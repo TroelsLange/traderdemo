@@ -589,42 +589,51 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   }
 
   function renderMarket(){
-    const a=ui.area, dReal=delIsReal(), tReal=todayIsReal();
+    // Basisdag (søjler) og leveringsdag (linje). Når morgendagens spot er ude, rykker begge én dag frem,
+    // så Marked viser de samme priser som handelsfanen: i morgen (spot) og overmorgen (prognose).
+    const a=ui.area, B=shifted()?DEL():TODAY(), D=TDEL();
+    const both=d=>!!(realH(d,'DK1')&&realH(d,'DK2'));
+    const dReal=both(D), tReal=both(B);
+    const bWord=shifted()?'i morgen':'i dag', bCap=shifted()?'I morgen':'I dag';
     const dTag=dReal?'spot':'prognose', dBadge=dReal?BADGE.live:BADGE.fc, tBadge=tReal?BADGE.live:BADGE.sim;
+    const spotOn=area=>realH(B,area)||simSpot(B,area);
     document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.area===a)));
-    $('mkLead').textContent=(tReal?'Spotpriser':'Simulerede priser')+' for '+longDate(TODAY())+' og '+(dReal?'spotpriser':'prognose')+' for leveringsdagen '+longDate(DEL())+'.'+
-      (dReal?'':' Morgendagens spotpriser offentliggøres efter middag. Indtil da vises vores prognose.');
-    const s1=spotToday('DK1'), s2=spotToday('DK2'), f1=delPrices('DK1').prices, f2=delPrices('DK2').prices;
+    const s1=spotOn('DK1'), s2=spotOn('DK2'), f1=pricesFor(D,'DK1').prices, f2=pricesFor(D,'DK2').prices;
+    let lead=(tReal?'Spotpriser':'Simulerede priser')+' for '+longDate(B)+' ('+bWord+') og '+(dReal?'spotpriser':'prognose')+' for leveringsdagen '+longDate(D)+'.';
+    if(shifted()) lead+=' Morgendagens spotpriser er offentliggjort, så leveringsdagen er rykket til overmorgen, ligesom på handelsfanen.'+
+      (todayIsReal()?' Dagens base: DK1 '+eur(avg(spotToday('DK1')))+', DK2 '+eur(avg(spotToday('DK2')))+' EUR/MWh.':'');
+    else if(!dReal) lead+=' Morgendagens spotpriser offentliggøres efter middag. Indtil da vises vores prognose.';
+    $('mkLead').textContent=lead;
     const pk=PRODUCTS.peak.hours(), base=PRODUCTS.base.hours();
     const k=(lbl,v,sub)=>'<div><span>'+lbl+'</span><strong>'+eur(v)+'</strong><small>'+sub+'</small></div>';
-    const chg=(f,s)=>{ const d=avg(f)-avg(s); return (d>=0?'+':'−')+eur(Math.abs(d))+' mod i dag'; };
+    const chg=(f,s)=>{ const d=avg(f)-avg(s); return (d>=0?'+':'−')+eur(Math.abs(d))+' mod '+bWord; };
     $('mkKpis').innerHTML=
       k('DK1 base, '+dTag,avg(f1),chg(f1,s1))+
       k('DK2 base, '+dTag,avg(f2),chg(f2,s2))+
       k('DK1 peak, '+dTag,avgH(f1,pk),'08–20')+
       k('DK2 peak, '+dTag,avgH(f2,pk),'08–20')+
       k('Spread DK2–DK1',avg(f2)-avg(f1),'base, '+dTag)+
-      k('DK1 base i dag',avg(s1),tReal?'spot':'simuleret');
-    $('mkChartTitle').innerHTML=a+': i dag og leveringsdag '+dBadge;
-    $('mkLegend').innerHTML='<span><i style="background:var(--line)"></i>'+(tReal?'Spot i dag':'Simuleret i dag')+'</span>'+
+      k('DK1 base '+bWord,avg(s1),tReal?'spot':'simuleret');
+    $('mkChartTitle').innerHTML=a+': '+shortDate(B)+' og '+shortDate(D)+' '+dBadge;
+    $('mkLegend').innerHTML='<span><i style="background:var(--line)"></i>'+(tReal?'Spot ':'Simuleret ')+bWord+'</span>'+
       '<span><i style="background:transparent;border:1.5px '+(dReal?'solid':'dashed')+' var(--accent)"></i>'+(dReal?'Spot leveringsdag':'Prognose leveringsdag')+'</span>';
     const sp=a==='DK1'?s1:s2, fc=a==='DK1'?f1:f2;
     $('mkChart').innerHTML=priceChart(sp,fc,dReal);
-    $('mkChart').querySelectorAll('rect[data-h]').forEach(r=>{ const h=+r.dataset.h; const show=()=>{ $('mkReadout').textContent=hh(h)+'–'+hh(h+1)+':  '+(tReal?'spot':'simuleret')+' i dag '+eur(sp[h])+'  ·  '+dTag+' '+eur(fc[h])+' EUR/MWh'; }; r.addEventListener('mouseenter',show); r.addEventListener('click',show); });
+    $('mkChart').querySelectorAll('rect[data-h]').forEach(r=>{ const h=+r.dataset.h; const show=()=>{ $('mkReadout').textContent=hh(h)+'–'+hh(h+1)+':  '+(tReal?'spot':'simuleret')+' '+bWord+' '+eur(sp[h])+'  ·  '+dTag+' '+shortDate(D)+' '+eur(fc[h])+' EUR/MWh'; }; r.addEventListener('mouseenter',show); r.addEventListener('click',show); });
     $('mkSource').innerHTML=market.status==='live'
       ? '<a href="https://www.energidataservice.dk/tso-electricity/DayAheadPrices" target="_blank" rel="noopener">Data: Energinet, Energi Data Service</a> · timepris = gennemsnit af fire kvarterer · hentet '+clock(market.fetchedAt)
       : market.status==='loading' ? 'Henter priser …' : '<span class="badge sim">Simuleret</span> Energi Data Service svarede ikke.';
-    const wt=windFor(TODAY()), wf=forecastWind(DEL());
-    $('fundTable').innerHTML='<thead><tr><th></th><th>I dag</th><th>Leveringsdag</th></tr></thead><tbody>'+
+    const wt=windFor(B), wf=forecastWind(D);
+    $('fundTable').innerHTML='<thead><tr><th></th><th>'+bCap+'</th><th>Leveringsdag</th></tr></thead><tbody>'+
       '<tr><td>Vind '+BADGE.sim+'</td><td>'+windWord(wt)+' ('+nf0.format(wt*100)+' %)</td><td>'+windWord(wf)+' ('+nf0.format(wf*100)+' %)</td></tr>'+
-      '<tr><td>Temperatur '+BADGE.sim+'</td><td>'+tempFor(TODAY())+' °C</td><td>'+tempFor(DEL())+' °C</td></tr>'+
+      '<tr><td>Temperatur '+BADGE.sim+'</td><td>'+tempFor(B)+' °C</td><td>'+tempFor(D)+' °C</td></tr>'+
       '<tr><td>Laveste time DK1</td><td>'+eur(Math.min(...vals(s1)))+'</td><td>'+eur(Math.min(...vals(f1)))+'</td></tr>'+
       '<tr><td>Højeste time DK1</td><td>'+eur(Math.max(...vals(s1)))+'</td><td>'+eur(Math.max(...vals(f1)))+'</td></tr>'+
       '<tr><td>Negative timer DK1</td><td>'+vals(s1).filter(v=>v<0).length+'</td><td>'+vals(f1).filter(v=>v<0).length+'</td></tr></tbody>';
-    $('hourNote').innerHTML='EUR/MWh, timegennemsnit. Spread = DK2 minus DK1. I dag '+tBadge+' Leveringsdag '+dBadge;
+    $('hourNote').innerHTML='EUR/MWh, timegennemsnit. Spread = DK2 minus DK1. '+bCap+' '+tBadge+' Leveringsdag '+dBadge;
     const rows=base.map(h=>{ const spr=(f2[h]==null||f1[h]==null)?null:f2[h]-f1[h]; return [hh(h)+'–'+hh(h+1), eur(s1[h]), eur(s2[h]), '<strong>'+eur(f1[h])+'</strong>', '<strong>'+eur(f2[h])+'</strong>', spr==null?'–':(spr>=0?'+':'−')+eur(Math.abs(spr))]; });
     const foot='<tfoot><tr><th>Base</th><th class="num">'+eur(avg(s1))+'</th><th class="num">'+eur(avg(s2))+'</th><th class="num">'+eur(avg(f1))+'</th><th class="num">'+eur(avg(f2))+'</th><th class="num">'+eur(avg(f2)-avg(f1))+'</th></tr></tfoot>';
-    const tl=tReal?'i dag':'i dag (sim.)';
+    const tl=bWord+(tReal?'':' (sim.)');
     $('hourTable').innerHTML=table(['Time','DK1 '+tl,'DK2 '+tl,'DK1 '+dTag,'DK2 '+dTag,'Spread '+dTag],rows,[1,2,3,4,5],foot);
   }
 
