@@ -75,8 +75,9 @@ a{color:var(--text-primary);text-underline-offset:2px}
 .nav-sub{border-bottom:var(--border-sm) solid var(--tabs-border)}
 .nav-sub .wrap{display:flex}
 nav.tabs{display:flex;overflow-x:auto;border-left:var(--border-sm) solid var(--tabs-border)}
-nav.tabs a{display:flex;align-items:center;height:47px;padding:0 var(--sp-xl);background:var(--tabs-bg);border-right:var(--border-sm) solid var(--tabs-border);
+nav.tabs a{display:flex;align-items:center;gap:var(--sp-xs);height:47px;padding:0 var(--sp-xl);background:var(--tabs-bg);border-right:var(--border-sm) solid var(--tabs-border);
   color:var(--text-primary);text-decoration:none;font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);white-space:nowrap}
+nav.tabs a img{display:block;flex:none}
 nav.tabs a:hover{background:var(--tabs-bg-active)}
 nav.tabs a[aria-current="page"]{background:var(--tabs-bg-active);font-weight:700}
 @media (max-width:760px){ .daychip{display:none} .nav-sub .wrap{padding:0} nav.tabs{border-left:0} }
@@ -231,10 +232,10 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   <div class="nav-sub">
     <div class="wrap">
       <nav class="tabs" aria-label="Hovedmenu">
-        <a href="#marked" data-view="marked">Marked</a>
-        <a href="#handel" data-view="handel">Handel</a>
-        <a href="#position" data-view="position">Position og risiko</a>
-        <a href="#resultat" data-view="resultat">Resultat</a>
+        <a href="#marked" data-view="marked">Marked<img src="assets/icon-chart-line.svg" width="16" height="16" alt=""></a>
+        <a href="#handel" data-view="handel">Handel<img src="assets/icon-plus-circle.svg" width="16" height="16" alt=""></a>
+        <a href="#position" data-view="position">Position og risiko<img src="assets/icon-chart-bar-horizontal.svg" width="16" height="16" alt=""></a>
+        <a href="#resultat" data-view="resultat">Resultat<img src="assets/icon-invoice.svg" width="16" height="16" alt=""></a>
       </nav>
     </div>
   </div>
