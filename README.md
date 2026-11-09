@@ -7,6 +7,14 @@ Intern prototype af en handelsplatform for el i DK1 og DK2.
 - `netlify/functions/prices.mts` – Netlify Function, der henter spotpriser fra Energinet
 - `netlify.toml` – opsætning til hosting på Netlify
 
+## Design
+Brugerfladen følger designsystemet **Naia – Core UI Library** i Figma. Farver, typografi, afstande og
+komponenter (navigation, faner, knapper, badges, datapunkt-kort, tabel, inputfelter og alert) er bygget
+med systemets tokens, defineret som CSS-variabler øverst i `public/index.html`.
+
+Fonten PP Radio Grotesk er licenseret og ligger ikke i repoet. Læg `PPRadioGrotesk-Regular.woff2` og
+`PPRadioGrotesk-Bold.woff2` i `public/fonts/` for at aktivere den. Indtil da vises Helvetica/Arial.
+
 ## Spotpriser
 Priserne kommer fra Energinets Energi Data Service, datasættet
 [DayAheadPrices](https://api.energidataservice.dk/dataset/DayAheadPrices)

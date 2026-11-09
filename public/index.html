@@ -4,126 +4,214 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Traderz Desk – intern handelsplatform</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* Naia Core UI Library – tokens (Figma: 🧱 Naia - Core UI Library / Token Specification).
+   PP Radio Grotesk er en licenseret font. Læg fontfilerne i /fonts for at aktivere den. */
+@font-face{font-family:"PP Radio Grotesk";font-weight:400;font-style:normal;font-display:swap;
+  src:local("PP Radio Grotesk Regular"),local("PPRadioGrotesk-Regular"),url("/fonts/PPRadioGrotesk-Regular.woff2") format("woff2")}
+@font-face{font-family:"PP Radio Grotesk";font-weight:700;font-style:normal;font-display:swap;
+  src:local("PP Radio Grotesk Bold"),local("PPRadioGrotesk-Bold"),url("/fonts/PPRadioGrotesk-Bold.woff2") format("woff2")}
 :root{
-  --bg:#ECF0F2; --surface:#FFFFFF; --surface-2:#F4F6F8; --ink:#14233A; --muted:#5A6A7E; --line:#D5DDE3;
-  --accent:#0F7C74; --accent-ink:#FFFFFF; --long:#0F7C74; --short:#C24E2C; --warn:#B7791F; --focus:#2F5BEA;
-  color-scheme: light; box-sizing:border-box;
+  color-scheme: light;
+  /* Typografi */
+  --font-family:"PP Radio Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --text-2xs:10px; --leading-2xs:12px; --tracking-2xs:0;
+  --text-xs:12px;  --leading-xs:14px;  --tracking-xs:0;
+  --text-sm:14px;  --leading-sm:17px;  --tracking-sm:-0.15px;
+  --text-base:16px;--leading-base:20px;--tracking-base:-0.3px;
+  --text-lg:18px;  --leading-lg:22px;  --tracking-lg:-0.3px;
+  --text-xl:20px;  --leading-xl:24px;  --tracking-xl:-0.3px;
+  --text-2xl:24px; --leading-2xl:28px; --tracking-2xl:-0.6px;
+  --text-3xl:32px; --leading-3xl:33px; --leading-3-5xl:38px; --tracking-3xl:-0.6px;
+  /* Afstande (spacers) */
+  --sp-2xs:2px; --sp-xs:4px; --sp-sm:6px; --sp-base:8px; --sp-md:10px; --sp-lg:12px;
+  --sp-xl:16px; --sp-2xl:20px; --sp-3xl:24px; --sp-4xl:32px; --sp-5xl:40px; --sp-6xl:48px;
+  /* Form */
+  --radius-card:4px; --radius-sm:6px; --radius-md:12px; --radius-round:999px; --border-sm:1px;
+  --shadow-md:0 2px 8px 0 rgba(0,0,0,.15);
+  /* Color Surface */
+  --light-surface:#FFFFFF; --text-primary:#000000; --text-secondary:#808080; --text-tertiary:#B2B2B2;
+  --border:#D9D6D2; --positive:#0AB16B; --negative:#F43F48;
+  --creme-bg:#F5F2ED; --medium-creme-bg:#EAE7E2; --creme-text:#300F0F;
+  --overlay:rgba(48,15,15,.6);
+  /* Color UI (elements/...) */
+  --btn-primary-bg:#300F0F; --btn-primary-bg-hover:#452727; --btn-primary-bg-disabled:#B2B2B2; --btn-primary-text:#FFFFFF;
+  --btn-secondary-bg:#FFFFFF; --btn-secondary-bg-hover:#F5F2ED; --btn-secondary-border:#D9D6D2; --btn-secondary-text:#000000;
+  --btn-destructive-bg:#FF686B; --btn-destructive-bg-hover:#D74C4F; --btn-destructive-bg-disabled:#DD9496; --btn-destructive-text:#FFFFFF;
+  --btn-alert-bg:#FACC14; --btn-alert-border:#E0B712;
+  --badge-red-bg:#FF686B; --badge-green-bg:#0AB16B; --badge-grey-bg:#D9D6D2; --badge-yellow-bg:#FACC14;
+  --badge-blue-bg:#CAE4FF; --badge-blue-border:#B2C9E0;
+  --tabs-bg:#FFFFFF; --tabs-bg-active:#F5F2ED; --tabs-border:#D9D6D2;
+  --row-bg:#FFFFFF; --row-bg-hover:#F5F2ED; --row-border:#D9D6D2;
+  --input-border:#D9D6D2; --input-focused:#C1B7B7; --input-label:#808080; --input-placeholder:#B2B2B2;
+  --focus:#007DFF;
+  /* Grafer: aliaser på tokens ovenfor */
+  --ink:var(--text-primary); --muted:var(--text-secondary); --line:var(--border); --surface:var(--light-surface);
+  --accent:var(--btn-primary-bg); --long:var(--positive); --short:var(--negative); --warn:var(--btn-alert-border);
+  box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0E1825; --surface:#152336; --surface-2:#1B2C42; --ink:#E5ECF4; --muted:#93A3B8; --line:#26384F;
-    --accent:#3FB8AA; --accent-ink:#0B1A28; --long:#3FB8AA; --short:#F07A55; --warn:#E3B04B; --focus:#7FA2FF; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0E1825; --surface:#152336; --surface-2:#1B2C42; --ink:#E5ECF4; --muted:#93A3B8; --line:#26384F;
-  --accent:#3FB8AA; --accent-ink:#0B1A28; --long:#3FB8AA; --short:#F07A55; --warn:#E3B04B; --focus:#7FA2FF; color-scheme: dark;
-}
 *,*::before,*::after{box-sizing:inherit}
-html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
-  font-family:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  font-size:15px;line-height:1.45;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
-button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px}
-a{color:var(--accent)}
-.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--creme-bg);color:var(--text-primary);font-family:var(--font-family);
+  font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm);
+  font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--light-surface)}
+button,input,select{font:inherit;color:inherit;letter-spacing:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+a{color:var(--text-primary);text-underline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 var(--sp-6xl)}
+@media (max-width:760px){ .wrap{padding:0 var(--sp-xl)} }
 
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;gap:16px;min-height:58px;flex-wrap:wrap}
-.brand{font-weight:800;font-size:1.15rem;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;white-space:nowrap}
-.brand em{font-style:normal;font-weight:500;color:var(--muted)}
-nav.tabs{display:flex;gap:2px;overflow-x:auto}
-nav.tabs a{padding:7px 12px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:600;white-space:nowrap}
-nav.tabs a[aria-current="page"]{color:var(--ink);background:var(--surface-2)}
-.top .right{margin-left:auto;display:flex;align-items:center;gap:12px}
-.daychip{font-size:.875rem;color:var(--muted);white-space:nowrap;text-align:right;line-height:1.25}
-.daychip strong{color:var(--ink);display:block}
-@media (max-width:760px){ nav.tabs{order:3;width:100%} .top .wrap{padding-top:8px;padding-bottom:8px;gap:8px} }
+/* Navigation (UI Kit / Navigation / main + sub-navigation Tabs) */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--light-surface)}
+.nav-main{border-bottom:var(--border-sm) solid var(--border)}
+.nav-main .wrap{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-xl);min-height:48px;padding-top:var(--sp-base);padding-bottom:var(--sp-base)}
+.brand{font-weight:700;font-size:var(--text-base);line-height:var(--leading-base);letter-spacing:var(--tracking-base);white-space:nowrap}
+.brand em{font-style:normal;font-weight:400;color:var(--text-secondary)}
+.nav-main .right{display:flex;align-items:center;gap:var(--sp-lg)}
+.daychip{font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);white-space:nowrap;text-align:right}
+.daychip strong{color:var(--text-primary);display:block;font-weight:700}
+.nav-sub{border-bottom:var(--border-sm) solid var(--tabs-border)}
+.nav-sub .wrap{display:flex}
+nav.tabs{display:flex;overflow-x:auto;border-left:var(--border-sm) solid var(--tabs-border)}
+nav.tabs a{display:flex;align-items:center;height:47px;padding:0 var(--sp-xl);background:var(--tabs-bg);border-right:var(--border-sm) solid var(--tabs-border);
+  color:var(--text-primary);text-decoration:none;font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);white-space:nowrap}
+nav.tabs a:hover{background:var(--tabs-bg-active)}
+nav.tabs a[aria-current="page"]{background:var(--tabs-bg-active);font-weight:700}
+@media (max-width:760px){ .daychip{display:none} .nav-sub .wrap{padding:0} nav.tabs{border-left:0} }
 
-.btn{border:1px solid var(--line);background:var(--surface);padding:8px 13px;border-radius:9px;font-weight:600;cursor:pointer;white-space:nowrap}
-.btn:hover{background:var(--surface-2)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.btn.primary:hover{filter:brightness(1.07)}
-.btn.sell{background:var(--short);border-color:var(--short);color:#fff}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+/* Button/main */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-base);height:32px;padding:var(--sp-xs) var(--sp-xl);border-radius:var(--radius-round);
+  border:var(--border-sm) solid var(--btn-secondary-border);background:var(--btn-secondary-bg);color:var(--btn-secondary-text);
+  font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);font-weight:400;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--btn-secondary-bg-hover)}
+.btn.primary{background:var(--btn-primary-bg);border-color:var(--btn-primary-bg);color:var(--btn-primary-text)}
+.btn.primary:hover{background:var(--btn-primary-bg-hover);border-color:var(--btn-primary-bg-hover)}
+.btn.primary:disabled{background:var(--btn-primary-bg-disabled);border-color:var(--btn-primary-bg-disabled)}
+.btn.sell{background:var(--btn-destructive-bg);border-color:var(--btn-destructive-bg);color:var(--btn-destructive-text)}
+.btn.sell:hover{background:var(--btn-destructive-bg-hover);border-color:var(--btn-destructive-bg-hover)}
+.btn.sell:disabled{background:var(--btn-destructive-bg-disabled);border-color:var(--btn-destructive-bg-disabled)}
+.btn:disabled{cursor:not-allowed}
+.btn:not(.primary):not(.sell):disabled{color:var(--text-tertiary);background:var(--btn-secondary-bg)}
+.btn.small{height:28px;padding:var(--sp-xs) var(--sp-lg)}
+.btn.block{width:100%;height:44px;font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm)}
 
-main{padding:22px 0 56px}
+/* Layout */
+main{padding:var(--sp-4xl) 0 var(--sp-6xl)}
 .view[hidden]{display:none}
-h1{font-size:1.6rem;letter-spacing:-0.025em;margin:0 0 4px;line-height:1.15}
-h2{font-size:1.05rem;margin:0 0 4px;letter-spacing:-0.01em}
-p{margin:0 0 10px;max-width:72ch}
-.muted{color:var(--muted)} .small{font-size:.8125rem}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
-.stack>*+*{margin-top:16px}
-.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+h1{font-size:var(--text-3xl);line-height:var(--leading-3xl);letter-spacing:var(--tracking-3xl);font-weight:700;margin:0 0 var(--sp-base)}
+h2{font-size:var(--text-xl);line-height:var(--leading-xl);letter-spacing:var(--tracking-xl);font-weight:700;margin:0}
+p{margin:0 0 var(--sp-md);max-width:72ch}
+.lead{color:var(--text-secondary);margin:0}
+.muted{color:var(--text-secondary)}
+.small{font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs)}
+.panel{background:var(--light-surface);border:var(--border-sm) solid var(--border);border-radius:var(--radius-card);padding:var(--sp-2xl)}
+.stack>*+*{margin-top:var(--sp-xl)}
+main .view.stack>*+*{margin-top:var(--sp-3xl)}
+.row{display:flex;gap:var(--sp-lg);align-items:center;flex-wrap:wrap}
 .spread{justify-content:space-between}
-.cols{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.cols{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--sp-3xl)}
 .c4{grid-column:span 4}.c5{grid-column:span 5}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
 @media (max-width:900px){.c4,.c5,.c7,.c8{grid-column:span 12}}
 
-.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px}
-.seg button{border:0;background:transparent;padding:5px 11px;border-radius:6px;font-weight:600;color:var(--muted);cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(20,35,58,.14)}
+/* Segmenteret valg (DK1/DK2) – Button/main secondary, valgt = primary */
+.seg{display:inline-flex;gap:var(--sp-sm)}
+.seg button{height:32px;padding:var(--sp-xs) var(--sp-xl);border-radius:var(--radius-round);border:var(--border-sm) solid var(--btn-secondary-border);
+  background:var(--btn-secondary-bg);font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);cursor:pointer}
+.seg button:hover{background:var(--btn-secondary-bg-hover)}
+.seg button[aria-pressed="true"]{background:var(--btn-primary-bg);border-color:var(--btn-primary-bg);color:var(--btn-primary-text)}
 
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.kpis div{background:var(--surface);padding:13px 15px}
-.kpis span{display:block;font-size:.78rem;color:var(--muted)}
-.kpis strong{font-size:1.3rem;letter-spacing:-0.02em;font-weight:700}
-.kpis small{display:block;font-size:.78rem;color:var(--muted)}
+/* Card/Datapoint */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--sp-xl)}
+.kpis div{background:var(--light-surface);border:var(--border-sm) solid var(--border);border-radius:var(--radius-card);min-height:112px;
+  padding:var(--sp-lg) var(--sp-xl) var(--sp-xl);display:flex;flex-direction:column;justify-content:space-between;gap:var(--sp-base)}
+.kpis span{display:block;font-weight:700}
+.kpis strong{display:block;font-weight:400;font-size:var(--text-3xl);line-height:var(--leading-3-5xl);letter-spacing:var(--tracking-3xl)}
+.kpis small{display:block;font-size:var(--text-sm);color:var(--text-secondary)}
 
+/* Grafer */
 .chart-wrap{overflow-x:auto}
 .chart{width:100%;min-width:560px;height:auto;display:block;color:var(--ink)}
-.readout{min-height:1.4em;font-size:.875rem;color:var(--muted)}
-.legend{display:flex;gap:14px;font-size:.78rem;color:var(--muted);flex-wrap:wrap}
-.legend i{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.readout{min-height:var(--leading-sm);color:var(--text-secondary)}
+.legend{display:flex;gap:var(--sp-xl);font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:var(--sp-xs);vertical-align:-1px}
 
+/* Tabel (table/projects) */
 .table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.875rem;min-width:520px}
-th{text-align:left;font-weight:600;color:var(--muted);font-size:.78rem;padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface)}
-td{padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
-tbody tr:hover td{background:var(--surface-2)}
+table{width:100%;border-collapse:separate;border-spacing:0 var(--sp-base);min-width:520px;margin-top:calc(-1 * var(--sp-base))}
+th{text-align:left;font-weight:400;color:var(--text-secondary);font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);
+  text-transform:uppercase;height:32px;padding:0 var(--sp-lg);white-space:nowrap;background:var(--light-surface)}
+td{height:48px;padding:0 var(--sp-lg);background:var(--row-bg);border-top:var(--border-sm) solid var(--row-border);border-bottom:var(--border-sm) solid var(--row-border);white-space:nowrap}
+td:first-child{border-left:var(--border-sm) solid var(--row-border);border-radius:var(--radius-sm) 0 0 var(--radius-sm);font-weight:700}
+td:last-child{border-right:var(--border-sm) solid var(--row-border);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+tbody tr:hover td{background:var(--row-bg-hover)}
+tfoot th{color:var(--text-primary);font-weight:700;text-transform:none;font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm);background:var(--medium-creme-bg)}
+tfoot th:first-child{border-radius:var(--radius-sm) 0 0 var(--radius-sm)} tfoot th:last-child{border-radius:0 var(--radius-sm) var(--radius-sm) 0}
 .num{text-align:right}
-.scroll{max-height:460px;overflow:auto}
-.scroll thead th{position:sticky;top:0}
-.pos{color:var(--long);font-weight:700}.neg{color:var(--short);font-weight:700}
-.warnc{color:var(--warn);font-weight:700}
-.tag{display:inline-block;padding:1px 7px;border-radius:5px;font-size:.78rem;font-weight:600;background:var(--surface-2)}
-.tag.buy{color:var(--long)}.tag.sell{color:var(--short)}
-.empty{padding:22px;text-align:center;color:var(--muted)}
+.scroll{max-height:520px;overflow:auto}
+.scroll thead th{position:sticky;top:0;z-index:1}
+.kv{min-width:0;margin-top:0;border-spacing:0}
+.kv td{height:40px;white-space:normal;border-left:0;border-right:0;border-radius:0;border-top:0;font-weight:400}
+.kv td:first-child{border-left:0;border-radius:0;font-weight:400;color:var(--text-secondary)}
+.kv td:last-child{border-right:0;border-radius:0}
+.kv tbody tr:hover td{background:transparent}
+.kv th{height:32px}
+.pos{color:var(--positive);font-weight:700}.neg{color:var(--negative);font-weight:700}
+.warnc{display:inline-block;padding:0 var(--sp-sm);border-radius:var(--radius-round);background:var(--badge-yellow-bg);color:var(--text-primary);font-weight:700}
+.empty{padding:var(--sp-2xl);text-align:center;color:var(--text-secondary)}
 
-label.field{display:block;font-weight:600;font-size:.875rem;margin-bottom:5px}
-.input{width:100%;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:9px 11px}
-select.input{appearance:auto}
-.sidebtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.sidebtns button{padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:700;cursor:pointer;font-size:1rem}
-.sidebtns button[aria-pressed="true"].b{background:var(--long);border-color:var(--long);color:#fff}
-.sidebtns button[aria-pressed="true"].s{background:var(--short);border-color:var(--short);color:#fff}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.quote{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-align:center}
-.quote div{background:var(--surface-2);padding:9px 6px}
-.quote span{display:block;font-size:.75rem;color:var(--muted)}
-.quote strong{font-size:1.1rem}
-.summary{font-size:.875rem;background:var(--surface-2);border-radius:10px;padding:12px 14px}
-.summary div{display:flex;justify-content:space-between;gap:12px;padding:2px 0}
-.error{color:var(--short);font-weight:600;min-height:1.3em;margin:6px 0 0;font-size:.875rem}
-.note{font-size:.78rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin-top:32px}
+/* Badge */
+.badge,.tag{display:inline-flex;align-items:center;gap:var(--sp-xs);height:24px;padding:var(--sp-xs) var(--sp-base);border-radius:var(--radius-round);
+  font-size:var(--text-2xs);line-height:var(--leading-2xs);letter-spacing:var(--tracking-2xs);font-weight:400;text-transform:uppercase;white-space:nowrap;vertical-align:middle}
+.badge.fc{background:var(--badge-blue-bg);border:var(--border-sm) solid var(--badge-blue-border);color:var(--text-primary)}
+.badge.live,.tag.buy{background:var(--badge-green-bg);color:#FFFFFF}
+.badge.sim{background:var(--badge-yellow-bg);color:var(--text-primary)}
+.tag.sell{background:var(--badge-red-bg);color:#FFFFFF}
+.tag.open{background:var(--badge-grey-bg);color:var(--text-primary)}
 
-.badge{display:inline-block;padding:1px 7px;border-radius:5px;font-size:.72rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;vertical-align:1px;white-space:nowrap}
-.badge.fc{color:var(--accent);border:1.5px dashed var(--accent)}
-.badge.live{color:var(--accent-ink);background:var(--accent)}
-.badge.sim{color:var(--warn);border:1.5px solid var(--warn)}
-.banner{border:1.5px solid var(--warn);background:var(--surface);border-left-width:6px;border-radius:10px;padding:11px 14px;margin-bottom:18px;font-size:.9rem}
-.banner strong{color:var(--warn)}
+/* input/basic */
+label.field,.field{display:block;color:var(--input-label);font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);text-transform:uppercase;margin-bottom:var(--sp-xs)}
+.input{width:100%;height:44px;border:var(--border-sm) solid var(--input-border);border-radius:var(--radius-sm);background:var(--light-surface);
+  padding:var(--sp-lg);font-size:var(--text-base);line-height:var(--leading-base);letter-spacing:var(--tracking-base)}
+.input::placeholder{color:var(--input-placeholder)}
+.input:focus{outline:none;box-shadow:0 0 0 2px var(--input-focused)}
+.input:focus-visible{outline:none}
+select.input{appearance:auto;padding-top:0;padding-bottom:0}
+.input.compact{height:32px;padding:var(--sp-xs) var(--sp-base);font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm)}
+.sidebtns{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-base)}
+.sidebtns button{height:44px;border-radius:var(--radius-round);border:var(--border-sm) solid var(--btn-secondary-border);background:var(--btn-secondary-bg);
+  font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm);cursor:pointer}
+.sidebtns button:hover{background:var(--btn-secondary-bg-hover)}
+.sidebtns button[aria-pressed="true"].b{background:var(--btn-primary-bg);border-color:var(--btn-primary-bg);color:var(--btn-primary-text)}
+.sidebtns button[aria-pressed="true"].s{background:var(--btn-destructive-bg);border-color:var(--btn-destructive-bg);color:var(--btn-destructive-text)}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+.quote{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp-base);text-align:center}
+.quote div{background:var(--medium-creme-bg);border-radius:var(--radius-sm);padding:var(--sp-md) var(--sp-sm)}
+.quote span{display:block;font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);text-transform:uppercase}
+.quote strong{font-size:var(--text-lg);line-height:var(--leading-lg);letter-spacing:var(--tracking-lg)}
+.summary{background:var(--medium-creme-bg);border-radius:var(--radius-sm);padding:var(--sp-lg) var(--sp-xl)}
+.summary div{display:flex;justify-content:space-between;gap:var(--sp-lg);padding:var(--sp-2xs) 0}
+.summary span{color:var(--text-secondary)}
+.error{color:var(--negative);min-height:var(--leading-sm);margin:var(--sp-sm) 0 0}
+.note{font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);border-top:var(--border-sm) solid var(--border);padding-top:var(--sp-xl);margin-top:var(--sp-4xl)}
+.source{font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);margin:0}
+.source a{color:var(--text-secondary)}
+
+/* Alert (UI Kit / Alert) */
+.banner{display:flex;gap:var(--sp-xl);align-items:flex-start;justify-content:space-between;flex-wrap:wrap;background:var(--light-surface);
+  border-radius:var(--radius-md);box-shadow:var(--shadow-md);padding:var(--sp-3xl);margin-bottom:var(--sp-3xl)}
 .banner[hidden]{display:none}
-.source{font-size:.78rem;color:var(--muted);margin:0}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--surface);padding:11px 17px;border-radius:11px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 40px);z-index:20}
+.banner .alert-body{display:flex;gap:var(--sp-xl);align-items:flex-start;flex:1 1 320px}
+.banner .alert-icon{flex:none;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-round);
+  background:var(--btn-alert-bg);border:var(--border-sm) solid var(--btn-alert-border)}
+.banner .alert-icon img{display:block}
+.banner strong{display:block;font-weight:700;margin-bottom:var(--sp-xs)}
+.banner p{color:var(--text-secondary);margin:0}
+.banner.info{padding:var(--sp-xl) var(--sp-3xl)}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--sp-2xl) + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--btn-primary-bg);color:var(--btn-primary-text);
+  padding:var(--sp-lg) var(--sp-xl);border-radius:var(--radius-md);box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 40px);z-index:20}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
 </style>
@@ -131,20 +219,23 @@ select.input{appearance:auto}
 <body>
 
 <header class="top">
-  <div class="wrap">
-    <div class="brand">
-      <svg width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="12" width="4" height="9" rx="1" fill="#13897C"/><rect x="7" y="7" width="4" height="14" rx="1" fill="#D2A12A"/><rect x="13" y="2" width="4" height="19" rx="1" fill="#C8532F"/></svg>
-      Traderz <em>Desk</em>
+  <div class="nav-main">
+    <div class="wrap">
+      <div class="brand">Traderz <em>Desk</em></div>
+      <div class="right">
+        <div class="daychip" id="daychip"></div>
+        <button class="btn primary" id="settleBtn" title="Afregner åbne handler mod den rigtige spotpris, når den er offentliggjort">Afregn handler</button>
+      </div>
     </div>
-    <nav class="tabs" aria-label="Hovedmenu">
-      <a href="#marked" data-view="marked">Marked</a>
-      <a href="#handel" data-view="handel">Handel</a>
-      <a href="#position" data-view="position">Position og risiko</a>
-      <a href="#resultat" data-view="resultat">Resultat</a>
-    </nav>
-    <div class="right">
-      <div class="daychip" id="daychip"></div>
-      <button class="btn" id="settleBtn" title="Afregner åbne handler mod den rigtige spotpris, når den er offentliggjort">Afregn handler</button>
+  </div>
+  <div class="nav-sub">
+    <div class="wrap">
+      <nav class="tabs" aria-label="Hovedmenu">
+        <a href="#marked" data-view="marked">Marked</a>
+        <a href="#handel" data-view="handel">Handel</a>
+        <a href="#position" data-view="position">Position og risiko</a>
+        <a href="#resultat" data-view="resultat">Resultat</a>
+      </nav>
     </div>
   </div>
 </header>
@@ -154,8 +245,8 @@ select.input{appearance:auto}
 
   <!-- MARKED -->
   <section class="view stack" id="view-marked" hidden>
-    <div class="row spread">
-      <div><h1>Marked</h1><p class="muted" style="margin:0" id="mkLead"></p></div>
+    <div class="row spread" style="align-items:flex-end">
+      <div><h1>Marked</h1><p class="lead" id="mkLead"></p></div>
       <div class="seg" role="group" aria-label="Prisområde i graf">
         <button data-area="DK1">DK1</button><button data-area="DK2">DK2</button>
       </div>
@@ -172,7 +263,7 @@ select.input{appearance:auto}
       </div>
       <div class="panel c5 stack">
         <h2>Fundamentals</h2>
-        <div class="table-wrap"><table style="min-width:0" id="fundTable"></table></div>
+        <div class="table-wrap"><table class="kv" id="fundTable"></table></div>
         <p class="muted small" style="margin:0"><span class="badge sim">Simuleret</span> Vind og temperatur er simulerede og kommer ikke fra en rigtig vejrudsigt. Prognosen for leveringsdagen tager udgangspunkt i dagens spotpriser og justeres for den simulerede vind- og temperaturudsigt.</p>
       </div>
     </div>
@@ -184,7 +275,7 @@ select.input{appearance:auto}
 
   <!-- HANDEL -->
   <section class="view stack" id="view-handel" hidden>
-    <div><h1>Ny handel</h1><p class="muted" style="margin:0" id="tdLead"></p></div>
+    <div><h1>Ny handel</h1><p class="lead" id="tdLead"></p></div>
     <div class="cols">
       <div class="panel c5 stack">
         <div class="formgrid">
@@ -205,7 +296,7 @@ select.input{appearance:auto}
         </div>
         <div class="quote" id="quote"></div>
         <div class="summary" id="tdSummary"></div>
-        <button class="btn primary" id="placeBtn" style="padding:12px">Køb</button>
+        <button class="btn primary block" id="placeBtn">Køb</button>
         <p class="error" id="tdError" role="alert"></p>
       </div>
       <div class="c7 stack">
@@ -223,11 +314,11 @@ select.input{appearance:auto}
 
   <!-- POSITION -->
   <section class="view stack" id="view-position" hidden>
-    <div class="row spread">
-      <div><h1>Position og risiko</h1><p class="muted" style="margin:0" id="psLead"></p></div>
-      <div class="row">
-        <label class="small muted" for="limitInput">Grænse pr. time</label>
-        <input class="input" id="limitInput" inputmode="numeric" style="width:90px">
+    <div class="row spread" style="align-items:flex-end">
+      <div><h1>Position og risiko</h1><p class="lead" id="psLead"></p></div>
+      <div class="row" style="gap:var(--sp-base)">
+        <label class="field" for="limitInput" style="margin:0">Grænse pr. time</label>
+        <input class="input compact" id="limitInput" inputmode="numeric" style="width:90px">
         <span class="small muted">MW</span>
       </div>
     </div>
@@ -237,9 +328,9 @@ select.input{appearance:auto}
         <div class="row spread"><h2>Nettoposition pr. time</h2>
           <div class="legend"><span><i style="background:var(--long)"></i>Lang (købt)</span><span><i style="background:var(--short)"></i>Kort (solgt)</span><span><i style="background:transparent;border-top:2px dashed var(--warn);height:0;width:14px"></i>Grænse</span></div>
         </div>
-        <div class="row"><strong style="width:40px">DK1</strong></div>
+        <div class="row"><strong>DK1</strong></div>
         <div class="chart-wrap" id="psChart1"></div>
-        <div class="row"><strong style="width:40px">DK2</strong></div>
+        <div class="row"><strong>DK2</strong></div>
         <div class="chart-wrap" id="psChart2"></div>
       </div>
     </div>
@@ -251,7 +342,7 @@ select.input{appearance:auto}
 
   <!-- RESULTAT -->
   <section class="view stack" id="view-resultat" hidden>
-    <div><h1>Resultat</h1><p class="muted" style="margin:0">Realiseret resultat efter afregning mod faktisk spotpris.</p></div>
+    <div><h1>Resultat</h1><p class="lead">Realiseret resultat efter afregning mod den rigtige spotpris.</p></div>
     <div class="kpis" id="rsKpis"></div>
     <div class="panel stack">
       <h2>Akkumuleret resultat</h2>
@@ -409,11 +500,12 @@ select.input{appearance:auto}
     const y=v=>pt+(hi-v)/(hi-lo)*(H-pt-pb);
     const step=hi>800?200:hi>400?100:50;
     let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Spotpriser i dag og '+(delReal?'spotpriser':'prognose')+' for leveringsdagen">';
-    for(let g=0; g<=hi; g+=step){ s+='<line x1="0" x2="'+W+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="currentColor" stroke-opacity=".08"/><text x="2" y="'+(y(g)-3)+'" font-size="10" fill="currentColor" opacity=".45">'+g+'</text>'; }
+    let labels='';
+    for(let g=0; g<=hi; g+=step){ s+='<line x1="0" x2="'+W+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="currentColor" stroke-opacity=".08"/>'; labels+='<text x="2" y="'+(y(g)-3)+'" font-size="10" fill="var(--muted)" stroke="var(--surface)" stroke-width="3" paint-order="stroke">'+g+'</text>'; }
     for(let h=0;h<n;h++){
       const p=spot[h], x=h*slot+3, w=slot-6;
       if(p!=null){ const top=Math.min(y(p),y(0)), ht=Math.max(1.5,Math.abs(y(p)-y(0)));
-        s+='<rect x="'+x+'" y="'+top+'" width="'+w+'" height="'+ht+'" rx="2" fill="currentColor" fill-opacity=".22"/>'; }
+        s+='<rect x="'+x+'" y="'+top+'" width="'+w+'" height="'+ht+'" rx="2" fill="var(--line)"/>'; }
       s+='<rect data-h="'+h+'" x="'+(h*slot)+'" y="0" width="'+slot+'" height="'+(H-pb)+'" fill="transparent" style="cursor:pointer"/>';
       if(h%3===0) s+='<text x="'+(x+w/2)+'" y="'+(H-6)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">'+hh(h)+'</text>';
     }
@@ -421,7 +513,7 @@ select.input{appearance:auto}
     s+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"'+(delReal?'':' stroke-dasharray="6 4"')+' pointer-events="none"/>';
     del.forEach((p,h)=>{ if(p!=null) s+='<circle cx="'+(h*slot+slot/2)+'" cy="'+y(p)+'" r="2.5" fill="'+(delReal?'var(--accent)':'var(--surface)')+'" stroke="var(--accent)" stroke-width="1.5" pointer-events="none"/>'; });
     if(lo<0) s+='<line x1="0" x2="'+W+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/>';
-    return s+'</svg>';
+    return s+labels+'</svg>';
   }
   function posChart(pos, limit, ghost){
     const W=720,H=160,pb=20,pt=8,n=24,slot=W/n;
@@ -470,11 +562,13 @@ select.input{appearance:auto}
   function renderChrome(){
     const b=$('banner');
     if(market.status==='fallback'){
-      b.hidden=false;
-      b.innerHTML='<strong>Advarsel: Energi Data Service svarer ikke.</strong> Alle priser er lige nu <strong>simulerede</strong> og ikke rigtige markedspriser. Handler afregnes først, når rigtige spotpriser kan hentes igen. <button class="btn" id="retryBtn" style="padding:3px 9px;margin-left:6px">Prøv igen</button>';
+      b.hidden=false; b.className='banner';
+      b.innerHTML='<div class="alert-body"><span class="alert-icon"><img src="assets/icon-warning.svg" width="16" height="16" alt=""></span>'+
+        '<div><strong>Energi Data Service svarer ikke</strong><p>Alle priser er lige nu simulerede og ikke rigtige markedspriser. Handler afregnes først, når rigtige spotpriser kan hentes igen.</p></div></div>'+
+        '<button class="btn" id="retryBtn">Prøv igen</button>';
       $('retryBtn').addEventListener('click',()=>{ market.status='loading'; renderChrome(); loadPrices(); });
     } else if(market.status==='loading'){
-      b.hidden=false; b.innerHTML='Henter spotpriser fra Energi Data Service …';
+      b.hidden=false; b.className='banner info'; b.innerHTML='<p>Henter spotpriser fra Energi Data Service …</p>';
     } else b.hidden=true;
     $('daychip').innerHTML='<strong>Handelsdag '+shortDate(TODAY())+'</strong>Levering '+shortDate(DEL());
     const n=settleable().length;
@@ -506,14 +600,14 @@ select.input{appearance:auto}
       k('Spread DK2–DK1',avg(f2)-avg(f1),'base, '+dTag)+
       k('DK1 base i dag',avg(s1),tReal?'spot':'simuleret');
     $('mkChartTitle').innerHTML=a+': i dag og leveringsdag '+dBadge;
-    $('mkLegend').innerHTML='<span><i style="background:var(--muted);opacity:.55"></i>'+(tReal?'Spot i dag':'Simuleret i dag')+'</span>'+
+    $('mkLegend').innerHTML='<span><i style="background:var(--line)"></i>'+(tReal?'Spot i dag':'Simuleret i dag')+'</span>'+
       '<span><i style="background:transparent;border:1.5px '+(dReal?'solid':'dashed')+' var(--accent)"></i>'+(dReal?'Spot leveringsdag':'Prognose leveringsdag')+'</span>';
     const sp=a==='DK1'?s1:s2, fc=a==='DK1'?f1:f2;
     $('mkChart').innerHTML=priceChart(sp,fc,dReal);
     $('mkChart').querySelectorAll('rect[data-h]').forEach(r=>{ const h=+r.dataset.h; const show=()=>{ $('mkReadout').textContent=hh(h)+'–'+hh(h+1)+':  '+(tReal?'spot':'simuleret')+' i dag '+eur(sp[h])+'  ·  '+dTag+' '+eur(fc[h])+' EUR/MWh'; }; r.addEventListener('mouseenter',show); r.addEventListener('click',show); });
     $('mkSource').innerHTML=market.status==='live'
       ? '<a href="https://www.energidataservice.dk/tso-electricity/DayAheadPrices" target="_blank" rel="noopener">Data: Energinet, Energi Data Service</a> · timepris = gennemsnit af fire kvarterer · hentet '+clock(market.fetchedAt)
-      : market.status==='loading' ? 'Henter priser …' : '<strong class="warnc">Simulerede priser.</strong> Energi Data Service svarede ikke.';
+      : market.status==='loading' ? 'Henter priser …' : '<span class="badge sim">Simuleret</span> Energi Data Service svarede ikke.';
     const wt=windFor(TODAY()), wf=forecastWind(DEL());
     $('fundTable').innerHTML='<thead><tr><th></th><th>I dag</th><th>Leveringsdag</th></tr></thead><tbody>'+
       '<tr><td>Vind '+BADGE.sim+'</td><td>'+windWord(wt)+' ('+nf0.format(wt*100)+' %)</td><td>'+windWord(wf)+' ('+nf0.format(wf*100)+' %)</td></tr>'+
@@ -522,7 +616,7 @@ select.input{appearance:auto}
       '<tr><td>Højeste time DK1</td><td>'+eur(Math.max(...vals(s1)))+'</td><td>'+eur(Math.max(...vals(f1)))+'</td></tr>'+
       '<tr><td>Negative timer DK1</td><td>'+vals(s1).filter(v=>v<0).length+'</td><td>'+vals(f1).filter(v=>v<0).length+'</td></tr></tbody>';
     $('hourNote').innerHTML='EUR/MWh, timegennemsnit. Spread = DK2 minus DK1. I dag '+tBadge+' Leveringsdag '+dBadge;
-    const rows=base.map(h=>{ const spr=(f2[h]==null||f1[h]==null)?null:f2[h]-f1[h]; return [hh(h)+'–'+hh(h+1), eur(s1[h]), eur(s2[h]), '<strong>'+eur(f1[h])+'</strong>', '<strong>'+eur(f2[h])+'</strong>', spr==null?'–':'<span class="'+(Math.abs(spr)>8?'warnc':'')+'">'+(spr>=0?'+':'−')+eur(Math.abs(spr))+'</span>']; });
+    const rows=base.map(h=>{ const spr=(f2[h]==null||f1[h]==null)?null:f2[h]-f1[h]; return [hh(h)+'–'+hh(h+1), eur(s1[h]), eur(s2[h]), '<strong>'+eur(f1[h])+'</strong>', '<strong>'+eur(f2[h])+'</strong>', spr==null?'–':(spr>=0?'+':'−')+eur(Math.abs(spr))]; });
     const foot='<tfoot><tr><th>Base</th><th class="num">'+eur(avg(s1))+'</th><th class="num">'+eur(avg(s2))+'</th><th class="num">'+eur(avg(f1))+'</th><th class="num">'+eur(avg(f2))+'</th><th class="num">'+eur(avg(f2)-avg(f1))+'</th></tr></tfoot>';
     const tl=tReal?'i dag':'i dag (sim.)';
     $('hourTable').innerHTML=table(['Time','DK1 '+tl,'DK2 '+tl,'DK1 '+dTag,'DK2 '+dTag,'Spread '+dTag],rows,[1,2,3,4,5],foot);
@@ -554,7 +648,7 @@ select.input{appearance:auto}
     const t=draft(), hours=t.product==='block'?(t.to>t.from?tradeHours(t):[]):tradeHours(t);
     const err=$('tdError'); err.textContent='';
     const btn=$('placeBtn');
-    btn.className='btn '+(t.side==='buy'?'primary':'sell');
+    btn.className='btn block '+(t.side==='buy'?'primary':'sell');
     if(tradingClosed()){
       $('quote').innerHTML=''; btn.disabled=true; btn.textContent='Handel lukket for '+shortDate(DEL());
       $('tdSummary').innerHTML='<div>Spotpriserne for '+longDate(DEL())+' er offentliggjort, så day-ahead-handlen for den dag er lukket. Handel åbner for næste leveringsdag efter midnat.</div>';
@@ -565,7 +659,7 @@ select.input{appearance:auto}
     $('quote').innerHTML='<div><span>Bud</span><strong>'+eur(q.bid)+'</strong></div><div><span>Prognose</span><strong>'+eur(q.fair)+'</strong></div><div><span>Udbud</span><strong>'+eur(q.ask)+'</strong></div>';
     const mwh=t.mw*hours.length;
     $('tdSummary').innerHTML=
-      (market.status==='fallback'?'<div class="warnc">Prognosen bygger på simulerede priser, fordi Energi Data Service ikke svarer.</div>':'')+
+      (market.status==='fallback'?'<div><span class="badge sim">Simuleret</span><span>Prognosen bygger på simulerede priser</span></div>':'')+
       '<div><span>Timer</span><strong>'+hours.length+' ('+hh(hours[0])+'–'+hh(hours[hours.length-1]+1)+(t.product==='offpeak'?', ekskl. 08–20':'')+')</strong></div>'+
       '<div><span>Energi</span><strong>'+nf1.format(mwh)+' MWh</strong></div>'+
       '<div><span>Din pris</span><strong>'+eur(q.price)+' EUR/MWh</strong></div>'+
@@ -585,7 +679,7 @@ select.input{appearance:auto}
     const open=state.trades.filter(x=>x.del===DEL()&&!x.settled);
     const canCancel=!tradingClosed();
     $('tdOpen').innerHTML=open.length?table(['#','Område','Produkt','Retning','MW','Pris','Note',''],open.map(x=>[
-      x.id,x.area,hoursLabel(x),'<span class="tag '+x.side+'">'+(x.side==='buy'?'Køb':'Salg')+'</span>',nf1.format(x.mw),eur(x.price),esc(x.note||''),canCancel?'<button class="btn small" data-cancel="'+x.id+'" style="padding:3px 8px">Annullér</button>':''
+      x.id,x.area,hoursLabel(x),'<span class="tag '+x.side+'">'+(x.side==='buy'?'Køb':'Salg')+'</span>',nf1.format(x.mw),eur(x.price),esc(x.note||''),canCancel?'<button class="btn small" data-cancel="'+x.id+'">Annullér</button>':''
     ]),[4,5]):'<div class="empty">Ingen handler for leveringsdagen endnu.</div>';
     $('tdOpen').querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{
       const id=+b.dataset.cancel; state.trades=state.trades.filter(x=>x.id!==id); save(); toast('Handel #'+id+' annulleret'); renderChrome(); updateTrade();
@@ -622,7 +716,7 @@ select.input{appearance:auto}
       '<div><span>Netto DK2</span><strong class="'+cls(net(p2))+'">'+nf1.format(net(p2))+' MWh</strong><small>'+(net(p2)>=0?'lang':'kort')+'</small></div>'+
       '<div><span>Brutto eksponering</span><strong>'+nf1.format(gross(p1)+gross(p2))+' MWh</strong><small>sum af timepositioner</small></div>'+
       '<div><span>Urealiseret</span><strong class="'+cls(unreal)+'">'+smoney(unreal)+'</strong><small>'+(dReal?'mod spotpris':'mod prognose')+'</small></div>'+
-      '<div><span>Grænsebrud</span><strong class="'+(breaches?'warnc':'')+'">'+breaches+'</strong><small>timer over '+state.limit+' MW</small></div>';
+      '<div><span>Grænsebrud</span><strong>'+breaches+'</strong><small>'+(breaches?'<span class="warnc">timer over '+state.limit+' MW</span>':'timer over '+state.limit+' MW')+'</small></div>';
     $('psChart1').innerHTML=posChart(p1,state.limit);
     $('psChart2').innerHTML=posChart(p2,state.limit);
     const scen=[-30,-10,10,30];
@@ -660,7 +754,7 @@ select.input{appearance:auto}
     const all=state.trades.slice().sort((a,b)=>b.id-a.id);
     $('rsBlotter').innerHTML=all.length?table(['#','Levering','Område','Produkt','Retning','MW','Pris','Spot','Resultat','Note'],all.map(t=>[
       t.id, shortDate(t.del), t.area, hoursLabel(t), '<span class="tag '+t.side+'">'+(t.side==='buy'?'Køb':'Salg')+'</span>', nf1.format(t.mw), eur(t.price),
-      t.settled?eur(t.settle):'<span class="muted">åben</span>', t.settled?'<span class="'+cls(t.pnl)+'">'+smoney(t.pnl)+'</span>':'<span class="muted">–</span>', esc(t.note||'')
+      t.settled?eur(t.settle):'<span class="tag open">Åben</span>', t.settled?'<span class="'+cls(t.pnl)+'">'+smoney(t.pnl)+'</span>':'<span class="muted">–</span>', esc(t.note||'')
     ]),[5,6,7,8]):'<div class="empty">Ingen handler endnu. <a href="#handel">Lav den første</a>.</div>';
   }
 
