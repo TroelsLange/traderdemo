@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strømkurs Desk – intern handelsplatform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECF0F2; --surface:#FFFFFF; --surface-2:#F4F6F8; --ink:#14233A; --muted:#5A6A7E; --line:#D5DDE3;
+  --accent:#0F7C74; --accent-ink:#FFFFFF; --long:#0F7C74; --short:#C24E2C; --warn:#B7791F; --focus:#2F5BEA;
+  color-scheme: light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1825; --surface:#152336; --surface-2:#1B2C42; --ink:#E5ECF4; --muted:#93A3B8; --line:#26384F;
+    --accent:#3FB8AA; --accent-ink:#0B1A28; --long:#3FB8AA; --short:#F07A55; --warn:#E3B04B; --focus:#7FA2FF; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1825; --surface:#152336; --surface-2:#1B2C42; --ink:#E5ECF4; --muted:#93A3B8; --line:#26384F;
+  --accent:#3FB8AA; --accent-ink:#0B1A28; --long:#3FB8AA; --short:#F07A55; --warn:#E3B04B; --focus:#7FA2FF; color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.45;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px}
+a{color:var(--accent)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;min-height:58px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:1.15rem;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.brand em{font-style:normal;font-weight:500;color:var(--muted)}
+nav.tabs{display:flex;gap:2px;overflow-x:auto}
+nav.tabs a{padding:7px 12px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:600;white-space:nowrap}
+nav.tabs a[aria-current="page"]{color:var(--ink);background:var(--surface-2)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.daychip{font-size:.875rem;color:var(--muted);white-space:nowrap;text-align:right;line-height:1.25}
+.daychip strong{color:var(--ink);display:block}
+@media (max-width:760px){ nav.tabs{order:3;width:100%} .top .wrap{padding-top:8px;padding-bottom:8px;gap:8px} }
+
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 13px;border-radius:9px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.sell{background:var(--short);border-color:var(--short);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+main{padding:22px 0 56px}
+.view[hidden]{display:none}
+h1{font-size:1.6rem;letter-spacing:-0.025em;margin:0 0 4px;line-height:1.15}
+h2{font-size:1.05rem;margin:0 0 4px;letter-spacing:-0.01em}
+p{margin:0 0 10px;max-width:72ch}
+.muted{color:var(--muted)} .small{font-size:.8125rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stack>*+*{margin-top:16px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.spread{justify-content:space-between}
+.cols{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.c4{grid-column:span 4}.c5{grid-column:span 5}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media (max-width:900px){.c4,.c5,.c7,.c8{grid-column:span 12}}
+
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px}
+.seg button{border:0;background:transparent;padding:5px 11px;border-radius:6px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(20,35,58,.14)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.kpis div{background:var(--surface);padding:13px 15px}
+.kpis span{display:block;font-size:.78rem;color:var(--muted)}
+.kpis strong{font-size:1.3rem;letter-spacing:-0.02em;font-weight:700}
+.kpis small{display:block;font-size:.78rem;color:var(--muted)}
+
+.chart-wrap{overflow-x:auto}
+.chart{width:100%;min-width:560px;height:auto;display:block;color:var(--ink)}
+.readout{min-height:1.4em;font-size:.875rem;color:var(--muted)}
+.legend{display:flex;gap:14px;font-size:.78rem;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.875rem;min-width:520px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:.78rem;padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface)}
+td{padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody tr:hover td{background:var(--surface-2)}
+.num{text-align:right}
+.scroll{max-height:460px;overflow:auto}
+.scroll thead th{position:sticky;top:0}
+.pos{color:var(--long);font-weight:700}.neg{color:var(--short);font-weight:700}
+.warnc{color:var(--warn);font-weight:700}
+.tag{display:inline-block;padding:1px 7px;border-radius:5px;font-size:.78rem;font-weight:600;background:var(--surface-2)}
+.tag.buy{color:var(--long)}.tag.sell{color:var(--short)}
+.empty{padding:22px;text-align:center;color:var(--muted)}
+
+label.field{display:block;font-weight:600;font-size:.875rem;margin-bottom:5px}
+.input{width:100%;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:9px 11px}
+select.input{appearance:auto}
+.sidebtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sidebtns button{padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:700;cursor:pointer;font-size:1rem}
+.sidebtns button[aria-pressed="true"].b{background:var(--long);border-color:var(--long);color:#fff}
+.sidebtns button[aria-pressed="true"].s{background:var(--short);border-color:var(--short);color:#fff}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.quote{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-align:center}
+.quote div{background:var(--surface-2);padding:9px 6px}
+.quote span{display:block;font-size:.75rem;color:var(--muted)}
+.quote strong{font-size:1.1rem}
+.summary{font-size:.875rem;background:var(--surface-2);border-radius:10px;padding:12px 14px}
+.summary div{display:flex;justify-content:space-between;gap:12px;padding:2px 0}
+.error{color:var(--short);font-weight:600;min-height:1.3em;margin:6px 0 0;font-size:.875rem}
+.note{font-size:.78rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin-top:32px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--surface);padding:11px 17px;border-radius:11px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 40px);z-index:20}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="12" width="4" height="9" rx="1" fill="#13897C"/><rect x="7" y="7" width="4" height="14" rx="1" fill="#D2A12A"/><rect x="13" y="2" width="4" height="19" rx="1" fill="#C8532F"/></svg>
+      Strømkurs <em>Desk</em>
+    </div>
+    <nav class="tabs" aria-label="Hovedmenu">
+      <a href="#marked" data-view="marked">Marked</a>
+      <a href="#handel" data-view="handel">Handel</a>
+      <a href="#position" data-view="position">Position og risiko</a>
+      <a href="#resultat" data-view="resultat">Resultat</a>
+    </nav>
+    <div class="right">
+      <div class="daychip" id="daychip"></div>
+      <button class="btn" id="nextDay" title="Afregner alle handler for næste leveringsdag mod den faktiske spotpris">Afregn og gå til næste dag</button>
+    </div>
+  </div>
+</header>
+
+<main><div class="wrap">
+
+  <!-- MARKED -->
+  <section class="view stack" id="view-marked" hidden>
+    <div class="row spread">
+      <div><h1>Marked</h1><p class="muted" style="margin:0" id="mkLead"></p></div>
+      <div class="seg" role="group" aria-label="Prisområde i graf">
+        <button data-area="DK1">DK1</button><button data-area="DK2">DK2</button>
+      </div>
+    </div>
+    <div class="kpis" id="mkKpis"></div>
+    <div class="cols">
+      <div class="panel c7 stack">
+        <div class="row spread"><h2 id="mkChartTitle"></h2>
+          <div class="legend"><span><i style="background:var(--muted);opacity:.55"></i>Spot i dag</span><span><i style="background:transparent;border:1.5px solid var(--accent)"></i>Prognose leveringsdag</span></div>
+        </div>
+        <div class="chart-wrap" id="mkChart"></div>
+        <div class="readout" id="mkReadout">Peg på en time for at se priserne.</div>
+      </div>
+      <div class="panel c5 stack">
+        <h2>Fundamentals</h2>
+        <div class="table-wrap"><table style="min-width:0" id="fundTable"></table></div>
+        <p class="muted small" style="margin:0">Prognosen bygger på vejrudsigten. Vindprognosen har typisk en fejl på ±15 procentpoint, og den fejl er din vigtigste prisrisiko.</p>
+      </div>
+    </div>
+    <div class="panel stack">
+      <div class="row spread"><h2>Timepriser</h2><span class="muted small">EUR/MWh. Spread = DK2 minus DK1.</span></div>
+      <div class="table-wrap scroll" id="hourTable"></div>
+    </div>
+  </section>
+
+  <!-- HANDEL -->
+  <section class="view stack" id="view-handel" hidden>
+    <div><h1>Ny handel</h1><p class="muted" style="margin:0" id="tdLead"></p></div>
+    <div class="cols">
+      <div class="panel c5 stack">
+        <div class="formgrid">
+          <div><label class="field" for="fArea">Område</label>
+            <select class="input" id="fArea"><option value="DK1">DK1 Vestdanmark</option><option value="DK2">DK2 Østdanmark</option></select></div>
+          <div><label class="field" for="fProd">Produkt</label>
+            <select class="input" id="fProd"><option value="base">Base 00–24</option><option value="peak">Peak 08–20</option><option value="offpeak">Off-peak</option><option value="block">Timeblok</option></select></div>
+        </div>
+        <div class="formgrid" id="blockRow" hidden>
+          <div><label class="field" for="fFrom">Fra time</label><select class="input" id="fFrom"></select></div>
+          <div><label class="field" for="fTo">Til time</label><select class="input" id="fTo"></select></div>
+        </div>
+        <div><span class="field">Retning</span>
+          <div class="sidebtns"><button class="b" data-side="buy" aria-pressed="true">Køb</button><button class="s" data-side="sell" aria-pressed="false">Sælg</button></div></div>
+        <div class="formgrid">
+          <div><label class="field" for="fMw">Volumen (MW)</label><input class="input" id="fMw" inputmode="decimal" value="10"></div>
+          <div><label class="field" for="fNote">Note (valgfri)</label><input class="input" id="fNote" maxlength="60" placeholder="F.eks. vindrisiko"></div>
+        </div>
+        <div class="quote" id="quote"></div>
+        <div class="summary" id="tdSummary"></div>
+        <button class="btn primary" id="placeBtn" style="padding:12px">Køb</button>
+        <p class="error" id="tdError" role="alert"></p>
+      </div>
+      <div class="c7 stack">
+        <div class="panel stack">
+          <div class="row spread"><h2>Position for leveringsdagen efter denne handel</h2><span class="muted small" id="tdLimitTxt"></span></div>
+          <div class="chart-wrap" id="tdPosChart"></div>
+        </div>
+        <div class="panel stack">
+          <h2>Åbne handler for leveringsdagen</h2>
+          <div class="table-wrap" id="tdOpen"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POSITION -->
+  <section class="view stack" id="view-position" hidden>
+    <div class="row spread">
+      <div><h1>Position og risiko</h1><p class="muted" style="margin:0" id="psLead"></p></div>
+      <div class="row">
+        <label class="small muted" for="limitInput">Grænse pr. time</label>
+        <input class="input" id="limitInput" inputmode="numeric" style="width:90px">
+        <span class="small muted">MW</span>
+      </div>
+    </div>
+    <div class="kpis" id="psKpis"></div>
+    <div class="cols">
+      <div class="panel c12 stack">
+        <div class="row spread"><h2>Nettoposition pr. time</h2>
+          <div class="legend"><span><i style="background:var(--long)"></i>Lang (købt)</span><span><i style="background:var(--short)"></i>Kort (solgt)</span><span><i style="background:transparent;border-top:2px dashed var(--warn);height:0;width:14px"></i>Grænse</span></div>
+        </div>
+        <div class="row"><strong style="width:40px">DK1</strong></div>
+        <div class="chart-wrap" id="psChart1"></div>
+        <div class="row"><strong style="width:40px">DK2</strong></div>
+        <div class="chart-wrap" id="psChart2"></div>
+      </div>
+    </div>
+    <div class="panel stack">
+      <h2>Følsomhed</h2>
+      <div class="table-wrap" id="sensTable"></div>
+    </div>
+  </section>
+
+  <!-- RESULTAT -->
+  <section class="view stack" id="view-resultat" hidden>
+    <div><h1>Resultat</h1><p class="muted" style="margin:0">Realiseret resultat efter afregning mod faktisk spotpris.</p></div>
+    <div class="kpis" id="rsKpis"></div>
+    <div class="panel stack">
+      <h2>Akkumuleret resultat</h2>
+      <div class="chart-wrap" id="rsChart"></div>
+    </div>
+    <div class="cols">
+      <div class="panel c4 stack"><h2>Pr. leveringsdag</h2><div class="table-wrap" id="rsDays"></div></div>
+      <div class="panel c8 stack"><h2>Handelsjournal</h2><div class="table-wrap scroll" id="rsBlotter"></div></div>
+    </div>
+    <div><button class="btn" id="resetBtn">Nulstil alle data</button></div>
+  </section>
+
+  <p class="note">Intern prototype. Priser og vejr er simulerede, og handler er papirhandler uden forbindelse til Nord Pool. Handelspris = prognose ± 0,50 EUR/MWh. Visningen er pr. time; en rigtig version skal også kunne håndtere kvartersopløsning i day-ahead-markedet.</p>
+</div></main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  const KEY = 'stroemkurs-desk-v1';
+  const HALF_SPREAD = 0.5;
+  const SHAPE = [0.72,0.68,0.66,0.66,0.70,0.82,1.02,1.18,1.20,1.08,0.98,0.94,0.92,0.92,0.96,1.04,1.18,1.36,1.42,1.30,1.12,0.98,0.88,0.80];
+  const PRODUCTS = {
+    base:{ label:'Base', hours:()=>range(0,24) },
+    peak:{ label:'Peak', hours:()=>range(8,20) },
+    offpeak:{ label:'Off-peak', hours:()=>range(0,8).concat(range(20,24)) },
+    block:{ label:'Timeblok', hours:(f,t)=>range(f,t) }
+  };
+  function range(a,b){ const r=[]; for(let i=a;i<b;i++) r.push(i); return r; }
+
+  // ---------- State ----------
+  function init(){ const d=new Date(); d.setHours(0,0,0,0); return { seed:Math.floor(Math.random()*1e9), startDate:d.toISOString(), day:0, trades:[], limit:50, nextId:1 }; }
+  let state;
+  try { state = JSON.parse(localStorage.getItem(KEY)) || null; } catch(e){ state = null; }
+  if (!state || !Array.isArray(state.trades)) state = init();
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+  const ui = { area:'DK1', side:'buy', psArea:'DK1' };
+
+  // ---------- Simulation (EUR/MWh) ----------
+  function rng(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  function windFor(day){ const r=rng(state.seed+day*9973); return clamp(0.5+0.3*Math.sin(day*1.27+(state.seed%13))+(r()-0.5)*0.55,0,1); }
+  function tempFor(day){ const r=rng(state.seed+day*313); return Math.round(5+3*Math.sin(day*0.6)+(r()-0.5)*6); }
+  function forecastWind(day){ const r=rng(state.seed+day*577); return clamp(windFor(day)+(r()-0.5)*0.32,0,1); }
+  function build(day, area, wind, noisy){
+    const temp=tempFor(day), base=92+(5-temp)*3, mul=area==='DK2'?1.06:1;
+    const r=rng(state.seed+day*131+(area==='DK2'?17:3));
+    return SHAPE.map((s,h)=>{
+      let p=base*mul*(1-0.62*wind)*s;
+      if(noisy) p+=(r()-0.5)*0.14*base;
+      if(wind>0.8 && (h<6||(h>10&&h<15))) p-=(wind-0.8)*140;
+      return Math.round(p*100)/100;
+    });
+  }
+  const cache = {};
+  function actual(day,area){ const k='a'+day+area+state.seed; return cache[k]||(cache[k]=build(day,area,windFor(day),true)); }
+  function forecast(day,area){ const k='f'+day+area+state.seed; return cache[k]||(cache[k]=build(day,area,forecastWind(day),false)); }
+  const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:0;
+  const avgH=(prices,hours)=>avg(hours.map(h=>prices[h]));
+
+  // ---------- Format ----------
+  const nf2=new Intl.NumberFormat('da-DK',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const nf1=new Intl.NumberFormat('da-DK',{maximumFractionDigits:1});
+  const nf0=new Intl.NumberFormat('da-DK',{maximumFractionDigits:0});
+  const eur=v=>nf2.format(v);
+  const money=v=>(v<0?'−':'')+nf0.format(Math.abs(Math.round(v)))+' EUR';
+  const smoney=v=>(v>0?'+':v<0?'−':'')+nf0.format(Math.abs(Math.round(v)))+' EUR';
+  const cls=v=>v>0?'pos':v<0?'neg':'';
+  const hh=h=>String(h).padStart(2,'0');
+  function dateFor(day){ const d=new Date(state.startDate); d.setDate(d.getDate()+day); return d; }
+  const longDate=d=>d.toLocaleDateString('da-DK',{weekday:'long',day:'numeric',month:'long'});
+  const shortDate=d=>d.toLocaleDateString('da-DK',{weekday:'short',day:'numeric',month:'short'});
+  function windWord(w){ return w>0.8?'kraftig':w>0.6?'frisk':w>0.4?'jævn':w>0.2?'svag':'næsten vindstille'; }
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function hoursLabel(t){ if(t.product!=='block') return PRODUCTS[t.product].label; return 'Timer '+hh(t.from)+'–'+hh(t.to); }
+
+  // ---------- Positions ----------
+  function tradeHours(t){ return t.product==='block'?PRODUCTS.block.hours(t.from,t.to):PRODUCTS[t.product].hours(); }
+  const sign=t=>t.side==='buy'?1:-1;
+  function netPosition(day, area, extra){
+    const pos=new Array(24).fill(0);
+    state.trades.concat(extra?[extra]:[]).forEach(t=>{ if(t.day===day && t.area===area && !t.settled) tradeHours(t).forEach(h=>pos[h]+=sign(t)*t.mw); });
+    return pos;
+  }
+
+  // ---------- Charts ----------
+  function priceChart(spot, fc){
+    const W=720,H=230,pb=24,pt=12,n=24,slot=W/n;
+    const all=spot.concat(fc); const lo=Math.min(0,...all), hi=Math.max(...all)*1.08;
+    const y=v=>pt+(hi-v)/(hi-lo)*(H-pt-pb);
+    let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Spotpriser i dag og prognose for leveringsdagen">';
+    for(let g=0; g<=hi; g+=50){ s+='<line x1="0" x2="'+W+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="currentColor" stroke-opacity=".08"/><text x="2" y="'+(y(g)-3)+'" font-size="10" fill="currentColor" opacity=".45">'+g+'</text>'; }
+    spot.forEach((p,h)=>{
+      const x=h*slot+3, w=slot-6, top=Math.min(y(p),y(0)), ht=Math.max(1.5,Math.abs(y(p)-y(0)));
+      s+='<rect data-h="'+h+'" x="'+x+'" y="'+top+'" width="'+w+'" height="'+ht+'" rx="2" fill="currentColor" fill-opacity=".22" style="cursor:pointer"/>';
+      if(h%3===0) s+='<text x="'+(x+w/2)+'" y="'+(H-6)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">'+hh(h)+'</text>';
+    });
+    let d=''; fc.forEach((p,h)=>{ const x=h*slot+slot/2; d+=(h?'L':'M')+x+' '+y(p); });
+    s+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>';
+    fc.forEach((p,h)=>{ s+='<circle cx="'+(h*slot+slot/2)+'" cy="'+y(p)+'" r="2.5" fill="var(--accent)"/>'; });
+    if(lo<0) s+='<line x1="0" x2="'+W+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/>';
+    return s+'</svg>';
+  }
+  function posChart(pos, limit, ghost){
+    const W=720,H=160,pb=20,pt=8,n=24,slot=W/n;
+    const m=Math.max(limit*1.2, ...pos.map(Math.abs), ...(ghost||[]).map(Math.abs), 1);
+    const y=v=>pt+(m-v)/(2*m)*(H-pt-pb);
+    let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Nettoposition pr. time i MW">';
+    s+='<line x1="0" x2="'+W+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="currentColor" stroke-opacity=".35"/>';
+    [limit,-limit].forEach(l=>{ s+='<line x1="0" x2="'+W+'" y1="'+y(l)+'" y2="'+y(l)+'" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 4"/>'; });
+    s+='<text x="'+(W-2)+'" y="'+(y(limit)-4)+'" text-anchor="end" font-size="10" fill="var(--warn)">+'+limit+' MW</text>';
+    s+='<text x="'+(W-2)+'" y="'+(y(-limit)+12)+'" text-anchor="end" font-size="10" fill="var(--warn)">−'+limit+' MW</text>';
+    pos.forEach((v,h)=>{
+      const x=h*slot+3,w=slot-6;
+      if(ghost && ghost[h]!==v){ const g=ghost[h]; s+='<rect x="'+x+'" y="'+Math.min(y(g),y(0))+'" width="'+w+'" height="'+Math.max(1,Math.abs(y(g)-y(0)))+'" rx="2" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="2 2"/>'; }
+      if(v!==0){ const col=v>0?'var(--long)':'var(--short)'; const over=Math.abs(v)>limit;
+        s+='<rect x="'+x+'" y="'+Math.min(y(v),y(0))+'" width="'+w+'" height="'+Math.max(1.5,Math.abs(y(v)-y(0)))+'" rx="2" fill="'+col+'"'+(over?' stroke="var(--warn)" stroke-width="2.5"':'')+'><title>'+hh(h)+'–'+hh(h+1)+': '+nf1.format(v)+' MW</title></rect>'; }
+      if(h%3===0) s+='<text x="'+(x+w/2)+'" y="'+(H-4)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">'+hh(h)+'</text>';
+    });
+    return s+'</svg>';
+  }
+  function lineChart(points){
+    const W=720,H=200,pb=24,pt=14,pl=8,pr=8;
+    if(points.length<1) return '<div class="empty">Ingen afregnede dage endnu. Lav en handel, og tryk på Afregn og gå til næste dag.</div>';
+    const vals=[0].concat(points.map(p=>p.v)); const lo=Math.min(...vals), hi=Math.max(...vals); const pad=(hi-lo)*0.12||100;
+    const y=v=>pt+((hi+pad)-v)/((hi+pad)-(lo-pad))*(H-pt-pb);
+    const x=i=>pl+i*(W-pl-pr)/Math.max(1,points.length);
+    let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Akkumuleret resultat over tid">';
+    s+='<line x1="0" x2="'+W+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="currentColor" stroke-opacity=".3" stroke-dasharray="3 3"/>';
+    let d='M'+x(0)+' '+y(0); points.forEach((p,i)=>{ d+=' L'+x(i+1)+' '+y(p.v); });
+    const last=points[points.length-1].v;
+    s+='<path d="'+d+'" fill="none" stroke="'+(last>=0?'var(--long)':'var(--short)')+'" stroke-width="2.5" stroke-linejoin="round"/>';
+    points.forEach((p,i)=>{ s+='<circle cx="'+x(i+1)+'" cy="'+y(p.v)+'" r="3" fill="'+(p.v>=0?'var(--long)':'var(--short)')+'"><title>'+p.label+': '+smoney(p.v)+'</title></circle>';
+      if(points.length<=14 || i%Math.ceil(points.length/10)===0) s+='<text x="'+x(i+1)+'" y="'+(H-6)+'" text-anchor="middle" font-size="10" fill="currentColor" opacity=".55">'+p.short+'</text>'; });
+    return s+'</svg>';
+  }
+  function table(head, rows, num, foot){
+    const c=i=>num.includes(i)?' class="num"':'';
+    return '<table><thead><tr>'+head.map((h,i)=>'<th'+c(i)+'>'+h+'</th>').join('')+'</tr></thead><tbody>'+
+      rows.map(r=>'<tr>'+r.map((v,i)=>'<td'+c(i)+'>'+v+'</td>').join('')+'</tr>').join('')+'</tbody>'+(foot||'')+'</table>';
+  }
+
+  // ---------- Views ----------
+  const $=id=>document.getElementById(id);
+  const VIEWS=['marked','handel','position','resultat'];
+  const DEL=()=>state.day+1;
+
+  function route(){
+    let v=(location.hash||'').slice(1); if(!VIEWS.includes(v)) v='marked';
+    document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='view-'+v);
+    document.querySelectorAll('nav.tabs a').forEach(a=>a.dataset.view===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+    $('daychip').innerHTML='<strong>Handelsdag '+shortDate(dateFor(state.day))+'</strong>Levering '+shortDate(dateFor(DEL()));
+    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult})[v]();
+  }
+
+  function renderMarket(){
+    const a=ui.area;
+    document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.area===a)));
+    $('mkLead').textContent='Spotpriser for '+longDate(dateFor(state.day))+' og prognose for leveringsdagen '+longDate(dateFor(DEL()))+'.';
+    const s1=actual(state.day,'DK1'), s2=actual(state.day,'DK2'), f1=forecast(DEL(),'DK1'), f2=forecast(DEL(),'DK2');
+    const pk=PRODUCTS.peak.hours(), base=PRODUCTS.base.hours();
+    const k=(lbl,v,sub)=>'<div><span>'+lbl+'</span><strong>'+eur(v)+'</strong><small>'+sub+'</small></div>';
+    const chg=(f,s)=>{ const d=avg(f)-avg(s); return (d>=0?'+':'−')+eur(Math.abs(d))+' mod i dag'; };
+    $('mkKpis').innerHTML=
+      k('DK1 base, prognose',avg(f1),chg(f1,s1))+
+      k('DK2 base, prognose',avg(f2),chg(f2,s2))+
+      k('DK1 peak, prognose',avgH(f1,pk),'08–20')+
+      k('DK2 peak, prognose',avgH(f2,pk),'08–20')+
+      k('Spread DK2–DK1',avg(f2)-avg(f1),'base, prognose')+
+      k('DK1 base i dag',avg(s1),'realiseret spot');
+    $('mkChartTitle').textContent=a+': spot i dag og prognose';
+    const sp=a==='DK1'?s1:s2, fc=a==='DK1'?f1:f2;
+    $('mkChart').innerHTML=priceChart(sp,fc);
+    $('mkChart').querySelectorAll('rect[data-h]').forEach(r=>{ const h=+r.dataset.h; const show=()=>{ $('mkReadout').textContent=hh(h)+'–'+hh(h+1)+':  spot i dag '+eur(sp[h])+'  ·  prognose '+eur(fc[h])+' EUR/MWh'; }; r.addEventListener('mouseenter',show); r.addEventListener('click',show); });
+    const wt=windFor(state.day), wf=forecastWind(DEL());
+    $('fundTable').innerHTML='<thead><tr><th></th><th>I dag</th><th>Leveringsdag</th></tr></thead><tbody>'+
+      '<tr><td>Vind</td><td>'+windWord(wt)+' ('+nf0.format(wt*100)+' %)</td><td>'+windWord(wf)+' ('+nf0.format(wf*100)+' %)</td></tr>'+
+      '<tr><td>Temperatur</td><td>'+tempFor(state.day)+' °C</td><td>'+tempFor(DEL())+' °C</td></tr>'+
+      '<tr><td>Laveste time DK1</td><td>'+eur(Math.min(...s1))+'</td><td>'+eur(Math.min(...f1))+'</td></tr>'+
+      '<tr><td>Højeste time DK1</td><td>'+eur(Math.max(...s1))+'</td><td>'+eur(Math.max(...f1))+'</td></tr>'+
+      '<tr><td>Negative timer DK1</td><td>'+s1.filter(v=>v<0).length+'</td><td>'+f1.filter(v=>v<0).length+'</td></tr></tbody>';
+    const rows=base.map(h=>{ const spr=f2[h]-f1[h]; return [hh(h)+'–'+hh(h+1), eur(s1[h]), eur(s2[h]), '<strong>'+eur(f1[h])+'</strong>', '<strong>'+eur(f2[h])+'</strong>', '<span class="'+(Math.abs(spr)>8?'warnc':'')+'">'+(spr>=0?'+':'−')+eur(Math.abs(spr))+'</span>']; });
+    const foot='<tfoot><tr><th>Base</th><th class="num">'+eur(avg(s1))+'</th><th class="num">'+eur(avg(s2))+'</th><th class="num">'+eur(avg(f1))+'</th><th class="num">'+eur(avg(f2))+'</th><th class="num">'+eur(avg(f2)-avg(f1))+'</th></tr></tfoot>';
+    $('hourTable').innerHTML=table(['Time','DK1 i dag','DK2 i dag','DK1 prognose','DK2 prognose','Spread prognose'],rows,[1,2,3,4,5],foot);
+  }
+
+  // Handel
+  function draft(){
+    const product=$('fProd').value, from=+$('fFrom').value, to=+$('fTo').value;
+    const mw=parseFloat(($('fMw').value||'').replace(',','.'))||0;
+    return { area:$('fArea').value, product, from, to, side:ui.side, mw:Math.round(mw*10)/10, day:DEL(), note:$('fNote').value.trim() };
+  }
+  function quoteFor(t){
+    const fair=avgH(forecast(t.day,t.area), tradeHours(t));
+    return { fair, bid:fair-HALF_SPREAD, ask:fair+HALF_SPREAD, price:t.side==='buy'?fair+HALF_SPREAD:fair-HALF_SPREAD };
+  }
+  function renderTrade(){
+    $('tdLead').textContent='Leveringsdag '+longDate(dateFor(DEL()))+'. Handlerne afregnes mod den faktiske spotpris, når du afregner dagen.';
+    if(!$('fFrom').options.length){
+      $('fFrom').innerHTML=range(0,24).map(h=>'<option value="'+h+'">'+hh(h)+'</option>').join('');
+      $('fTo').innerHTML=range(1,25).map(h=>'<option value="'+h+'">'+hh(h)+'</option>').join('');
+      $('fFrom').value='17'; $('fTo').value='21';
+    }
+    updateTrade();
+  }
+  function updateTrade(){
+    $('blockRow').hidden=$('fProd').value!=='block';
+    document.querySelectorAll('.sidebtns button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.side===ui.side)));
+    const t=draft(), hours=t.product==='block'?(t.to>t.from?tradeHours(t):[]):tradeHours(t);
+    const err=$('tdError'); err.textContent='';
+    const btn=$('placeBtn');
+    btn.className='btn '+(t.side==='buy'?'primary':'sell');
+    if(!hours.length){ $('quote').innerHTML=''; $('tdSummary').innerHTML='<div>Til-time skal ligge efter fra-time.</div>'; btn.disabled=true; btn.textContent=t.side==='buy'?'Køb':'Sælg'; drawTradePos(null); return; }
+    const q=quoteFor(t);
+    $('quote').innerHTML='<div><span>Bud</span><strong>'+eur(q.bid)+'</strong></div><div><span>Prognose</span><strong>'+eur(q.fair)+'</strong></div><div><span>Udbud</span><strong>'+eur(q.ask)+'</strong></div>';
+    const mwh=t.mw*hours.length;
+    $('tdSummary').innerHTML=
+      '<div><span>Timer</span><strong>'+hours.length+' ('+hh(hours[0])+'–'+hh(hours[hours.length-1]+1)+(t.product==='offpeak'?', ekskl. 08–20':'')+')</strong></div>'+
+      '<div><span>Energi</span><strong>'+nf1.format(mwh)+' MWh</strong></div>'+
+      '<div><span>Din pris</span><strong>'+eur(q.price)+' EUR/MWh</strong></div>'+
+      '<div><span>Værdi</span><strong>'+money(mwh*q.price)+'</strong></div>'+
+      '<div><span>Følsomhed ved ±10 EUR/MWh</span><strong>±'+money(mwh*10)+'</strong></div>';
+    const valid=t.mw>0;
+    btn.disabled=!valid;
+    btn.textContent=(t.side==='buy'?'Køb ':'Sælg ')+nf1.format(t.mw)+' MW '+(t.product==='block'?'timer '+hh(t.from)+'–'+hh(t.to):PRODUCTS[t.product].label)+' '+t.area+' til '+eur(q.price);
+    drawTradePos(valid?t:null);
+  }
+  function drawTradePos(t){
+    const area=$('fArea').value;
+    const now=netPosition(DEL(),area), after=t?netPosition(DEL(),area,Object.assign({},t,{settled:false})):now;
+    $('tdPosChart').innerHTML='<div class="small muted" style="margin-bottom:4px">'+area+(t?', stiplet = før handlen':'')+'</div>'+posChart(after,state.limit,t?now:null);
+    const breach=after.filter(v=>Math.abs(v)>state.limit).length;
+    $('tdLimitTxt').innerHTML=breach?'<span class="warnc">'+breach+' timer over grænsen på '+state.limit+' MW</span>':'Grænse '+state.limit+' MW pr. time';
+    const open=state.trades.filter(x=>x.day===DEL()&&!x.settled);
+    $('tdOpen').innerHTML=open.length?table(['#','Område','Produkt','Retning','MW','Pris','Note',''],open.map(x=>[
+      x.id,x.area,hoursLabel(x),'<span class="tag '+x.side+'">'+(x.side==='buy'?'Køb':'Salg')+'</span>',nf1.format(x.mw),eur(x.price),esc(x.note||''),'<button class="btn small" data-cancel="'+x.id+'" style="padding:3px 8px">Annullér</button>'
+    ]),[4,5]):'<div class="empty">Ingen handler for leveringsdagen endnu.</div>';
+    $('tdOpen').querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{
+      const id=+b.dataset.cancel; state.trades=state.trades.filter(x=>x.id!==id); save(); toast('Handel #'+id+' annulleret'); updateTrade();
+    }));
+  }
+  function place(){
+    const t=draft();
+    if(t.mw<=0){ $('tdError').textContent='Volumen skal være større end 0 MW.'; return; }
+    if(t.mw>500){ $('tdError').textContent='Volumen over 500 MW pr. handel er spærret. Del handlen op.'; return; }
+    if(t.product==='block' && t.to<=t.from){ $('tdError').textContent='Til-time skal ligge efter fra-time.'; return; }
+    const q=quoteFor(t);
+    const trade=Object.assign(t,{ id:state.nextId++, price:Math.round(q.price*100)/100, fair:q.fair, traded:state.day, settled:false });
+    if(trade.product!=='block'){ delete trade.from; delete trade.to; }
+    state.trades.push(trade); save();
+    const after=netPosition(DEL(),t.area); const breach=after.some(v=>Math.abs(v)>state.limit);
+    toast('Handel #'+trade.id+' registreret: '+(t.side==='buy'?'Køb ':'Salg ')+nf1.format(t.mw)+' MW '+hoursLabel(trade)+' '+t.area+(breach?'. Bemærk: grænsen er overskredet':''));
+    $('fNote').value='';
+    updateTrade();
+  }
+
+  // Position
+  function renderPosition(){
+    $('psLead').textContent='Leveringsdag '+longDate(dateFor(DEL()))+'. Urealiseret resultat er beregnet mod prognosen.';
+    $('limitInput').value=state.limit;
+    const p1=netPosition(DEL(),'DK1'), p2=netPosition(DEL(),'DK2');
+    const f1=forecast(DEL(),'DK1'), f2=forecast(DEL(),'DK2');
+    const open=state.trades.filter(t=>t.day===DEL()&&!t.settled);
+    const unreal=open.reduce((s,t)=>s+sign(t)*t.mw*tradeHours(t).length*(t.fair-t.price),0);
+    const net=p=>p.reduce((s,v)=>s+v,0), gross=p=>p.reduce((s,v)=>s+Math.abs(v),0);
+    const breaches=p1.concat(p2).filter(v=>Math.abs(v)>state.limit).length;
+    $('psKpis').innerHTML=
+      '<div><span>Netto DK1</span><strong class="'+cls(net(p1))+'">'+nf1.format(net(p1))+' MWh</strong><small>'+(net(p1)>=0?'lang':'kort')+'</small></div>'+
+      '<div><span>Netto DK2</span><strong class="'+cls(net(p2))+'">'+nf1.format(net(p2))+' MWh</strong><small>'+(net(p2)>=0?'lang':'kort')+'</small></div>'+
+      '<div><span>Brutto eksponering</span><strong>'+nf1.format(gross(p1)+gross(p2))+' MWh</strong><small>sum af timepositioner</small></div>'+
+      '<div><span>Urealiseret</span><strong class="'+cls(unreal)+'">'+smoney(unreal)+'</strong><small>mod prognose</small></div>'+
+      '<div><span>Grænsebrud</span><strong class="'+(breaches?'warnc':'')+'">'+breaches+'</strong><small>timer over '+state.limit+' MW</small></div>';
+    $('psChart1').innerHTML=posChart(p1,state.limit);
+    $('psChart2').innerHTML=posChart(p2,state.limit);
+    const scen=[-30,-10,10,30];
+    const rowFor=(name,pos,fc)=>{ const n=net(pos); return [name, nf1.format(n)+' MWh'].concat(scen.map(d=>{ const v=n*d; return '<span class="'+cls(v)+'">'+smoney(v)+'</span>'; })); };
+    // wind scenario: forecast with ±0.15 wind error
+    const windScen=(dw)=>{ let tot=0; ['DK1','DK2'].forEach(a=>{ const pos=a==='DK1'?p1:p2; const fc=a==='DK1'?f1:f2; const alt=build(DEL(),a,clamp(forecastWind(DEL())+dw,0,1),false); pos.forEach((v,h)=>tot+=v*(alt[h]-fc[h])); }); return tot; };
+    const wUp=windScen(0.15), wDn=windScen(-0.15);
+    $('sensTable').innerHTML=table(['Scenario','Netto','−30 EUR/MWh','−10 EUR/MWh','+10 EUR/MWh','+30 EUR/MWh'],[
+      rowFor('DK1',p1,f1), rowFor('DK2',p2,f2),
+      ['Samlet', nf1.format(net(p1)+net(p2))+' MWh'].concat(scen.map(d=>{ const v=(net(p1)+net(p2))*d; return '<strong class="'+cls(v)+'">'+smoney(v)+'</strong>'; }))
+    ],[1,2,3,4,5])+
+    '<p class="small muted" style="margin:12px 0 0">Vindscenarie: hvis vinden bliver 15 procentpoint stærkere end prognosen, er effekten på dit resultat <strong class="'+cls(wUp)+'">'+smoney(wUp)+'</strong>. Hvis den bliver 15 procentpoint svagere: <strong class="'+cls(wDn)+'">'+smoney(wDn)+'</strong>.</p>';
+  }
+
+  // Resultat
+  function renderResult(){
+    const done=state.trades.filter(t=>t.settled);
+    const total=done.reduce((s,t)=>s+t.pnl,0);
+    const winners=done.filter(t=>t.pnl>0).length;
+    const days={}; done.forEach(t=>{ (days[t.day]=days[t.day]||{n:0,mwh:0,pnl:0}); days[t.day].n++; days[t.day].mwh+=t.mw*tradeHours(t).length; days[t.day].pnl+=t.pnl; });
+    const dayKeys=Object.keys(days).map(Number).sort((a,b)=>a-b);
+    const best=dayKeys.length?Math.max(...dayKeys.map(d=>days[d].pnl)):0, worst=dayKeys.length?Math.min(...dayKeys.map(d=>days[d].pnl)):0;
+    $('rsKpis').innerHTML=
+      '<div><span>Realiseret i alt</span><strong class="'+cls(total)+'">'+smoney(total)+'</strong></div>'+
+      '<div><span>Afregnede handler</span><strong>'+done.length+'</strong></div>'+
+      '<div><span>Træfprocent</span><strong>'+(done.length?nf0.format(winners/done.length*100)+' %':'–')+'</strong><small>handler med gevinst</small></div>'+
+      '<div><span>Bedste dag</span><strong class="'+cls(best)+'">'+(dayKeys.length?smoney(best):'–')+'</strong></div>'+
+      '<div><span>Værste dag</span><strong class="'+cls(worst)+'">'+(dayKeys.length?smoney(worst):'–')+'</strong></div>';
+    let cum=0; const pts=dayKeys.map(d=>{ cum+=days[d].pnl; return { v:cum, label:shortDate(dateFor(d)), short:dateFor(d).getDate()+'/'+(dateFor(d).getMonth()+1) }; });
+    $('rsChart').innerHTML=lineChart(pts);
+    $('rsDays').innerHTML=dayKeys.length?table(['Levering','Handler','Resultat'],dayKeys.slice().reverse().map(d=>[shortDate(dateFor(d)),days[d].n,'<span class="'+cls(days[d].pnl)+'">'+smoney(days[d].pnl)+'</span>']),[1,2]):'<div class="empty">Ingen afregnede dage endnu.</div>';
+    const all=state.trades.slice().sort((a,b)=>b.id-a.id);
+    $('rsBlotter').innerHTML=all.length?table(['#','Levering','Område','Produkt','Retning','MW','Pris','Spot','Resultat','Note'],all.map(t=>[
+      t.id, shortDate(dateFor(t.day)), t.area, hoursLabel(t), '<span class="tag '+t.side+'">'+(t.side==='buy'?'Køb':'Salg')+'</span>', nf1.format(t.mw), eur(t.price),
+      t.settled?eur(t.settle):'<span class="muted">åben</span>', t.settled?'<span class="'+cls(t.pnl)+'">'+smoney(t.pnl)+'</span>':'<span class="muted">–</span>', esc(t.note||'')
+    ]),[5,6,7,8]):'<div class="empty">Ingen handler endnu. <a href="#handel">Lav den første</a>.</div>';
+  }
+
+  // Afregning
+  function nextDay(){
+    state.day+=1;
+    let n=0,tot=0;
+    state.trades.forEach(t=>{ if(!t.settled && t.day<=state.day){
+      const settle=avgH(actual(t.day,t.area),tradeHours(t));
+      t.settle=Math.round(settle*100)/100; t.pnl=sign(t)*t.mw*tradeHours(t).length*(settle-t.price); t.settled=true; n++; tot+=t.pnl; } });
+    save();
+    toast(n?n+(n===1?' handel':' handler')+' afregnet: '+smoney(tot):'Ny handelsdag: '+longDate(dateFor(state.day)));
+    route();
+  }
+
+  let tt; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),3400); }
+
+  // Events
+  document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{ ui.area=b.dataset.area; renderMarket(); }));
+  ['fArea','fProd','fFrom','fTo'].forEach(id=>$(id).addEventListener('change',updateTrade));
+  $('fMw').addEventListener('input',updateTrade);
+  document.querySelectorAll('.sidebtns button').forEach(b=>b.addEventListener('click',()=>{ ui.side=b.dataset.side; updateTrade(); }));
+  $('placeBtn').addEventListener('click',place);
+  $('nextDay').addEventListener('click',nextDay);
+  $('limitInput').addEventListener('change',()=>{ const v=parseInt($('limitInput').value,10); if(v>0){ state.limit=v; save(); renderPosition(); } else $('limitInput').value=state.limit; });
+  $('resetBtn').addEventListener('click',()=>{ if(!confirm('Slet alle handler og start forfra? Det kan ikke fortrydes.')) return; state=init(); for(const k in cache) delete cache[k]; save(); toast('Alle data er nulstillet'); location.hash='#marked'; route(); });
+  window.addEventListener('hashchange',route);
+  route();
+})();
+</script>
+</body>
+</html>
