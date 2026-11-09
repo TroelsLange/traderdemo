@@ -26,7 +26,7 @@ Priserne kommer fra Energinets Energi Data Service, datasættet
 - Svaret caches i 15 minutter i Netlifys CDN (`Netlify-CDN-Cache-Control`) og i funktionens hukommelse.
 - Brugerfladen viser timepriser som gennemsnit af de fire kvarterer i timen.
 - Indtil morgendagens priser er offentliggjort (efter middag), viser leveringsdagen prognosemodellen, markeret som prognose.
-  Når priserne er ude, vises de rigtige priser, og handel for den leveringsdag lukker.
+  Når priserne er ude, vises de rigtige priser, og handelsfanen rykker til næste leveringsdag (overmorgen) med prognosepris.
 - Handler afregnes kun mod rigtige spotpriser.
 - Svarer API'et ikke, vises simulerede priser med en tydelig advarsel.
 

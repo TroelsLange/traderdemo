@@ -356,7 +356,7 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     <div><button class="btn" id="resetBtn">Nulstil alle data</button></div>
   </section>
 
-  <p class="note">Intern prototype. Spotpriser: day-ahead-priser i 15-minutters opløsning, vist som timegennemsnit af fire kvarterer. <a href="https://www.energidataservice.dk/tso-electricity/DayAheadPrices" target="_blank" rel="noopener">Data: Energinet, Energi Data Service</a>. Vind og temperatur er simulerede. Handler er papirhandler uden forbindelse til Nord Pool. Handelspris = prognose ± 0,50 EUR/MWh. Handel for en leveringsdag lukker, når dens spotpriser er offentliggjort, og handler afregnes kun mod rigtige spotpriser.</p>
+  <p class="note">Intern prototype. Spotpriser: day-ahead-priser i 15-minutters opløsning, vist som timegennemsnit af fire kvarterer. <a href="https://www.energidataservice.dk/tso-electricity/DayAheadPrices" target="_blank" rel="noopener">Data: Energinet, Energi Data Service</a>. Vind og temperatur er simulerede. Handler er papirhandler uden forbindelse til Nord Pool. Handelspris = prognose ± 0,50 EUR/MWh. Når spotpriserne for en leveringsdag er offentliggjort, rykker handlen til næste leveringsdag, og handler afregnes kun mod rigtige spotpriser.</p>
 </div></main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -453,16 +453,21 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   function simSpot(date,area){ const k='s'+date+area+state.seed; return cache[k]||(cache[k]=build(date,area,windFor(date),true)); }
   // Dagens spot: rigtig pris, hvis den findes, ellers simuleret (fallback).
   function spotToday(area){ return realH(TODAY(),area) || simSpot(TODAY(),area); }
-  // Prognose for leveringsdagen: dagens spot + modellens forventede ændring fra i dag til leveringsdagen.
-  function forecast(area, windAdj){
-    const k='f'+TODAY()+DEL()+area+(windAdj||0)+state.seed+(realH(TODAY(),area)?'r':'s');
+  // Prognose for en leveringsdag: dagen før (rigtig spot, ellers simuleret) + modellens forventede ændring.
+  function forecastFor(target, area, windAdj){
+    const baseDate=addDays(target,-1), baseReal=realH(baseDate,area);
+    const k='f'+baseDate+target+area+(windAdj||0)+state.seed+(baseReal?'r':'s');
     if(cache[k]) return cache[k];
-    const base=spotToday(area);
-    const mDel=build(DEL(),area,clamp(forecastWind(DEL())+(windAdj||0),0,1),false), mToday=build(TODAY(),area,windFor(TODAY()),false);
-    return cache[k]=base.map((p,h)=>Math.round(((p==null?mToday[h]:p)+mDel[h]-mToday[h])*100)/100);
+    const base=baseReal || simSpot(baseDate,area);
+    const mDel=build(target,area,clamp(forecastWind(target)+(windAdj||0),0,1),false), mBase=build(baseDate,area,windFor(baseDate),false);
+    return cache[k]=base.map((p,h)=>Math.round(((p==null?mBase[h]:p)+mDel[h]-mBase[h])*100)/100);
   }
-  // Priserne for leveringsdagen: rigtige, når de er offentliggjort, ellers prognosen.
-  function delPrices(area){ const r=realH(DEL(),area); return r?{prices:r,real:true}:{prices:forecast(area),real:false}; }
+  // Priserne for en leveringsdag: rigtige, når de er offentliggjort, ellers prognosen.
+  function pricesFor(date, area){ const r=realH(date,area); return r?{prices:r,real:true}:{prices:forecastFor(date,area),real:false}; }
+  function delPrices(area){ return pricesFor(DEL(),area); }
+  // Leveringsdagen, der kan handles: i morgen, indtil dens spotpriser er offentliggjort; derefter overmorgen.
+  const TDEL=()=>delIsReal()?addDays(DEL(),1):DEL();
+  const shifted=()=>TDEL()!==DEL();
 
   const vals=a=>a.filter(v=>v!=null);
   const avg=a=>{ const v=vals(a); return v.length?v.reduce((s,x)=>s+x,0)/v.length:0; };
@@ -571,7 +576,7 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     } else if(market.status==='loading'){
       b.hidden=false; b.className='banner info'; b.innerHTML='<p>Henter spotpriser fra Energi Data Service …</p>';
     } else b.hidden=true;
-    $('daychip').innerHTML='<strong>Handelsdag '+shortDate(TODAY())+'</strong>Levering '+shortDate(DEL());
+    $('daychip').innerHTML='<strong>Handelsdag '+shortDate(TODAY())+'</strong>Levering '+shortDate(TDEL());
     const n=settleable().length;
     $('settleBtn').textContent=n?'Afregn handler ('+n+')':'Afregn handler';
   }
@@ -627,15 +632,16 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   function draft(){
     const product=$('fProd').value, from=+$('fFrom').value, to=+$('fTo').value;
     const mw=parseFloat(($('fMw').value||'').replace(',','.'))||0;
-    return { area:$('fArea').value, product, from, to, side:ui.side, mw:Math.round(mw*10)/10, del:DEL(), note:$('fNote').value.trim() };
+    return { area:$('fArea').value, product, from, to, side:ui.side, mw:Math.round(mw*10)/10, del:TDEL(), note:$('fNote').value.trim() };
   }
   function quoteFor(t){
-    const fair=avgH(forecast(t.area), tradeHours(t));
+    const fair=avgH(forecastFor(t.del,t.area), tradeHours(t));
     return { fair, bid:fair-HALF_SPREAD, ask:fair+HALF_SPREAD, price:t.side==='buy'?fair+HALF_SPREAD:fair-HALF_SPREAD };
   }
-  const tradingClosed=()=>delIsReal();
   function renderTrade(){
-    $('tdLead').textContent='Leveringsdag '+longDate(DEL())+'. Handlerne afregnes mod den rigtige spotpris, når den er offentliggjort.';
+    $('tdLead').textContent='Leveringsdag '+longDate(TDEL())+'. '+
+      (shifted()?'Spotpriserne for '+longDate(DEL())+' er offentliggjort, så handlen er rykket til næste leveringsdag. ':'')+
+      'Handlerne afregnes mod den rigtige spotpris, når den er offentliggjort.';
     if(!$('fFrom').options.length){
       $('fFrom').innerHTML=range(0,24).map(h=>'<option value="'+h+'">'+hh(h)+'</option>').join('');
       $('fTo').innerHTML=range(1,25).map(h=>'<option value="'+h+'">'+hh(h)+'</option>').join('');
@@ -650,17 +656,13 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     const err=$('tdError'); err.textContent='';
     const btn=$('placeBtn');
     btn.className='btn block '+(t.side==='buy'?'primary':'sell');
-    if(tradingClosed()){
-      $('quote').innerHTML=''; btn.disabled=true; btn.textContent='Handel lukket for '+shortDate(DEL());
-      $('tdSummary').innerHTML='<div>Spotpriserne for '+longDate(DEL())+' er offentliggjort, så day-ahead-handlen for den dag er lukket. Handel åbner for næste leveringsdag efter midnat.</div>';
-      drawTradePos(null); return;
-    }
     if(!hours.length){ $('quote').innerHTML=''; $('tdSummary').innerHTML='<div>Til-time skal ligge efter fra-time.</div>'; btn.disabled=true; btn.textContent=t.side==='buy'?'Køb':'Sælg'; drawTradePos(null); return; }
     const q=quoteFor(t);
     $('quote').innerHTML='<div><span>Bud</span><strong>'+eur(q.bid)+'</strong></div><div><span>Prognose</span><strong>'+eur(q.fair)+'</strong></div><div><span>Udbud</span><strong>'+eur(q.ask)+'</strong></div>';
     const mwh=t.mw*hours.length;
     $('tdSummary').innerHTML=
       (market.status==='fallback'?'<div><span class="badge sim">Simuleret</span><span>Prognosen bygger på simulerede priser</span></div>':'')+
+      '<div><span>Leveringsdag</span><strong>'+shortDate(t.del)+' '+BADGE.fc+'</strong></div>'+
       '<div><span>Timer</span><strong>'+hours.length+' ('+hh(hours[0])+'–'+hh(hours[hours.length-1]+1)+(t.product==='offpeak'?', ekskl. 08–20':'')+')</strong></div>'+
       '<div><span>Energi</span><strong>'+nf1.format(mwh)+' MWh</strong></div>'+
       '<div><span>Din pris</span><strong>'+eur(q.price)+' EUR/MWh</strong></div>'+
@@ -673,21 +675,19 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   }
   function drawTradePos(t){
     const area=$('fArea').value;
-    const now=netPosition(DEL(),area), after=t?netPosition(DEL(),area,Object.assign({},t,{settled:false})):now;
+    const now=netPosition(TDEL(),area), after=t?netPosition(TDEL(),area,Object.assign({},t,{settled:false})):now;
     $('tdPosChart').innerHTML='<div class="small muted" style="margin-bottom:4px">'+area+(t?', stiplet = før handlen':'')+'</div>'+posChart(after,state.limit,t?now:null);
     const breach=after.filter(v=>Math.abs(v)>state.limit).length;
     $('tdLimitTxt').innerHTML=breach?'<span class="warnc">'+breach+' timer over grænsen på '+state.limit+' MW</span>':'Grænse '+state.limit+' MW pr. time';
-    const open=state.trades.filter(x=>x.del===DEL()&&!x.settled);
-    const canCancel=!tradingClosed();
+    const open=state.trades.filter(x=>x.del===TDEL()&&!x.settled);
     $('tdOpen').innerHTML=open.length?table(['#','Område','Produkt','Retning','MW','Pris','Note',''],open.map(x=>[
-      x.id,x.area,hoursLabel(x),'<span class="tag '+x.side+'">'+(x.side==='buy'?'Køb':'Salg')+'</span>',nf1.format(x.mw),eur(x.price),esc(x.note||''),canCancel?'<button class="btn small" data-cancel="'+x.id+'">Annullér</button>':''
+      x.id,x.area,hoursLabel(x),'<span class="tag '+x.side+'">'+(x.side==='buy'?'Køb':'Salg')+'</span>',nf1.format(x.mw),eur(x.price),esc(x.note||''),'<button class="btn small" data-cancel="'+x.id+'">Annullér</button>'
     ]),[4,5]):'<div class="empty">Ingen handler for leveringsdagen endnu.</div>';
     $('tdOpen').querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{
       const id=+b.dataset.cancel; state.trades=state.trades.filter(x=>x.id!==id); save(); toast('Handel #'+id+' annulleret'); renderChrome(); updateTrade();
     }));
   }
   function place(){
-    if(tradingClosed()){ $('tdError').textContent='Handlen for '+longDate(DEL())+' er lukket.'; return; }
     const t=draft();
     if(t.mw<=0){ $('tdError').textContent='Volumen skal være større end 0 MW.'; return; }
     if(t.mw>500){ $('tdError').textContent='Volumen over 500 MW pr. handel er spærret. Del handlen op.'; return; }
@@ -696,7 +696,7 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     const trade=Object.assign(t,{ id:state.nextId++, price:Math.round(q.price*100)/100, fair:q.fair, tradedOn:TODAY(), simBasis:market.status!=='live', settled:false });
     if(trade.product!=='block'){ delete trade.from; delete trade.to; }
     state.trades.push(trade); save();
-    const after=netPosition(DEL(),t.area); const breach=after.some(v=>Math.abs(v)>state.limit);
+    const after=netPosition(TDEL(),t.area); const breach=after.some(v=>Math.abs(v)>state.limit);
     toast('Handel #'+trade.id+' registreret: '+(t.side==='buy'?'Køb ':'Salg ')+nf1.format(t.mw)+' MW '+hoursLabel(trade)+' '+t.area+(breach?'. Bemærk: grænsen er overskredet':''));
     $('fNote').value='';
     renderChrome(); updateTrade();
@@ -704,12 +704,14 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 
   // Position
   function renderPosition(){
-    const dReal=delIsReal();
-    $('psLead').textContent='Leveringsdag '+longDate(DEL())+'. Urealiseret resultat er beregnet mod '+(dReal?'den offentliggjorte spotpris':'prognosen')+'.';
+    const D=TDEL(), dReal=!!(realH(D,'DK1')&&realH(D,'DK2'));
+    const waitingN=shifted()?state.trades.filter(t=>t.del===DEL()&&!t.settled).length:0;
+    $('psLead').textContent='Leveringsdag '+longDate(D)+'. Urealiseret resultat er beregnet mod '+(dReal?'den offentliggjorte spotpris':'prognosen')+'.'+
+      (waitingN?' '+waitingN+(waitingN===1?' handel':' handler')+' for '+longDate(DEL())+' kan afregnes nu.':'');
     $('limitInput').value=state.limit;
-    const p1=netPosition(DEL(),'DK1'), p2=netPosition(DEL(),'DK2');
-    const open=state.trades.filter(t=>t.del===DEL()&&!t.settled);
-    const unreal=open.reduce((s,t)=>s+sign(t)*t.mw*tradeHours(t).length*(avgH(delPrices(t.area).prices,tradeHours(t))-t.price),0);
+    const p1=netPosition(D,'DK1'), p2=netPosition(D,'DK2');
+    const open=state.trades.filter(t=>t.del===D&&!t.settled);
+    const unreal=open.reduce((s,t)=>s+sign(t)*t.mw*tradeHours(t).length*(avgH(pricesFor(D,t.area).prices,tradeHours(t))-t.price),0);
     const net=p=>p.reduce((s,v)=>s+v,0), gross=p=>p.reduce((s,v)=>s+Math.abs(v),0);
     const breaches=p1.concat(p2).filter(v=>Math.abs(v)>state.limit).length;
     $('psKpis').innerHTML=
@@ -725,7 +727,7 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     let windTxt='';
     if(!dReal){
       // Vindscenarie: prognosen genberegnet med ±15 procentpoint (simuleret) vind.
-      const windScen=dw=>{ let tot=0; ['DK1','DK2'].forEach(a=>{ const pos=a==='DK1'?p1:p2, fc=forecast(a), alt=forecast(a,dw); pos.forEach((v,h)=>tot+=v*(alt[h]-fc[h])); }); return tot; };
+      const windScen=dw=>{ let tot=0; ['DK1','DK2'].forEach(a=>{ const pos=a==='DK1'?p1:p2, fc=forecastFor(D,a), alt=forecastFor(D,a,dw); pos.forEach((v,h)=>tot+=v*(alt[h]-fc[h])); }); return tot; };
       const wUp=windScen(0.15), wDn=windScen(-0.15);
       windTxt='<p class="small muted" style="margin:12px 0 0">'+BADGE.sim+' Vindscenarie: hvis vinden bliver 15 procentpoint stærkere end den simulerede prognose, er effekten på dit resultat <strong class="'+cls(wUp)+'">'+smoney(wUp)+'</strong>. Hvis den bliver 15 procentpoint svagere: <strong class="'+cls(wDn)+'">'+smoney(wDn)+'</strong>.</p>';
     } else windTxt='<p class="small muted" style="margin:12px 0 0">Spotprisen for leveringsdagen er kendt, så positionen har ikke længere prisrisiko. Den afregnes, når du trykker Afregn handler.</p>';
