@@ -1,4 +1,4 @@
-# Strømkurs Desk
+# Traderz Desk
 
 Intern prototype af en handelsplatform for el i DK1 og DK2.
 
