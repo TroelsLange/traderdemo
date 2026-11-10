@@ -14,7 +14,7 @@ import { fakeEnerginet, memoryStore } from "./fakes.mjs";
 
 const ROOT = fileURLToPath(new URL("../public/", import.meta.url));
 const PORT = +(process.argv[2] || process.env.PORT || 8899);
-const TYPES = { ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".js": "text/javascript", ".css": "text/css" };
+const TYPES = { ".json": "application/json", ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".js": "text/javascript", ".css": "text/css" };
 
 let ctl, store, prices, book, waitlist, funds;
 function reset(opts = {}) {

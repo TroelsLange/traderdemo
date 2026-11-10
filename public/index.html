@@ -300,10 +300,10 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .meter.warn span{background:var(--btn-alert-border)} .meter.over span{background:var(--negative)}
 .risk-row+.risk-row{margin-top:var(--sp-2xl)}
 @media (max-width:760px){
-  #ivKpis,#kpKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
-  #ivKpis div,#kpKpis div{min-height:0;padding:var(--sp-lg)}
-  #ivKpis strong,#kpKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
-  #ivKpis small,#kpKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
+  #ivKpis,#kpKpis,#pdKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+  #ivKpis div,#kpKpis div,#pdKpis div{min-height:0;padding:var(--sp-lg)}
+  #ivKpis strong,#kpKpis strong,#pdKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
+  #ivKpis small,#kpKpis small,#pdKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
 }
 .risk-row .row{justify-content:space-between;margin-bottom:var(--sp-base)}
 .months{min-width:760px}
@@ -315,6 +315,22 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .fee-out .total{font-weight:700;border-top-style:solid}
 .prose h2{margin:var(--sp-2xl) 0 var(--sp-base)} .prose h2:first-child{margin-top:0}
 .prose ul{margin:0 0 var(--sp-md);padding-left:var(--sp-2xl);max-width:72ch} .prose li+li{margin-top:var(--sp-xs)}
+
+/* Produkter (bruger) */
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--sp-xl)}
+.product-card{background:var(--light-surface);border:var(--border-sm) solid var(--border);border-radius:var(--radius-card);padding:var(--sp-2xl);
+  display:flex;flex-direction:column;gap:var(--sp-lg);min-width:0}
+.product-card h2 a{color:var(--text-primary);text-decoration:none} .product-card h2 a:hover{text-decoration:underline}
+.product-card dl{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-base) var(--sp-lg);margin:0}
+.product-card dt{color:var(--text-secondary);font-size:var(--text-xs);line-height:var(--leading-xs)} .product-card dd{margin:0;font-weight:700}
+.product-card .btn{align-self:flex-start;margin-top:auto}
+.risk{display:inline-flex;align-items:center;gap:var(--sp-2xs);flex:none}
+.risk i{display:block;width:10px;height:16px;border-radius:2px;background:var(--meter-bg);border:var(--border-sm) solid var(--border)}
+.risk i.on{background:var(--text-primary);border-color:var(--text-primary)}
+.risk b{margin-left:var(--sp-sm);font-size:var(--text-xs);line-height:var(--leading-xs)}
+.crumb{font-size:var(--text-xs);line-height:var(--leading-xs);color:var(--text-secondary);text-decoration:none} .crumb:hover{text-decoration:underline}
+#pdMain[hidden],#pdMissing[hidden]{display:none}
+#pdTraders{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
 
 /* Community */
 .profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--sp-xl)}
@@ -415,6 +431,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
         <a href="#strategi" data-view="strategi">Strategi<img src="assets/icon-info.svg" width="16" height="16" alt=""></a>
       </nav>
       <nav class="tabs" aria-label="Community" data-role="community" hidden>
+        <a href="#produkter" data-view="produkter">Produkter<img src="assets/icon-squares-four.svg" width="16" height="16" alt=""></a>
         <a href="#community" data-view="community">Community<img src="assets/icon-chat-circle.svg" width="17" height="16" alt=""></a>
       </nav>
     </div>
@@ -644,6 +661,52 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
       <div class="c5 stack">
         <div class="panel stack"><h2>Grænser og satser</h2><div class="table-wrap"><table class="kv" id="stLimits"></table></div></div>
       </div>
+    </div>
+  </section>
+
+  <!-- PRODUKTER (bruger, gratis) -->
+  <section class="view stack" id="view-produkter" hidden>
+    <div><h1>Produkter</h1><p class="lead">Vælg mellem produkter, som desk'ens tradere handler. Følg med gratis i kurser, tradere og afregnede handler. Alt er demo, og der er ingen rigtige penge.</p></div>
+    <div class="products" id="prCards"></div>
+    <p class="source" id="prSource"></p>
+    <div class="panel stack">
+      <div class="row spread"><h2>Tradere</h2><span class="badge sim">Demoprofiler</span></div>
+      <div class="profiles" id="prProfiles"></div>
+    </div>
+    <div class="panel stack">
+      <div class="row spread"><h2>Seneste afregnede handler</h2><span class="muted small">Vist efter afregning, så ingen kan handle foran produkterne</span></div>
+      <ul class="feed" id="prFeed"></ul>
+    </div>
+  </section>
+
+  <!-- PRODUKT (bruger, gratis) -->
+  <section class="view stack" id="view-produkt" hidden>
+    <a class="crumb" href="#produkter">← Alle produkter</a>
+    <div id="pdMissing" class="panel empty" hidden>Produktet findes ikke. <a href="#produkter">Se alle produkter</a>.</div>
+    <div id="pdMain" class="stack">
+      <div class="row spread" style="align-items:flex-end">
+        <div><h1 id="pdTitle"></h1><p class="lead" id="pdLead"></p></div>
+        <div id="pdRisk"></div>
+      </div>
+      <div class="kpis" id="pdKpis"></div>
+      <div class="panel stack">
+        <div class="row spread"><h2>Kursudvikling</h2><div class="legend" id="pdLegend"></div></div>
+        <div class="chart-wrap" id="pdChart"></div>
+        <p class="source" id="pdSource"></p>
+      </div>
+      <div class="cols">
+        <div class="panel c7 stack"><h2>Strategi</h2><div id="pdStrategy" class="prose"></div></div>
+        <div class="panel c5 stack">
+          <h2>Vilkår</h2>
+          <div class="table-wrap"><table class="kv" id="pdTerms"></table></div>
+          <a class="btn" id="pdFactsheet" href="#" target="_blank" rel="noopener">Faktaark (PDF kommer)</a>
+          <button type="button" class="btn primary block" id="pdBuy" disabled>Køb andele</button>
+          <p class="help" style="margin:0">Køb kræver en profil og en egnethedstest. Det kommer i næste del af demoen.</p>
+        </div>
+      </div>
+      <div class="panel stack"><div class="row spread"><h2>Afkast pr. måned</h2><span class="muted small">Procent, før gebyrer</span></div><div class="table-wrap" id="pdMonths"></div></div>
+      <div class="panel stack"><h2>Ansvarlige tradere</h2><div class="profiles" id="pdTraders"></div></div>
+      <div class="panel stack"><div class="row spread"><h2>Seneste afregnede handler</h2><span class="muted small">Vist efter afregning</span></div><ul class="feed" id="pdFeed"></ul></div>
     </div>
   </section>
 
@@ -1019,7 +1082,8 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
 
   // ---------- Views ----------
   const $=id=>document.getElementById(id);
-  const VIEWS=['marked','handel','position','resultat','kapital','investor','strategi','community'];
+  const VIEWS=['marked','handel','position','resultat','kapital','investor','strategi','produkter','produkt','community'];
+  const viewName=()=>(location.hash||'').slice(1).split('/')[0];
 
   function settleable(){ return state.trades.filter(t=>!t.settled && t.del<=DEL()); }
   function alertHtml(title,text,btnId,btnTxt){
@@ -1046,9 +1110,10 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     $('settleBtn').textContent=n?'Afregn handler ('+n+')':'Afregn handler';
   }
   function route(){
-    let v=(location.hash||'').slice(1); if(!VIEWS.includes(v)) v='marked';
+    const parts=(location.hash||'').slice(1).split('/'); let v=parts[0], arg=parts[1]; if(!VIEWS.includes(v)) v='marked';
     document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='view-'+v);
-    document.querySelectorAll('nav.tabs a').forEach(a=>a.dataset.view===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+    const tab=v==='produkt'?'produkter':v;
+    document.querySelectorAll('nav.tabs a').forEach(a=>a.dataset.view===tab?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
     // Rolle (demo): styrer faner, værktøjer og den faste ansvarsfraskrivelse.
     const role=roleOf(v);
     document.querySelectorAll('input[name="role"]').forEach(r=>{ r.checked=r.value===role; });
@@ -1057,7 +1122,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     $('disclaimer').hidden=role==='trader';
     $('brandSub').textContent=ROLES[role].brand;
     renderChrome();
-    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,kapital:renderKapital,investor:renderInvestor,strategi:renderStrategy,community:renderCommunity})[v]();
+    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,kapital:renderKapital,investor:renderInvestor,strategi:renderStrategy,produkter:renderProducts,produkt:()=>renderProduct(arg),community:renderCommunity})[v]();
   }
 
   function renderMarket(){
@@ -1358,7 +1423,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   const ROLES = {
     trader:    { views:['marked','handel','position','resultat','kapital'], brand:'Desk' },
     investor:  { views:['investor','strategi'], brand:'Fund' },
-    community: { views:['community'], brand:'Community' }
+    community: { views:['produkter','produkt','community'], brand:'Community' }
   };
   const roleOf = v => Object.keys(ROLES).find(r => ROLES[r].views.includes(v)) || 'trader';
   const pctS = v => v==null ? '–' : (v>0?'+':v<0?'−':'')+nf1.format(Math.abs(v*100))+' %';
@@ -1425,11 +1490,13 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     }
     return out;
   }
-  function navChart(pts, st){
-    const W=720,H=260,pl=56,pr=10,pt=14,pb=26, n=pts.length;
-    const navs=pts.map(p=>p.nav), lo=Math.min(...navs,FUND.CAPITAL), hi=Math.max(...navs,FUND.CAPITAL), pad=(hi-lo)*0.08||FUND.CAPITAL*0.01;
+  // opt: base = referencelinje (startkapital eller indeks 100), scale/unit = akseetiketter, mark = { i, label } lodret markering.
+  function navChart(pts, st, opt){
+    opt=Object.assign({ base:FUND.CAPITAL, scale:1e6, unit:'mio.', label:'Fondens værdi over tid' }, opt||{});
+    const W=720,H=260,pl=56,pr=10,pt=14,pb=26, n=pts.length, B=opt.base;
+    const navs=pts.map(p=>p.nav), lo=Math.min(...navs,B), hi=Math.max(...navs,B), pad=(hi-lo)*0.08||B*0.01;
     const y0=lo-pad, y1=hi+pad, x=i=>pl+i*(W-pl-pr)/Math.max(1,n-1), y=v=>pt+(y1-v)/(y1-y0)*(H-pt-pb);
-    let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Fondens værdi over tid, største fald '+pctS(st.maxDD)+'">';
+    let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+opt.label+', største fald '+pctS(st.maxDD)+'">';
     // Perioder med fald: fra en top til NAV er tilbage på toppen, når faldet undervejs er større end DD_MARK.
     const band=(a,b)=>{ s+='<rect x="'+x(a)+'" y="'+pt+'" width="'+Math.max(1,x(b)-x(a))+'" height="'+(H-pt-pb)+'" fill="var(--dd-fill)"/>'; };
     let peak=pts[0].nav, peakI=0, worst=0;
@@ -1441,10 +1508,13 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     const span=y1-y0, raw=span/4, mag=Math.pow(10,Math.floor(Math.log10(raw))), step=[1,2,2.5,5,10].map(k=>k*mag).find(k=>k>=raw);
     for(let g=Math.ceil(y0/step)*step; g<=y1; g+=step){
       s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="currentColor" stroke-opacity=".08"/>';
-      s+='<text x="'+(pl-6)+'" y="'+(y(g)+3)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+nf1.format(g/1e6)+'</text>';
+      s+='<text x="'+(pl-6)+'" y="'+(y(g)+3)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+nf1.format(g/opt.scale)+'</text>';
     }
-    s+='<text x="'+(pl-6)+'" y="'+(pt-3)+'" text-anchor="end" font-size="10" fill="var(--muted)">mio.</text>';
-    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(FUND.CAPITAL)+'" y2="'+y(FUND.CAPITAL)+'" stroke="currentColor" stroke-opacity=".45" stroke-dasharray="3 3"/>';
+    if(opt.unit) s+='<text x="'+(pl-6)+'" y="'+(pt-3)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+opt.unit+'</text>';
+    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(B)+'" y2="'+y(B)+'" stroke="currentColor" stroke-opacity=".45" stroke-dasharray="3 3"/>';
+    if(opt.mark && opt.mark.i>0 && opt.mark.i<n){ const mx=x(opt.mark.i);
+      s+='<line x1="'+mx+'" x2="'+mx+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="var(--focus)" stroke-width="1.5" stroke-dasharray="4 3"/>'+
+         '<text x="'+(mx-4)+'" y="'+(pt+10)+'" text-anchor="end" font-size="10" fill="var(--focus)" stroke="var(--surface)" stroke-width="3" paint-order="stroke">'+opt.mark.label+'</text>'; }
     let d=''; pts.forEach((p,i)=>{ d+=(i?'L':'M')+x(i).toFixed(1)+' '+y(p.nav).toFixed(1); });
     s+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>';
     if(st.maxDD<0){
@@ -1552,9 +1622,11 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     const d=v.map((p,i)=>(i?'L':'M')+(i*W/(v.length-1)).toFixed(1)+' '+(3+(hi-p)/((hi-lo)||1)*(H-6)).toFixed(1)).join('');
     return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+'" fill="none" stroke="'+(nav>=1?'var(--long)':'var(--short)')+'" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>';
   }
-  function renderProfiles(){
-    const f=follows();
-    $('cmProfiles').innerHTML=TRADERS.map(t=>{
+  function renderProfiles(target, ids){
+    target=target||'cmProfiles';
+    const f=follows(), list=ids?TRADERS.filter(t=>ids.includes(t.id)):TRADERS;
+    $(target).innerHTML=list.map(t=>{
+      const funds=FUNDS().filter(p=>(p.traders||[]).includes(t.id));
       const ms=traderMonths(t), tot=ms.reduce((c,m)=>c*(1+m),1)-1, pos=ms.filter(m=>m>0).length, on=f.includes(t.id);
       let nav=1, peak=1, dd=0; ms.forEach(m=>{ nav*=1+m; peak=Math.max(peak,nav); dd=Math.min(dd,nav/peak-1); });
       return '<article class="profile"><div class="who"><span class="avatar" aria-hidden="true">'+t.name.split(' ').map(w=>w[0]).join('')+'</span><div><strong>'+esc(t.name)+'</strong><span class="small muted">'+esc(t.style)+'</span></div></div>'+
@@ -1562,31 +1634,111 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
         '<dl><div><dt>Afkast 12 mdr.</dt><dd class="'+cls(tot)+'">'+pctS(tot)+'</dd></div><div><dt>Positive måneder</dt><dd>'+pos+' af 12</dd></div>'+
         '<div><dt>Største fald</dt><dd class="'+cls(dd)+'">'+pctS(dd)+'</dd></div><div><dt>Handler</dt><dd>'+t.trades+'</dd></div></dl>'+
         '<div class="tags">'+t.tags.map(g=>'<span class="tag open">'+g+'</span>').join('')+'</div>'+
+        (funds.length?'<p class="small muted" style="margin:0">Handler: '+funds.map(p=>'<a href="#produkt/'+p.id+'">'+esc(p.name)+'</a>').join(', ')+'</p>':'')+
         '<div class="row spread"><span class="small muted">'+(t.followers+(on?1:0))+' følgere</span><button type="button" class="btn small" data-follow="'+t.id+'" aria-pressed="'+on+'">'+(on?'Følger':'Følg')+'</button></div></article>';
     }).join('');
-    $('cmProfiles').querySelectorAll('[data-follow]').forEach(b=>b.addEventListener('click',()=>{
-      const id=b.dataset.follow, a=follows(); setFollows(a.includes(id)?a.filter(x=>x!==id):a.concat(id)); renderProfiles();
+    $(target).querySelectorAll('[data-follow]').forEach(b=>b.addEventListener('click',()=>{
+      const id=b.dataset.follow, a=follows(); setFollows(a.includes(id)?a.filter(x=>x!==id):a.concat(id)); renderProfiles(target, ids);
     }));
   }
   // Feedet viser kun afregnede positioner (dagen efter levering eller senere), aldrig åbne.
   const DEMO_FEED = [
-    { t:'mk', ago:1, side:'buy',  mw:20, prod:'Peak', area:'DK2', pnl:3120,  c:'Mindre vind i øst end prognosen. Spreaden åbnede som ventet.' },
-    { t:'jr', ago:2, side:'sell', mw:15, prod:'Timer 17–21', area:'DK1', pnl:-2480, c:'Aftenspidsen blev højere end ventet. Tab, men inden for grænsen.' },
-    { t:'sl', ago:2, side:'buy',  mw:10, prod:'Base', area:'DK1', pnl:860,   c:'Kold morgen trak basen op.' },
-    { t:'mk', ago:4, side:'sell', mw:25, prod:'Off-peak', area:'DK1', pnl:1940, c:'Blæst om natten pressede priserne ned.' },
-    { t:'jr', ago:5, side:'buy',  mw:30, prod:'Peak', area:'DK2', pnl:4410,  c:'Lav sol og lav vind. Godt kald.' },
-    { t:'sl', ago:6, side:'sell', mw:10, prod:'Base', area:'DK2', pnl:-720,  c:'Prognosen ramte forbi på temperaturen.' }
+    { t:'mk', fund:'spread', ago:1, side:'buy',  mw:20, prod:'Peak', area:'DK2', pnl:3120,  c:'Mindre vind i øst end prognosen. Spreaden åbnede som ventet.' },
+    { t:'jr', fund:'intraday', ago:2, side:'sell', mw:15, prod:'Timer 17–21', area:'DK1', pnl:-2480, c:'Aftenspidsen blev højere end ventet. Tab, men inden for grænsen.' },
+    { t:'sl', fund:'da-dk1', ago:2, side:'buy',  mw:10, prod:'Base', area:'DK1', pnl:860,   c:'Kold morgen trak basen op.' },
+    { t:'mk', fund:'spread', ago:4, side:'sell', mw:25, prod:'Off-peak', area:'DK1', pnl:1940, c:'Blæst om natten pressede priserne ned.' },
+    { t:'jr', fund:'intraday', ago:5, side:'buy',  mw:30, prod:'Peak', area:'DK2', pnl:4410,  c:'Lav sol og lav vind. Godt kald.' },
+    { t:'sl', fund:'da-dk1', ago:6, side:'sell', mw:10, prod:'Base', area:'DK2', pnl:-720,  c:'Prognosen ramte forbi på temperaturen.' }
   ];
-  function renderFeed(){
+  // target: element-id; fund: kun ét produkt.
+  function renderFeed(target, fund){
+    target=target||'cmFeed';
     const today=TODAY(), name=id=>(TRADERS.find(t=>t.id===id)||{}).name;
-    const items=DEMO_FEED.map(f=>({ who:name(f.t), initials:name(f.t).split(' ').map(w=>w[0]).join(''), del:addDays(today,-f.ago-1), shown:addDays(today,-f.ago),
-      what:(f.side==='buy'?'Købte ':'Solgte ')+f.mw+' MW '+f.prod+' '+f.area, pnl:f.pnl, c:f.c, demo:true }));
-    state.trades.filter(t=>t.settled).forEach(t=>items.push({ who:'Desk', initials:'D', del:t.del, shown:(t.settledAt||'').slice(0,10)||t.del,
-      what:(t.side==='buy'?'Købte ':'Solgte ')+nf1.format(t.mw)+' MW '+hoursLabel(t)+' '+t.area, pnl:t.pnl, c:t.note||'', demo:false }));
+    const items=DEMO_FEED.filter(f=>!fund||f.fund===fund).map(f=>({ who:name(f.t), initials:name(f.t).split(' ').map(w=>w[0]).join(''), del:addDays(today,-f.ago-1), shown:addDays(today,-f.ago),
+      what:(f.side==='buy'?'Købte ':'Solgte ')+f.mw+' MW '+f.prod+' '+f.area, fund:f.fund, pnl:f.pnl, c:f.c, demo:true }));
+    state.trades.filter(t=>t.settled && (!fund||fundOf(t)===fund)).forEach(t=>items.push({ who:'Desk', initials:'D', del:t.del, shown:(t.settledAt||'').slice(0,10)||t.del,
+      what:(t.side==='buy'?'Købte ':'Solgte ')+nf1.format(t.mw)+' MW '+hoursLabel(t)+' '+t.area, fund:fundOf(t), pnl:t.pnl, c:t.note||'', demo:false }));
     items.sort((a,b)=>b.shown.localeCompare(a.shown)||b.del.localeCompare(a.del));
-    $('cmFeed').innerHTML=items.slice(0,12).map(i=>'<li><span class="avatar" aria-hidden="true">'+esc(i.initials)+'</span><div><div class="meta">'+esc(i.who)+' · levering '+shortDate(i.del)+' · vist efter afregning '+(i.demo?'<span class="badge sim">Demo</span>':'<span class="badge fc">Papirhandel</span>')+'</div>'+
+    if(!items.length){ $(target).innerHTML='<li class="muted">Ingen afregnede positioner endnu.</li>'; return; }
+    $(target).innerHTML=items.slice(0,12).map(i=>'<li><span class="avatar" aria-hidden="true">'+esc(i.initials)+'</span><div><div class="meta">'+esc(i.who)+(fund?'':' · '+esc(fundName(i.fund)))+' · levering '+shortDate(i.del)+' · vist efter afregning '+(i.demo?'<span class="badge sim">Demo</span>':'<span class="badge fc">Papirhandel</span>')+'</div>'+
       '<div class="what">'+esc(i.what)+'</div>'+(i.c?'<q>'+esc(i.c)+'</q>':'')+'</div><strong class="'+cls(i.pnl)+'">'+smoney(i.pnl)+'</strong></li>').join('');
   }
+  // ---------- Produkter for brugere (gratis tilstand) ----------
+  const demoNote=()=>'Kurser før '+longDate(CATALOG.launch)+' er demodata, derefter papirhandler. Ingen rigtige penge.';
+  function fundSeries(id){ const f=fundState(id); return f?f.series.map((p,i,a)=>({ date:p.date, nav:p.nav, pnl:i?p.nav-a[i-1].nav:0, demo:p.demo })):[]; }
+  function riskMeter(r){ return '<span class="risk" role="img" aria-label="Risikoklasse '+r+' af 7">'+range(1,8).map(i=>'<i'+(i<=r?' class="on"':'')+'></i>').join('')+'<b>'+r+'/7</b></span>'; }
+  function ret12(pts){ if(pts.length<2) return null; const end=pts[pts.length-1], from=addDays(end.date,-365); let b=pts[0]; pts.forEach(p=>{ if(p.date<=from) b=p; }); return end.nav/b.nav-1; }
+  const pctOf=v=>nf1.format(v*100).replace(/,0$/,'')+' %';
+  const redText=p=>(CATALOG.redemptionText||{})[p.redemption]||p.redemption||'–';
+  function launchMark(pts){ const i=pts.findIndex(p=>!p.demo); return i>0?{ i, label:'Papirhandler fra '+shortDate(pts[i].date) }:null; }
+  function setUserDisclaimer(extra){ $('disclaimerSrc').textContent=(extra?extra+' ':'')+demoNote(); }
+
+  function drawProducts(){
+    const ok=fundsData.status==='ok';
+    $('prCards').innerHTML=FUNDS().map(p=>{
+      const pts=fundSeries(p.id), st=pts.length?fundStats(pts):null, r12=ret12(pts);
+      const sp=pts.length?spark(pts.filter((x,i)=>i%7===0||i===pts.length-1).slice(1).map((x,i,a)=>i?x.nav/a[i-1].nav-1:0)):'';
+      return '<article class="product-card">'+
+        '<div class="row spread" style="align-items:flex-start"><div><h2><a href="#produkt/'+p.id+'">'+esc(p.name)+'</a></h2><p class="small muted" style="margin:var(--sp-xs) 0 0">'+esc(p.tagline||'')+'</p></div>'+riskMeter(p.risk)+'</div>'+
+        sp+
+        '<dl><div><dt>Afkast 12 mdr.</dt><dd class="'+cls(r12||0)+'">'+(ok?pctS(r12):'…')+'</dd></div><div><dt>Største fald</dt><dd class="'+cls(st?st.maxDD:0)+'">'+(st?pctS(st.maxDD):'…')+'</dd></div>'+
+        '<div><dt>Minimum</dt><dd>'+money(p.minEur||0)+'</dd></div><div><dt>Gebyrer</dt><dd>'+pctOf(p.feeMgmt||0)+' + '+pctOf(p.feePerf||0)+'</dd></div>'+
+        '<div><dt>Udtrædelse</dt><dd>'+esc(redText(p))+'</dd></div><div><dt>Områder</dt><dd>'+(p.areas||[]).join(', ')+'</dd></div></dl>'+
+        (p.notice?'<p class="small muted" style="margin:0">'+esc(p.notice)+'</p>':'')+
+        '<a class="btn" href="#produkt/'+p.id+'">Se produkt</a></article>';
+    }).join('');
+    $('prSource').innerHTML='<span class="badge sim">Demodata</span> før '+longDate(CATALOG.launch)+', derefter <span class="badge fc">Papirhandler</span>. Afkast før gebyrer. Gebyrer = forvaltningsgebyr pr. år + resultathonorar af gevinst.'+(fundsData.status==='error'?' Kurserne kunne ikke hentes: '+esc(fundsData.error):'');
+  }
+  async function renderProducts(){
+    setUserDisclaimer('');
+    drawProducts(); renderProfiles('prProfiles'); renderFeed('prFeed');
+    await loadFunds();
+    if(viewName()==='produkter') drawProducts();
+  }
+
+  function drawProduct(id){
+    const p=fundById(id);
+    if(!p){ $('pdMain').hidden=true; $('pdMissing').hidden=false; return; }
+    $('pdMain').hidden=false; $('pdMissing').hidden=true;
+    const pts=fundSeries(p.id), st=pts.length>1?fundStats(pts):null, f=fundState(p.id);
+    $('pdTitle').textContent=p.name;
+    $('pdRisk').innerHTML=riskMeter(p.risk);
+    $('pdLead').textContent=p.tagline||'';
+    const k=(lbl,v,sub,c)=>'<div><span>'+lbl+'</span><strong class="'+(c||'')+'">'+v+'</strong><small>'+sub+'</small></div>';
+    $('pdKpis').innerHTML=st?(
+      k('Kurs',nf2.format(f.nav),'indeks, '+shortDate(f.navDate))+
+      k('Afkast 12 mdr.',pctS(ret12(pts)),'før gebyrer',cls(ret12(pts)))+
+      k('Afkast i år',pctS(st.ytd),'før gebyrer',cls(st.ytd))+
+      k('Volatilitet',pctU(st.vol),'årlig')+
+      k('Største fald',pctS(st.maxDD),shortDate(pts[st.ddPeak].date)+' – '+shortDate(pts[st.ddTrough].date),cls(st.maxDD))+
+      k('Minimum',money(p.minEur||0),'første køb')):'';
+    $('pdChart').innerHTML=st?navChart(pts,st,{ base:100, scale:1, unit:'', label:p.name+', kurs over tid', mark:launchMark(pts) }):'<div class="empty">'+(fundsData.status==='error'?'Kursen kunne ikke hentes.':'Henter kurs …')+'</div>';
+    $('pdLegend').innerHTML='<span><i style="background:var(--accent)"></i>Kurs</span><span><i style="background:var(--dd-fill)"></i>Fald over '+nf0.format(FUND.DD_MARK*100)+' %</span><span><i style="background:transparent;border-top:2px dashed var(--focus);height:0;width:14px"></i>Papirhandler fra</span>';
+    $('pdSource').innerHTML='<span class="badge sim">Demodata</span> før '+longDate(CATALOG.launch)+', derefter <span class="badge fc">Papirhandler</span>. Indeks 100 for 12 måneder siden, før gebyrer.';
+    $('pdMonths').innerHTML=st?monthsTable(monthlyReturns(pts)):'';
+    $('pdStrategy').innerHTML='<p>'+esc(p.strategy||'')+'</p><p class="muted">'+esc(p.riskText||'')+'</p>'+(p.notice?'<p class="small"><span class="badge sim">Bemærk</span> '+esc(p.notice)+'</p>':'');
+    const r=(a,b)=>'<tr><td>'+a+'</td><td>'+b+'</td></tr>';
+    $('pdTerms').innerHTML='<tbody>'+
+      r('Risikoklasse',p.risk+' af 7')+
+      r('Egnethed',({ basis:'Basis', udvidet:'Udvidet', hoej:'Høj' })[(CATALOG.suitability.byRisk||{})[String(p.risk)]]||'–')+
+      r('Minimumsbeløb',money(p.minEur||0))+
+      r('Forvaltningsgebyr',pctOf(p.feeMgmt||0)+' pr. år')+
+      r('Resultathonorar',pctOf(p.feePerf||0)+' af gevinst')+
+      r('Udtrædelse',esc(redText(p)))+
+      r('Prisområder',(p.areas||[]).join(' og '))+
+      r('Positionsgrænse',limitOf(p.id)+' MW pr. time')+
+      r('Kapital i produktet',f?mio(f.aum):'…')+'</tbody>';
+    $('pdFactsheet').href=p.factsheet||'#';
+    renderProfiles('pdTraders', p.traders||[]);
+    renderFeed('pdFeed', p.id);
+  }
+  async function renderProduct(id){
+    setUserDisclaimer('');
+    drawProduct(id);
+    await loadFunds();
+    if(viewName()==='produkt') drawProduct(id);
+  }
+
   async function loadWaitlistCount(){
     try { const r=await fetch('/api/waitlist',{headers:{accept:'application/json'}}); const j=await r.json(); if(r.ok && typeof j.count==='number') $('wlCount').textContent=j.count?j.count+' er allerede skrevet op.':''; } catch(e){}
   }
@@ -1609,7 +1761,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   }
   function renderCommunity(){
     $('disclaimerSrc').textContent='Profiler, resultater og feed er demodata, suppleret med desk\'ens afregnede papirhandler.';
-    renderProfiles(); renderFeed(); loadWaitlistCount();
+    renderProfiles('cmProfiles'); renderFeed('cmFeed'); loadWaitlistCount();
   }
 
   // ---------- Kapital pr. produkt (desk) ----------

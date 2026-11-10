@@ -16,7 +16,7 @@ test("Rolleskifter: Trader er desk'en, Investor og Community har egne faner", as
   await expect(page.locator('nav[data-role="investor"] a')).toHaveText(["Fonden", "Strategi"]);
 
   await page.getByRole("radio", { name: "Community" }).check();
-  await expect(page).toHaveURL(/#community$/);
+  await expect(page).toHaveURL(/#produkter$/);
   await page.getByRole("radio", { name: "Trader" }).check();
   await expect(page).toHaveURL(/#marked$/);
 });
