@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "note": "Demo. Forenklet egnethedstest til prototypen; ikke en godkendt test efter MiFID II.",
+  "questions": [
+    {
+      "id": "knowledge",
+      "area": "Viden",
+      "text": "Hvor godt kender du til handel med elektricitet eller andre råvarer?",
+      "options": [
+        { "text": "Slet ikke", "score": 0 },
+        { "text": "Lidt. Jeg har læst om det", "score": 1 },
+        { "text": "Godt. Jeg forstår, hvordan priserne dannes", "score": 2 },
+        { "text": "Meget godt. Jeg har arbejdet med det", "score": 3 }
+      ]
+    },
+    {
+      "id": "experience",
+      "area": "Erfaring",
+      "text": "Hvor ofte har du investeret i aktier, fonde eller lignende de seneste fem år?",
+      "options": [
+        { "text": "Aldrig", "score": 0 },
+        { "text": "Et par gange", "score": 1 },
+        { "text": "Flere gange om året", "score": 2 },
+        { "text": "Jævnligt, også i produkter med høj risiko", "score": 3 }
+      ]
+    },
+    {
+      "id": "economy",
+      "area": "Økonomi",
+      "text": "Hvor stor en del af din opsparing vil du højst sætte i produkterne?",
+      "options": [
+        { "text": "Mere end halvdelen", "score": 0 },
+        { "text": "Mellem 25 og 50 %", "score": 1 },
+        { "text": "Mellem 10 og 25 %", "score": 2 },
+        { "text": "Under 10 %", "score": 3 }
+      ]
+    },
+    {
+      "id": "risk",
+      "area": "Risikovillighed",
+      "text": "Hvad gør du, hvis din investering falder 20 % på en måned?",
+      "options": [
+        { "text": "Sælger alt med det samme", "score": 0 },
+        { "text": "Bliver urolig og overvejer at sælge", "score": 1 },
+        { "text": "Venter og ser tiden an", "score": 2 },
+        { "text": "Det forventer jeg. Jeg kan tåle store udsving", "score": 3 }
+      ]
+    }
+  ],
+  "levels": {
+    "ingen": "Ikke egnet. Du kan følge med gratis, men ikke købe.",
+    "basis": "Basis: produkter med risiko 1–3.",
+    "udvidet": "Udvidet: produkter med risiko 1–5.",
+    "hoej": "Høj: alle produkter, også risiko 6–7."
+  }
+}

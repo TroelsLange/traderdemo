@@ -9,13 +9,15 @@ import { fileURLToPath } from "node:url";
 import { createPricesHandler } from "../netlify/functions/prices.mts";
 import { createBookHandler } from "../netlify/functions/book.mts";
 import { createWaitlistHandler } from "../netlify/functions/waitlist.mts";
+import { createFundsHandler } from "../netlify/functions/funds.mts";
+import { createAccountHandler } from "../netlify/functions/account.mts";
 import { fakeEnerginet, memoryStore } from "./fakes.mjs";
 
 const ROOT = fileURLToPath(new URL("../public/", import.meta.url));
 const PORT = +(process.argv[2] || process.env.PORT || 8899);
-const TYPES = { ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".js": "text/javascript", ".css": "text/css" };
+const TYPES = { ".json": "application/json", ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".js": "text/javascript", ".css": "text/css" };
 
-let ctl, store, prices, book, waitlist;
+let ctl, store, prices, book, waitlist, funds, account;
 function reset(opts = {}) {
   ctl = { now: Date.parse(opts.now || "2026-11-10T10:00:00+01:00"), upstream: opts.upstream || "ok", book: opts.book || "ok", publishHour: opts.publishHour ?? 13 };
   store = memoryStore();
@@ -24,6 +26,8 @@ function reset(opts = {}) {
   prices = createPricesHandler({ now, fetchImpl });
   book = createBookHandler({ now, fetchImpl, store: () => store });
   waitlist = createWaitlistHandler({ now, store: () => store });
+  funds = createFundsHandler({ now, store: () => store });
+  account = createAccountHandler({ now, store: () => store });
 }
 reset();
 
@@ -53,6 +57,8 @@ createServer(async (req, res) => {
       return send(res, Response.json({ ok: true, now: new Date(ctl.now).toISOString() }));
     }
     if (url.pathname === "/api/prices") return send(res, await prices(await toRequest(req)));
+    if (url.pathname === "/api/account") return send(res, await account(await toRequest(req)));
+    if (url.pathname === "/api/funds") return send(res, await funds(await toRequest(req)));
     if (url.pathname === "/api/waitlist") return send(res, await waitlist(await toRequest(req)));
     if (url.pathname === "/api/book") {
       if (ctl.book === "down") return send(res, Response.json({ error: "nede" }, { status: 503 }));

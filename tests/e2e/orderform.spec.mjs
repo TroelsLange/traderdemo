@@ -66,7 +66,7 @@ test("Lille handel inden for grænsen registreres uden dialog", async ({ page, r
 test("Grænsebrud alene kræver også bekræftelse", async ({ page, request }) => {
   await open(page, request, "handel", NOW);
   await page.fill("#fMw", "60");
-  await expect(page.locator("#tdWarn")).toContainText("24 timer over grænsen på 50 MW");
+  await expect(page.locator("#tdWarn")).toContainText("24 timer over Day-Ahead DK1s grænse på 50 MW");
   await expect(page.locator("#tdWarn")).not.toContainText("Stor handel");
   await page.locator("#placeBtn").click();
   await page.keyboard.press("Escape");

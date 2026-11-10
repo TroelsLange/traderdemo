@@ -59,6 +59,10 @@ export function memoryStore({ etagOnGet = true } = {}) {
       const v = data.get(key);
       return v ? { data: JSON.parse(v.json), etag: etagOnGet ? v.etag : undefined, metadata: {} } : null;
     },
+    async get(key) {
+      const v = data.get(key);
+      return v ? JSON.parse(v.json) : null;
+    },
     async list({ prefix = "" } = {}) {
       return { blobs: [...data].filter(([k]) => k.startsWith(prefix)).map(([key, v]) => ({ key, etag: v.etag })) };
     },
