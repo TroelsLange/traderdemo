@@ -3,7 +3,7 @@
 Senest opdateret: 10. november 2026.
 
 ## Hvad vi lavede i dag (10. nov. 2026, aften): private brugere og trading-produkter
-Ny forretningsmodel: private brugere sætter (simulerede) penge ind og køber andele i produkter, som desk'ens tradere handler. Bygget i fire dele i [PR #4](https://github.com/TroelsLange/traderdemo/pull/4) (ikke merget endnu, så ikke i produktion).
+Ny forretningsmodel: private brugere sætter (simulerede) penge ind og køber andele i produkter, som desk'ens tradere handler. Bygget i fire dele og merget til `main` via [PR #4](https://github.com/TroelsLange/traderdemo/pull/4); deployet automatisk til https://traderzai.netlify.app. Netlifys deploy preview byggede uden fejl. Produktionen er ikke kontrolleret i browser endnu (kan ikke nås fra Claudes cloud-container).
 
 1. Produkter og kobling til desk'en
    - Produktkatalog som data i `public/data/products.json`: Day-Ahead DK1 (risiko 3/7), Intraday Aktiv (6/7) og Spread DK1/DK2 (4/7).
@@ -91,7 +91,7 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 - Produkternes gebyrer, minimumsbeløb og startkapital er valgt til demoen og kan ændres i `products.json`.
 
 ## Næste skridt (prioriteret)
-1. Merge PR #4 og tjek i produktion: handel med produkt, Kapital, brugerrejsen (profil, test, indbetaling, køb, udtrædelse) og ventelisten.
+1. Tjek i produktion: handel med produkt, Kapital, brugerrejsen (profil, test, indbetaling, køb, udtrædelse) og ventelisten. Brug testdata; alt ligger i samme Blobs-lager som produktionen.
 2. Juridisk afklaring af produkterne for private (markedsføring, egnethed, kundemidler, GDPR, privatlivstekst).
 3. Rigtigt login (bruger og trader), så profiler og handler får en ejer.
 4. Gebyrer trukket i kursen og et rigtigt faktaark pr. produkt.
