@@ -2,6 +2,22 @@
 
 Senest opdateret: 10. november 2026.
 
+## I gang: private brugere og trading-produkter (10. nov. 2026, aften)
+Ny forretningsmodel: private brugere sætter (simulerede) penge ind og køber andele i produkter, som tradere handler. Bygges i fire dele.
+
+Del 1, færdig (på branch, i pull request til `main`):
+1. Produktkatalog som data i `public/data/products.json`: Day-Ahead DK1 (risiko 3/7), Intraday Aktiv (6/7) og Spread DK1/DK2 (4/7).
+2. Hver handel har et produkt. Ordreformularen har Produkt og Kontrakt; produktet bestemmer områder og grænse. Gamle handler er knyttet til Day-Ahead DK1 (DK2-handler til Spread).
+3. Grænse og positioner pr. produkt i Handel og Position og risiko.
+4. `/api/funds`: kurs (NAV) og kapital pr. produkt. Demodata før 1. nov. 2026, derefter produktets papirhandler.
+5. Ny desk-fane Kapital: kurs, kapital, ind- og udbetalinger, ventende udtrædelser og kapital til handel pr. produkt.
+6. Tests: 21 enhedstests og 30 browsertests.
+
+Mangler:
+- Del 2: produktkatalog og produktsider for brugere (gratis tilstand) med traderprofiler og forsinket feed.
+- Del 3: brugerkonto med simuleret MitID, egnethedstest, simuleret indbetaling (uafhængig depotbank), køb af andele, Min portefølje og udtrædelse.
+- Del 4: rolleskifter Trader/Bruger, demo-markering på alle sider, CLAUDE.md, STATUS.md og Notion.
+
 ## Hvad vi lavede i dag (10. nov. 2026, eftermiddag): investor- og community-demo
 Merget til `main` via [PR #2](https://github.com/TroelsLange/traderdemo/pull/2) og deployet automatisk til https://traderzai.netlify.app. Netlifys deploy preview byggede uden fejl. Produktionen er ikke kontrolleret i browser endnu (kan ikke nås fra Claudes cloud-container).
 
@@ -68,6 +84,8 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 - Mørkt tema: tokens til kort, kanter og knapper er afledt af Prime/Dark red-skalaen, fordi Figma kun definerer baggrund og tekst for Dark.
 - Ventelisten har ingen side til at se eller eksportere tilmeldinger (kun Netlifys Blobs-oversigt) og ingen funktion til at slette en tilmelding ved tilbagetrukket samtykke.
 - Inden siden vises for eksterne investorer: få afklaret de juridiske krav til markedsføring af en fond, også med simulerede tal.
+- Produkternes gebyrer, minimumsbeløb og startkapital er valgt til demoen og kan ændres i `products.json`. Intraday Aktiv handles med day-ahead-timeblokke, indtil intraday-handel er bygget.
+- Kapital pr. produkt er kun startkapital, indtil brugerkonti (del 3) er bygget.
 
 ## Næste skridt (prioriteret)
 1. Tjek den fælles bog og ventelisten i produktion.
