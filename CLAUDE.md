@@ -37,7 +37,8 @@ GitHub `TroelsLange/traderdemo` (branch `main`) → Netlify-projektet `traderzai
 - Handler afregnes kun mod rigtige spotpriser, aldrig simulerede. Svarer API'et ikke: simulerede priser + tydelig advarsel.
 - Når morgendagens spot er ude, rykker handel og Marked til overmorgen med prognosepris (ellers kunne man handle til prognose med kendt pris).
 - Handelspris = prognose ± 0,50 EUR/MWh.
+- Ordreformularen (Handel): trin 1–4, Retning er en radiogruppe (segmented control efter Figma `elements/Switch`), og kun handlingsknappen har fuldt mættet farve (grøn køb, rød salg). Grænsebrud eller over 100 MW (`BIG_MW`) vises som advarsel i ordreoversigten og kræver bekræftelse i en dialog.
 - Data i kvarterer, visning pr. time (kvartersvisning kommer senere).
-- Design: Figma "🧱 Naia – Core UI Library" (fil `4exYySvrgcHTqeLKfM6xGY`). Brug tokens (CSS-variabler øverst i `index.html`), aldrig hårdkodede værdier. Ikoner hentes fra Figma til `public/assets/`. Light-only. Font PP Radio Grotesk er licenseret og ligger ikke i repoet.
+- Design: Figma "🧱 Naia – Core UI Library" (fil `4exYySvrgcHTqeLKfM6xGY`). Brug tokens (CSS-variabler øverst i `index.html`), aldrig hårdkodede værdier. Ikoner hentes fra Figma til `public/assets/` (farvelægges med CSS `mask` + token, f.eks. fluebenet i Retning). Lyst tema er standard; mørkt tema følger systemindstillingen (`prefers-color-scheme`) og er bygget af Figmas Color Surface "Dark" + Prime/Dark red-skalaen. Nye farver skal have en værdi i begge temaer. Font PP Radio Grotesk er licenseret og ligger ikke i repoet.
 
 @docs/STATUS.md

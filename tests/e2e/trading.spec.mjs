@@ -5,7 +5,7 @@ async function trade(page, { product = "base", mw = "10", side = "Køb", from, t
   await page.selectOption("#fProd", product);
   if (from != null) { await page.selectOption("#fFrom", String(from)); await page.selectOption("#fTo", String(to)); }
   await page.fill("#fMw", mw);
-  await page.locator(".sidebtns button", { hasText: side }).click();
+  await page.getByRole("radio", { name: side }).check();
 }
 
 test("handel registreres i den fælles bog og ses fra en anden browser", async ({ page, request, browser }) => {

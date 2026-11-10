@@ -8,6 +8,14 @@ Senest opdateret: 10. november 2026.
 3. Automatiske tests i repoet: 13 enhedstests (Node test runner) og 11 browsertests (Playwright) for priser, handel, deling, afregning, sommertid og fallback. Kør med `npm test`.
 4. Fælles serverkode flyttet til `netlify/lib/` (Energi Data Service-hentning og timer/sommertid).
 
+## Ordreformularen (10. nov. 2026, senere)
+- Retning (Køb/Sælg) er nu en radiogruppe som segmented control med flueben, piletaster og hjælpetekst, ikke knapper.
+- Formularen er delt i trin: 1 Marked, 2 Retning, 3 Volumen og note, 4 Ordreoversigt (kvittering med egen baggrund). Handlingsknappen ligger direkte efter oversigten, i fuld bredde og med tekst som "Køb 10 MW Base DK1 til 46,32 EUR/MWh".
+- Advarsel i ordreoversigten ved grænsebrud og ved handler over 100 MW; begge kræver bekræftelse i en dialog.
+- Mørkt tema (systemindstilling) for hele appen.
+- Rettet: Fra/Til time blev vist, selvom produktet ikke var Timeblok.
+- 6 nye browsertests (17 i alt).
+
 ## Tidligere (9. nov. 2026)
 Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/prices`; afregning mod rigtig spot; Netlify forbundet; brugerfladen bygget om efter Naia Core UI Library; handel rykker til næste leveringsdag, når morgendagens spot er ude.
 
@@ -40,6 +48,8 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 - Handler fra den gamle version (nøgle `stroemkurs-desk-v1`) vises ikke.
 - Der findes et ekstra Netlify-projekt, `fancy-salmiakki-106317`, som også bygger fra repoet. Bør slettes, hvis det ikke bruges.
 - Kosmetisk: toast kan dække indhold; akseetiketter i positionsgrafen bliver store på brede skærme.
+- Hvid tekst på handlingsknapperne (grøn #09955A ca. 3,9:1, rød #F43F48 ca. 3,7:1) opfylder 3:1 for UI-elementer, men ikke 4,5:1 for normal tekst. Farverne er designsystemets Signal/Deep.
+- Mørkt tema: tokens til kort, kanter og knapper er afledt af Prime/Dark red-skalaen, fordi Figma kun definerer baggrund og tekst for Dark.
 
 ## Næste skridt (prioriteret)
 1. Deploy og tjek den fælles bog i produktion (se ovenfor).

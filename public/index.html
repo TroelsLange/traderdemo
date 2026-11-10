@@ -45,11 +45,46 @@
   --row-bg:#FFFFFF; --row-bg-hover:#F5F2ED; --row-border:#D9D6D2;
   --input-border:#D9D6D2; --input-focused:#C1B7B7; --input-label:#808080; --input-placeholder:#B2B2B2;
   --focus:#007DFF;
+  /* Signal-primitiver (Figma: Colors * / Signal) */
+  --neutrals-black:#000000; --signal-green-deep:#09955A; --signal-red-deep:#F43F48; --signal-red-muted-deep:#D74C4F;
+  /* Badge-tekst (gul/blå badge altid sort tekst, grøn/rød altid hvid) */
+  --badge-text:#000000; --badge-text-inverse:#FFFFFF;
+  /* Switch (Figma: elements/Switch) og valgt retning i ordreformularen */
+  --switch-bg:var(--light-surface); --switch-border:var(--border); --switch-bg-hover:var(--btn-secondary-bg-hover);
+  --select-buy-bg:color-mix(in srgb,var(--positive) 12%,var(--light-surface)); --select-buy-border:var(--signal-green-deep); --select-buy-icon:var(--signal-green-deep);
+  --select-sell-bg:color-mix(in srgb,var(--negative) 10%,var(--light-surface)); --select-sell-border:var(--signal-red-deep); --select-sell-icon:var(--signal-red-muted-deep);
+  --select-off-ring:var(--text-tertiary);
+  /* Handlingsknap: eneste fuldt mættede farve i formularen */
+  --btn-buy-bg:var(--signal-green-deep); --btn-buy-bg-hover:color-mix(in srgb,var(--signal-green-deep) 85%,var(--neutrals-black));
+  --btn-sell-bg:var(--signal-red-deep); --btn-sell-bg-hover:var(--signal-red-muted-deep); --btn-trade-text:#FFFFFF;
+  /* Advarsel i ordreoversigten */
+  --warn-bg:color-mix(in srgb,var(--badge-yellow-bg) 18%,var(--light-surface)); --warn-border:var(--btn-alert-border);
   /* Grafer: aliaser på tokens ovenfor */
   --ink:var(--text-primary); --muted:var(--text-secondary); --line:var(--border); --surface:var(--light-surface);
   --accent:var(--btn-primary-bg); --long:var(--positive); --short:var(--negative); --warn:var(--btn-alert-border);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* Mørkt tema (følger systemindstillingen). Figma: Color Surface "Dark" (bg #300F0F, tekst #FFF / #C1B7B7)
+   suppleret med Prime/Dark red-skalaen til kort, kanter og knapper. */
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --light-surface:#452727; --text-primary:#FFFFFF; --text-secondary:#C1B7B7; --text-tertiary:#978787;
+    --border:#6E5757; --creme-bg:#300F0F; --medium-creme-bg:#300F0F; --creme-text:#FFFFFF;
+    --overlay:rgba(0,0,0,.6);
+    --btn-primary-bg:#F5F2ED; --btn-primary-bg-hover:#EAE7E2; --btn-primary-bg-disabled:#6E5757; --btn-primary-text:#300F0F;
+    --btn-secondary-bg:#452727; --btn-secondary-bg-hover:#300F0F; --btn-secondary-border:#6E5757; --btn-secondary-text:#FFFFFF;
+    --badge-grey-bg:#6E5757;
+    --tabs-bg:#452727; --tabs-bg-active:#300F0F; --tabs-border:#6E5757;
+    --row-bg:#452727; --row-bg-hover:#300F0F; --row-border:#6E5757;
+    --input-border:#6E5757; --input-focused:#978787; --input-label:#C1B7B7; --input-placeholder:#978787;
+    --select-buy-bg:color-mix(in srgb,var(--positive) 18%,var(--light-surface)); --select-buy-icon:var(--positive); --select-buy-border:var(--positive);
+    --select-sell-bg:color-mix(in srgb,var(--negative) 18%,var(--light-surface)); --select-sell-icon:var(--btn-destructive-bg); --select-sell-border:var(--btn-destructive-bg);
+    --warn-bg:color-mix(in srgb,var(--badge-yellow-bg) 14%,var(--light-surface));
+  }
+  /* Ikonerne er sorte SVG'er fra Figma; vend dem på mørk baggrund. */
+  nav.tabs a img{filter:invert(1)}
 }
 *,*::before,*::after{box-sizing:inherit}
 html{height:100%}
@@ -159,16 +194,16 @@ tfoot th:first-child{border-radius:var(--radius-sm) 0 0 var(--radius-sm)} tfoot 
 .kv tbody tr:hover td{background:transparent}
 .kv th{height:32px}
 .pos{color:var(--positive);font-weight:700}.neg{color:var(--negative);font-weight:700}
-.warnc{display:inline-block;padding:0 var(--sp-sm);border-radius:var(--radius-round);background:var(--badge-yellow-bg);color:var(--text-primary);font-weight:700}
+.warnc{display:inline-block;padding:0 var(--sp-sm);border-radius:var(--radius-round);background:var(--badge-yellow-bg);color:var(--badge-text);font-weight:700}
 .empty{padding:var(--sp-2xl);text-align:center;color:var(--text-secondary)}
 
 /* Badge */
 .badge,.tag{display:inline-flex;align-items:center;gap:var(--sp-xs);height:24px;padding:var(--sp-xs) var(--sp-base);border-radius:var(--radius-round);
   font-size:var(--text-2xs);line-height:var(--leading-2xs);letter-spacing:var(--tracking-2xs);font-weight:400;text-transform:uppercase;white-space:nowrap;vertical-align:middle}
-.badge.fc{background:var(--badge-blue-bg);border:var(--border-sm) solid var(--badge-blue-border);color:var(--text-primary)}
-.badge.live,.tag.buy{background:var(--badge-green-bg);color:#FFFFFF}
-.badge.sim{background:var(--badge-yellow-bg);color:var(--text-primary)}
-.tag.sell{background:var(--badge-red-bg);color:#FFFFFF}
+.badge.fc{background:var(--badge-blue-bg);border:var(--border-sm) solid var(--badge-blue-border);color:var(--badge-text)}
+.badge.live,.tag.buy{background:var(--badge-green-bg);color:var(--badge-text-inverse)}
+.badge.sim{background:var(--badge-yellow-bg);color:var(--badge-text)}
+.tag.sell{background:var(--badge-red-bg);color:var(--badge-text-inverse)}
 .tag.open{background:var(--badge-grey-bg);color:var(--text-primary)}
 
 /* input/basic */
@@ -180,19 +215,73 @@ label.field,.field{display:block;color:var(--input-label);font-size:var(--text-x
 .input:focus-visible{outline:none}
 select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .input.compact{height:32px;padding:var(--sp-xs) var(--sp-base);font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm)}
-.sidebtns{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-base)}
-.sidebtns button{height:44px;border-radius:var(--radius-round);border:var(--border-sm) solid var(--btn-secondary-border);background:var(--btn-secondary-bg);
-  font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm);cursor:pointer}
-.sidebtns button:hover{background:var(--btn-secondary-bg-hover)}
-.sidebtns button[aria-pressed="true"].b{background:var(--btn-primary-bg);border-color:var(--btn-primary-bg);color:var(--btn-primary-text)}
-.sidebtns button[aria-pressed="true"].s{background:var(--btn-destructive-bg);border-color:var(--btn-destructive-bg);color:var(--btn-destructive-text)}
+/* Ordreformular: nummererede trin */
+.order{display:flex;flex-direction:column;gap:var(--sp-3xl)}
+.step{border:0;margin:0;padding:0;min-width:0}
+.step>*+*{margin-top:var(--sp-lg)}
+.step-h{float:left;width:100%;display:flex;align-items:center;gap:var(--sp-base);padding:0;margin:0 0 var(--sp-lg);
+  font-size:var(--text-base);line-height:var(--leading-base);letter-spacing:var(--tracking-base);font-weight:700;color:var(--text-primary)}
+.step-h+*{clear:both;margin-top:0}
+.step-n{display:inline-flex;align-items:center;justify-content:center;flex:none;width:24px;height:24px;border-radius:var(--radius-round);
+  border:var(--border-sm) solid var(--border);background:var(--light-surface);font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);font-weight:700}
+.help{margin:var(--sp-base) 0 0;color:var(--text-secondary);font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs)}
+
+/* Retning: segmented control (Figma: elements/Switch) som radiogruppe */
+.segmented{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-xs);padding:var(--sp-xs);background:var(--switch-bg);
+  border:var(--border-sm) solid var(--switch-border);border-radius:var(--radius-round)}
+.seg-opt{position:relative;display:flex;align-items:center;justify-content:center;gap:var(--sp-base);min-height:40px;padding:0 var(--sp-xl);
+  border:var(--border-sm) solid transparent;border-radius:var(--radius-round);color:var(--text-secondary);cursor:pointer;user-select:none;
+  font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm)}
+.seg-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.seg-opt:hover{background:var(--switch-bg-hover);color:var(--text-primary)}
+.seg-mark{flex:none;width:16px;height:16px;border-radius:var(--radius-round);box-shadow:inset 0 0 0 1.5px var(--select-off-ring)}
+.seg-opt:has(input:checked){font-weight:700;color:var(--text-primary)}
+.seg-opt:has(input:checked) .seg-mark{box-shadow:none;border-radius:0;-webkit-mask:url(assets/icon-check.svg) center/16px 16px no-repeat;mask:url(assets/icon-check.svg) center/16px 16px no-repeat}
+.seg-opt.buy:has(input:checked){background:var(--select-buy-bg);border-color:var(--select-buy-border)}
+.seg-opt.buy:has(input:checked) .seg-mark{background:var(--select-buy-icon)}
+.seg-opt.sell:has(input:checked){background:var(--select-sell-bg);border-color:var(--select-sell-border)}
+.seg-opt.sell:has(input:checked) .seg-mark{background:var(--select-sell-icon)}
+.seg-opt:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
+
+/* Ordreoversigt: læses som en kvittering */
+.receipt{background:var(--medium-creme-bg);border-radius:var(--radius-md);padding:var(--sp-2xl)}
+.receipt>*+*{margin-top:var(--sp-xl)}
+.receipt .step-n{background:var(--medium-creme-bg)}
+.order-warn{display:flex;gap:var(--sp-lg);align-items:flex-start;padding:var(--sp-lg);background:var(--warn-bg);border:var(--border-sm) solid var(--warn-border);
+  border-radius:var(--radius-sm);color:var(--text-primary)}
+.order-warn+.order-warn{margin-top:var(--sp-base)}
+.order-warn .alert-icon{flex:none;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:var(--radius-round);
+  background:var(--btn-alert-bg);border:var(--border-sm) solid var(--btn-alert-border)}
+.order-warn .alert-icon img{display:block;width:14px;height:14px}
+.order-warn strong{display:block}
+
+/* Handlingsknap */
+.btn.trade{width:100%;min-height:48px;height:auto;padding:var(--sp-md) var(--sp-xl);border:0;color:var(--btn-trade-text);white-space:normal;
+  font-size:var(--text-base);line-height:var(--leading-base);letter-spacing:var(--tracking-base);font-weight:700}
+.btn.trade.buy{background:var(--btn-buy-bg)} .btn.trade.buy:hover{background:var(--btn-buy-bg-hover)}
+.btn.trade.sell{background:var(--btn-sell-bg)} .btn.trade.sell:hover{background:var(--btn-sell-bg-hover)}
+.btn.trade:disabled,.btn.trade:disabled:hover{background:var(--btn-primary-bg-disabled);color:var(--btn-trade-text);cursor:not-allowed}
+
+/* Bekræftelsesdialog (Figma: Modal) */
+dialog.confirm{border:0;border-radius:var(--radius-md);box-shadow:var(--shadow-md);padding:var(--sp-3xl);width:min(440px,calc(100vw - 2 * var(--sp-xl)));
+  background:var(--light-surface);color:var(--text-primary)}
+dialog.confirm::backdrop{background:var(--overlay)}
+dialog.confirm h2{margin-bottom:var(--sp-base)}
+dialog.confirm p{color:var(--text-secondary)}
+dialog.confirm ul{margin:var(--sp-lg) 0 var(--sp-2xl);padding-left:var(--sp-2xl)}
+dialog.confirm li+li{margin-top:var(--sp-xs)}
+dialog.confirm .actions{display:flex;flex-wrap:wrap;gap:var(--sp-base);justify-content:flex-end}
+dialog.confirm .actions .btn{height:40px}
+dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-xs) var(--sp-xl);font-size:var(--text-sm);line-height:var(--leading-sm)}
 .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+.formgrid[hidden]{display:none}
 .quote{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp-base);text-align:center}
-.quote div{background:var(--medium-creme-bg);border-radius:var(--radius-sm);padding:var(--sp-md) var(--sp-sm)}
+.quote div{background:var(--light-surface);border-radius:var(--radius-sm);padding:var(--sp-md) var(--sp-sm)}
 .quote span{display:block;font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);text-transform:uppercase}
 .quote strong{font-size:var(--text-lg);line-height:var(--leading-lg);letter-spacing:var(--tracking-lg)}
-.summary{background:var(--medium-creme-bg);border-radius:var(--radius-sm);padding:var(--sp-lg) var(--sp-xl)}
-.summary div{display:flex;justify-content:space-between;gap:var(--sp-lg);padding:var(--sp-2xs) 0}
+.summary div{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-lg);padding:var(--sp-base) 0;border-top:var(--border-sm) dashed var(--border)}
+.summary div:first-child{border-top:0;padding-top:0}
+.summary strong{text-align:right}
 .summary span{color:var(--text-secondary)}
 .error{color:var(--negative);min-height:var(--leading-sm);margin:var(--sp-sm) 0 0}
 .note{font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);border-top:var(--border-sm) solid var(--border);padding-top:var(--sp-xl);margin-top:var(--sp-4xl)}
@@ -279,28 +368,46 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   <section class="view stack" id="view-handel" hidden>
     <div><h1>Ny handel</h1><p class="lead" id="tdLead"></p></div>
     <div class="cols">
-      <div class="panel c5 stack">
-        <div class="formgrid">
-          <div><label class="field" for="fArea">Område</label>
-            <select class="input" id="fArea"><option value="DK1">DK1 Vestdanmark</option><option value="DK2">DK2 Østdanmark</option></select></div>
-          <div><label class="field" for="fProd">Produkt</label>
-            <select class="input" id="fProd"><option value="base">Base 00–24</option><option value="peak">Peak 08–20</option><option value="offpeak">Off-peak</option><option value="block">Timeblok</option></select></div>
+      <form class="panel c5 order" id="orderForm" novalidate>
+        <fieldset class="step">
+          <legend class="step-h"><span class="step-n">1</span>Marked</legend>
+          <div class="formgrid">
+            <div><label class="field" for="fArea">Område</label>
+              <select class="input" id="fArea"><option value="DK1">DK1 Vestdanmark</option><option value="DK2">DK2 Østdanmark</option></select></div>
+            <div><label class="field" for="fProd">Produkt</label>
+              <select class="input" id="fProd"><option value="base">Base 00–24</option><option value="peak">Peak 08–20</option><option value="offpeak">Off-peak</option><option value="block">Timeblok</option></select></div>
+          </div>
+          <div class="formgrid" id="blockRow" hidden>
+            <div><label class="field" for="fFrom">Fra time</label><select class="input" id="fFrom"></select></div>
+            <div><label class="field" for="fTo">Til time</label><select class="input" id="fTo"></select></div>
+          </div>
+        </fieldset>
+        <fieldset class="step" aria-describedby="sideHelp">
+          <legend class="step-h"><span class="step-n">2</span>Retning</legend>
+          <div class="segmented">
+            <label class="seg-opt buy"><input type="radio" name="side" value="buy" checked><span class="seg-mark" aria-hidden="true"></span>Køb</label>
+            <label class="seg-opt sell"><input type="radio" name="side" value="sell"><span class="seg-mark" aria-hidden="true"></span>Sælg</label>
+          </div>
+          <p class="help" id="sideHelp">Vælg om du køber eller sælger strøm. Handlen udføres først, når du bekræfter nederst.</p>
+        </fieldset>
+        <fieldset class="step">
+          <legend class="step-h"><span class="step-n">3</span>Volumen og note</legend>
+          <div class="formgrid">
+            <div><label class="field" for="fMw">Volumen (MW)</label><input class="input" id="fMw" inputmode="decimal" value="10" autocomplete="off"></div>
+            <div><label class="field" for="fNote">Note (valgfri)</label><input class="input" id="fNote" maxlength="60" placeholder="F.eks. vindrisiko" autocomplete="off"></div>
+          </div>
+        </fieldset>
+        <section class="step receipt" aria-labelledby="receiptTitle">
+          <h2 class="step-h" id="receiptTitle"><span class="step-n">4</span>Ordreoversigt</h2>
+          <div class="quote" id="quote"></div>
+          <div class="summary" id="tdSummary"></div>
+          <div id="tdWarn" aria-live="polite"></div>
+        </section>
+        <div>
+          <button type="submit" class="btn trade buy" id="placeBtn">Køb</button>
+          <p class="error" id="tdError" role="alert"></p>
         </div>
-        <div class="formgrid" id="blockRow" hidden>
-          <div><label class="field" for="fFrom">Fra time</label><select class="input" id="fFrom"></select></div>
-          <div><label class="field" for="fTo">Til time</label><select class="input" id="fTo"></select></div>
-        </div>
-        <div><span class="field">Retning</span>
-          <div class="sidebtns"><button class="b" data-side="buy" aria-pressed="true">Køb</button><button class="s" data-side="sell" aria-pressed="false">Sælg</button></div></div>
-        <div class="formgrid">
-          <div><label class="field" for="fMw">Volumen (MW)</label><input class="input" id="fMw" inputmode="decimal" value="10"></div>
-          <div><label class="field" for="fNote">Note (valgfri)</label><input class="input" id="fNote" maxlength="60" placeholder="F.eks. vindrisiko"></div>
-        </div>
-        <div class="quote" id="quote"></div>
-        <div class="summary" id="tdSummary"></div>
-        <button class="btn primary block" id="placeBtn">Køb</button>
-        <p class="error" id="tdError" role="alert"></p>
-      </div>
+      </form>
       <div class="c7 stack">
         <div class="panel stack">
           <div class="row spread"><h2>Position for leveringsdagen efter denne handel</h2><span class="muted small" id="tdLimitTxt"></span></div>
@@ -362,10 +469,20 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<dialog class="confirm" id="confirmDlg" aria-labelledby="confirmTitle" aria-describedby="confirmWhat">
+  <form method="dialog">
+    <h2 id="confirmTitle">Bekræft handlen</h2>
+    <p id="confirmWhat"></p>
+    <ul id="confirmWhy"></ul>
+    <div class="actions"><button class="btn" value="cancel">Tilbage</button><button class="btn trade" id="confirmOk" value="ok">Bekræft</button></div>
+  </form>
+</dialog>
+
 <script>
 (function(){
   const KEY = 'traderz-desk-v2';          // localStorage: bruges kun, når den fælles handelsbog ikke svarer
   const HALF_SPREAD = 0.5;
+  const BIG_MW = 100;                     // handler over denne størrelse skal bekræftes
   const PRICES_URL = '/api/prices';
   const BOOK_URL = '/api/book';
   const REFRESH_MS = 15*60*1000;
@@ -776,11 +893,12 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   }
   function updateTrade(){
     $('blockRow').hidden=$('fProd').value!=='block';
-    document.querySelectorAll('.sidebtns button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.side===ui.side)));
+    document.querySelectorAll('input[name="side"]').forEach(r=>{ r.checked=r.value===ui.side; });
     const t=draft(), hours=tradeHours(t), hs=slotHours(t.del);
     const err=$('tdError'); err.textContent='';
     const btn=$('placeBtn');
-    btn.className='btn block '+(t.side==='buy'?'primary':'sell');
+    btn.className='btn trade '+t.side;
+    $('tdWarn').innerHTML='';
     if(!hours.length){
       $('quote').innerHTML='';
       $('tdSummary').innerHTML='<div>'+(t.product==='block'&&t.to<=t.from?'Til-time skal ligge efter fra-time.':'Timerne findes ikke på leveringsdagen (sommertid).')+'</div>';
@@ -799,8 +917,41 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
       '<div><span>Følsomhed ved ±10 EUR/MWh</span><strong>±'+money(mwh*10)+'</strong></div>';
     const valid=t.mw>0;
     btn.disabled=!valid || busy;
-    btn.textContent=(t.side==='buy'?'Køb ':'Sælg ')+nf1.format(t.mw)+' MW '+(t.product==='block'?'timer '+hh(t.from)+'–'+hh(t.to):PRODUCTS[t.product].label)+' '+t.area+' til '+eur(q.price);
+    btn.textContent=tradeLabel(t,q);
+    // Advarsler vises i ordreoversigten, før brugeren trykker på knappen.
+    $('tdWarn').innerHTML=valid?orderWarnings(t).map(w=>
+      '<div class="order-warn"><span class="alert-icon"><img src="assets/icon-warning.svg" width="14" height="14" alt=""></span><div><strong>'+w.title+'</strong>'+w.text+'</div></div>').join(''):'';
     drawTradePos(valid?t:null);
+  }
+  // Knaptekst: præcis hvad der sker, f.eks. "Køb 10 MW Base DK1 til 46,32 EUR/MWh".
+  function tradeLabel(t,q){
+    return (t.side==='buy'?'Køb ':'Sælg ')+nf1.format(t.mw)+' MW '+(t.product==='block'?'timer '+hh(t.from)+'–'+hh(t.to):PRODUCTS[t.product].label)+' '+t.area+' til '+eur(q.price)+' EUR/MWh';
+  }
+  // Timer, hvor handlen bringer positionen over grænsen (eller længere over). Kun visning; ændrer ingen beregning.
+  function limitBreach(t){
+    const before=netPosition(t.del,t.area), after=netPosition(t.del,t.area,Object.assign({},t,{settled:false}));
+    const hit=after.map((v,i)=>Math.abs(v)>state.limit && Math.abs(v)>Math.abs(before[i])?Math.abs(v):0).filter(v=>v>0);
+    return { hours:hit.length, max:hit.length?Math.max(...hit):0 };
+  }
+  function orderWarnings(t){
+    const w=[], b=limitBreach(t);
+    if(b.hours) w.push({ kind:'limit', title:'Overskrider positionsgrænsen',
+      text:'Efter handlen ligger '+b.hours+(b.hours===1?' time':' timer')+' over grænsen på '+state.limit+' MW i '+t.area+' (op til '+nf1.format(b.max)+' MW). Du bliver bedt om at bekræfte.' });
+    if(t.mw>BIG_MW) w.push({ kind:'big', title:'Stor handel',
+      text:nf1.format(t.mw)+' MW er over '+BIG_MW+' MW. Du bliver bedt om at bekræfte.' });
+    return w;
+  }
+  // Bekræftelsesdialog (native <dialog>): fokus starter på "Tilbage", Esc annullerer.
+  function confirmTrade(label, warnings, side){
+    return new Promise(resolve=>{
+      const d=$('confirmDlg');
+      $('confirmWhat').textContent=label+'.';
+      $('confirmWhy').innerHTML=warnings.map(w=>'<li><strong>'+w.title+':</strong> '+esc(w.text.replace(/ Du bliver bedt om at bekræfte\.$/,''))+'</li>').join('');
+      const ok=$('confirmOk'); ok.className='btn trade '+side; ok.textContent=side==='buy'?'Bekræft køb':'Bekræft salg';
+      d.returnValue='';
+      d.addEventListener('close',()=>resolve(d.returnValue==='ok'),{once:true});
+      d.showModal();
+    });
   }
   function drawTradePos(t){
     const area=$('fArea').value, D=TDEL();
@@ -826,6 +977,8 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     if(t.mw>500){ $('tdError').textContent='Volumen over 500 MW pr. handel er spærret. Del handlen op.'; return; }
     if(t.product==='block' && t.to<=t.from){ $('tdError').textContent='Til-time skal ligge efter fra-time.'; return; }
     const q=quoteFor(t);
+    const warnings=orderWarnings(t);
+    if(warnings.length && !(await confirmTrade(tradeLabel(t,q),warnings,t.side))) return;
     Object.assign(t,{ price:Math.round(q.price*100)/100, fair:q.fair, simBasis:market.status!=='live' });
     busy=true; $('placeBtn').disabled=true;
     try {
@@ -938,8 +1091,8 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{ ui.area=b.dataset.area; renderMarket(); }));
   ['fArea','fProd','fFrom','fTo'].forEach(id=>$(id).addEventListener('change',updateTrade));
   $('fMw').addEventListener('input',updateTrade);
-  document.querySelectorAll('.sidebtns button').forEach(b=>b.addEventListener('click',()=>{ ui.side=b.dataset.side; updateTrade(); }));
-  $('placeBtn').addEventListener('click',place);
+  document.querySelectorAll('input[name="side"]').forEach(r=>r.addEventListener('change',()=>{ if(r.checked){ ui.side=r.value; updateTrade(); } }));
+  $('orderForm').addEventListener('submit',e=>{ e.preventDefault(); if(!$('placeBtn').disabled) place(); });
   $('settleBtn').addEventListener('click',settle);
   $('limitInput').addEventListener('change',async()=>{
     const v=parseInt($('limitInput').value,10);
