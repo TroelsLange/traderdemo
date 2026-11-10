@@ -7,6 +7,7 @@
 // Kursen er før gebyrer.
 
 import catalog from "../../public/data/products.json" with { type: "json" };
+import suitability from "../../public/data/suitability.json" with { type: "json" };
 import { addDays } from "./hours.mts";
 
 export type Product = (typeof catalog.products)[number];
@@ -21,6 +22,24 @@ export const legacyFund = (area: string) => (area === "DK2" ? "spread" : "da-dk1
 const ORDER = ["basis", "udvidet", "hoej"];
 export const requiredLevel = (p: Product) => (catalog.suitability.byRisk as Record<string, string>)[String(p.risk)];
 export const levelAllows = (level: string | undefined, p: Product) => !!level && ORDER.indexOf(level) >= ORDER.indexOf(requiredLevel(p));
+
+// Egnethedstest: svar (indeks pr. spørgsmål) -> niveau. Høj kræver både viden, risikovillighed og en lille andel af opsparingen.
+export const SUITABILITY = suitability;
+export function assessSuitability(answers: Record<string, unknown>): { level: string; score: number; scores: Record<string, number> } {
+  const scores: Record<string, number> = {};
+  for (const q of suitability.questions) {
+    const i = answers?.[q.id];
+    if (!Number.isInteger(i) || (i as number) < 0 || (i as number) >= q.options.length) throw new Error("Besvar alle spørgsmål.");
+    scores[q.id] = q.options[i as number].score;
+  }
+  const score = Object.values(scores).reduce((a, b) => a + b, 0);
+  const level =
+    score < 3 ? "ingen"
+    : score >= 10 && scores.risk >= 2 && scores.knowledge >= 2 && scores.economy >= 2 ? "hoej"
+    : score >= 6 && scores.risk >= 1 ? "udvidet"
+    : "basis";
+  return { level, score, scores };
+}
 
 // Næste handelsdag for udtrædelse på eller efter en dato.
 export function dealingDate(p: Product, from: string): string {

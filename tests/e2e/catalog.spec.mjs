@@ -36,7 +36,7 @@ test("Produktside: kurs, største fald, månedsafkast, strategi, tradere, vilkå
   await expect(page.locator("#pdTraders")).toContainText("Mette K.");
   // Feedet er filtreret til produktet.
   await expect(page.locator("#pdFeed")).not.toContainText("Jonas R.");
-  await expect(page.locator("#pdBuy")).toBeDisabled();
+  await expect(page.locator("#pdBuy")).toHaveText("Opret profil for at købe");
   const href = await page.locator("#pdFactsheet").getAttribute("href");
   expect(href).toBe("faktaark/spread.html");
   const fs = await request.get("/" + href);

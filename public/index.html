@@ -300,10 +300,10 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .meter.warn span{background:var(--btn-alert-border)} .meter.over span{background:var(--negative)}
 .risk-row+.risk-row{margin-top:var(--sp-2xl)}
 @media (max-width:760px){
-  #ivKpis,#kpKpis,#pdKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
-  #ivKpis div,#kpKpis div,#pdKpis div{min-height:0;padding:var(--sp-lg)}
-  #ivKpis strong,#kpKpis strong,#pdKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
-  #ivKpis small,#kpKpis small,#pdKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
+  #ivKpis,#kpKpis,#pdKpis,#pfKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+  #ivKpis div,#kpKpis div,#pdKpis div,#pfKpis div{min-height:0;padding:var(--sp-lg)}
+  #ivKpis strong,#kpKpis strong,#pdKpis strong,#pfKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
+  #ivKpis small,#kpKpis small,#pdKpis small,#pfKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
 }
 .risk-row .row{justify-content:space-between;margin-bottom:var(--sp-base)}
 .months{min-width:760px}
@@ -331,6 +331,21 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .crumb{font-size:var(--text-xs);line-height:var(--leading-xs);color:var(--text-secondary);text-decoration:none} .crumb:hover{text-decoration:underline}
 #pdMain[hidden],#pdMissing[hidden]{display:none}
 #pdTraders{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+
+/* Konto, egnethed og portefølje (bruger) */
+#ktGuest[hidden],#ktMain[hidden],#pfGuest[hidden],#pfMain[hidden],#egNeedLogin[hidden],#egForm[hidden],#egResult[hidden]{display:none}
+.custody{background:var(--medium-creme-bg);border-radius:var(--radius-sm);padding:var(--sp-xl)}
+.custody span{display:block;color:var(--text-secondary);font-size:var(--text-xs);line-height:var(--leading-xs)}
+.custody strong{display:block;font-size:var(--text-3xl);line-height:var(--leading-3-5xl);letter-spacing:var(--tracking-3xl);font-weight:400}
+.custody small{display:block;color:var(--text-secondary);font-size:var(--text-xs);line-height:var(--leading-xs);margin-top:var(--sp-xs)}
+.q p{margin:0 0 var(--sp-base)}
+#egForm .q+.q{margin-top:var(--sp-2xl);padding-top:var(--sp-2xl);border-top:var(--border-sm) solid var(--border)}
+.check.opt{font-size:var(--text-sm);line-height:var(--leading-sm);color:var(--text-primary);padding:var(--sp-base) 0}
+.check.opt input{margin-top:1px}
+.suit{list-style:none;margin:var(--sp-base) 0;padding:0}
+.suit li{display:flex;align-items:center;gap:var(--sp-base);padding:var(--sp-xs) 0}
+.suit li.ok .seg-mark{box-shadow:none;border-radius:0;background:var(--select-buy-icon);-webkit-mask:url(assets/icon-check.svg) center/16px 16px no-repeat;mask:url(assets/icon-check.svg) center/16px 16px no-repeat}
+.suit li.no{color:var(--text-secondary)}
 
 /* Community */
 .profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--sp-xl)}
@@ -432,6 +447,8 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
       </nav>
       <nav class="tabs" aria-label="Community" data-role="community" hidden>
         <a href="#produkter" data-view="produkter">Produkter<img src="assets/icon-squares-four.svg" width="16" height="16" alt=""></a>
+        <a href="#portefolje" data-view="portefolje">Portefølje<img src="assets/icon-chart-bar.svg" width="16" height="16" alt=""></a>
+        <a href="#konto" data-view="konto">Konto<img src="assets/icon-user-circle-check.svg" width="16" height="16" alt=""></a>
         <a href="#community" data-view="community">Community<img src="assets/icon-chat-circle.svg" width="17" height="16" alt=""></a>
       </nav>
     </div>
@@ -700,13 +717,67 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
           <h2>Vilkår</h2>
           <div class="table-wrap"><table class="kv" id="pdTerms"></table></div>
           <a class="btn" id="pdFactsheet" href="#" target="_blank" rel="noopener">Faktaark (PDF kommer)</a>
-          <button type="button" class="btn primary block" id="pdBuy" disabled>Køb andele</button>
-          <p class="help" style="margin:0">Køb kræver en profil og en egnethedstest. Det kommer i næste del af demoen.</p>
+          <button type="button" class="btn primary block" id="pdBuy">Køb andele</button>
+          <p class="help" style="margin:0" id="pdBuyNote"></p>
         </div>
       </div>
       <div class="panel stack"><div class="row spread"><h2>Afkast pr. måned</h2><span class="muted small">Procent, før gebyrer</span></div><div class="table-wrap" id="pdMonths"></div></div>
       <div class="panel stack"><h2>Ansvarlige tradere</h2><div class="profiles" id="pdTraders"></div></div>
       <div class="panel stack"><div class="row spread"><h2>Seneste afregnede handler</h2><span class="muted small">Vist efter afregning</span></div><ul class="feed" id="pdFeed"></ul></div>
+    </div>
+  </section>
+
+  <!-- KONTO (bruger) -->
+  <section class="view stack" id="view-konto" hidden>
+    <div><h1>Min konto</h1><p class="lead">Profil, egnethed og kontantkonto. Alt er simuleret: ingen rigtig MitID og ingen rigtige penge.</p></div>
+    <div class="panel stack" id="ktGuest">
+      <h2>Opret profil</h2>
+      <p>Med en profil kan du følge produkterne og blive investor. I demoen logger du ind med en simuleret MitID, hvor du kun skriver dit navn.</p>
+      <button type="button" class="btn primary" id="ktLogin">Log ind med MitID (simuleret)</button>
+      <p class="error" id="ktGuestErr" role="alert"></p>
+    </div>
+    <div class="cols" id="ktMain" hidden>
+      <div class="c7 stack">
+        <div class="panel stack">
+          <div class="row spread"><h2 id="ktName"></h2><div id="ktStatus"></div></div>
+          <p class="muted" id="ktSince" style="margin:0"></p>
+          <div><button type="button" class="btn small" id="ktLogout">Log ud</button></div>
+        </div>
+        <div class="panel stack">
+          <h2>Egnethed</h2>
+          <div id="ktSuit"></div>
+          <div><a class="btn" href="#egnethed" id="ktTestBtn">Tag egnethedstesten</a></div>
+        </div>
+        <div class="panel stack"><h2>Bevægelser</h2><div class="table-wrap" id="ktTx"></div></div>
+      </div>
+      <div class="c5 stack">
+        <div class="panel stack">
+          <div class="row spread"><h2>Kontantkonto</h2><span class="badge sim">Simuleret</span></div>
+          <div class="custody"><span>Saldo</span><strong id="ktCash"></strong><small>Opbevares hos uafhængig depotbank (simuleret). Pengene er adskilt fra Traderz' egne midler.</small></div>
+          <div><label class="field" for="ktDeposit">Indbetal (EUR)</label><div class="row" style="flex-wrap:nowrap"><input class="input" id="ktDeposit" inputmode="decimal" placeholder="F.eks. 10.000"><button type="button" class="btn primary" id="ktDepositBtn">Indbetal</button></div></div>
+          <div><label class="field" for="ktWithdraw">Udbetal (EUR)</label><div class="row" style="flex-wrap:nowrap"><input class="input" id="ktWithdraw" inputmode="decimal"><button type="button" class="btn" id="ktWithdrawBtn">Udbetal</button></div></div>
+          <p class="error" id="ktCashErr" role="alert"></p>
+          <p class="help" style="margin:0">Ingen rigtige betalinger. Beløbene findes kun i demoen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EGNETHEDSTEST (bruger) -->
+  <section class="view stack" id="view-egnethed" hidden>
+    <div><a class="crumb" href="#konto">← Min konto</a><h1>Egnethedstest</h1><p class="lead">Fire korte spørgsmål om viden, erfaring, økonomi og risikovillighed. Resultatet afgør, hvilke produkter du kan købe. Produkter med høj risiko kræver et højt resultat.</p></div>
+    <div class="panel stack" id="egNeedLogin" hidden><p>Opret en profil, før du tager testen.</p><div><button type="button" class="btn primary" id="egLogin">Log ind med MitID (simuleret)</button></div></div>
+    <form class="panel stack" id="egForm" novalidate></form>
+    <div class="panel stack" id="egResult" hidden></div>
+  </section>
+
+  <!-- PORTEFØLJE (bruger) -->
+  <section class="view stack" id="view-portefolje" hidden>
+    <div><h1>Min portefølje</h1><p class="lead">Beholdning, værdi og afkast pr. produkt. Afkast er før gebyrer. Alt er simuleret.</p></div>
+    <div class="panel stack" id="pfGuest"><p>Opret en profil for at se din portefølje.</p><div><button type="button" class="btn primary" id="pfLogin">Log ind med MitID (simuleret)</button></div></div>
+    <div class="stack" id="pfMain" hidden>
+      <div class="kpis" id="pfKpis"></div>
+      <div class="panel stack"><div class="row spread"><h2>Beholdning</h2><a class="btn small" href="#produkter">Køb flere</a></div><div class="table-wrap" id="pfTable"></div></div>
     </div>
   </section>
 
@@ -741,6 +812,38 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
 </div></main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog class="confirm" id="mitidDlg" aria-labelledby="mitidTitle">
+  <form id="mitidForm" novalidate>
+    <h2 id="mitidTitle">MitID (simuleret)</h2>
+    <p>Dette er ikke rigtig MitID. I demoen gemmes kun det navn, du skriver.</p>
+    <div style="margin:var(--sp-lg) 0"><label class="field" for="mitidName">Navn</label><input class="input" id="mitidName" autocomplete="name" maxlength="60"></div>
+    <p class="error" id="mitidErr" role="alert"></p>
+    <div class="actions"><button type="button" class="btn" id="mitidCancel">Annullér</button><button type="submit" class="btn primary">Godkend</button></div>
+  </form>
+</dialog>
+
+<dialog class="confirm" id="buyDlg" aria-labelledby="buyTitle">
+  <form id="buyForm" novalidate>
+    <h2 id="buyTitle">Køb andele</h2>
+    <p id="buyInfo"></p>
+    <div style="margin:var(--sp-lg) 0"><label class="field" for="buyAmount">Beløb (EUR)</label><input class="input" id="buyAmount" inputmode="decimal"><p class="help" id="buyUnits"></p></div>
+    <label class="check"><input type="checkbox" id="buyAck"><span>Jeg har læst vilkårene og faktaarket og forstår, at jeg kan tabe penge. (Demo: ingen rigtige penge.)</span></label>
+    <p class="error" id="buyErr" role="alert"></p>
+    <div class="actions"><button type="button" class="btn" id="buyCancel">Annullér</button><button type="submit" class="btn primary">Bekræft køb</button></div>
+  </form>
+</dialog>
+
+<dialog class="confirm" id="redDlg" aria-labelledby="redTitle">
+  <form id="redForm" novalidate>
+    <h2 id="redTitle">Udtræd</h2>
+    <p id="redInfo"></p>
+    <label class="check" style="margin:var(--sp-lg) 0 var(--sp-base)"><input type="checkbox" id="redAll" checked><span>Alle andele</span></label>
+    <div><label class="field" for="redUnits">Antal andele</label><input class="input" id="redUnits" inputmode="decimal"></div>
+    <p class="error" id="redErr" role="alert"></p>
+    <div class="actions"><button type="button" class="btn" id="redCancel">Annullér</button><button type="submit" class="btn primary">Bekræft udtrædelse</button></div>
+  </form>
+</dialog>
 
 <dialog class="confirm" id="confirmDlg" aria-labelledby="confirmTitle" aria-describedby="confirmWhat">
   <form method="dialog">
@@ -1082,7 +1185,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
 
   // ---------- Views ----------
   const $=id=>document.getElementById(id);
-  const VIEWS=['marked','handel','position','resultat','kapital','investor','strategi','produkter','produkt','community'];
+  const VIEWS=['marked','handel','position','resultat','kapital','investor','strategi','produkter','produkt','portefolje','konto','egnethed','community'];
   const viewName=()=>(location.hash||'').slice(1).split('/')[0];
 
   function settleable(){ return state.trades.filter(t=>!t.settled && t.del<=DEL()); }
@@ -1112,7 +1215,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   function route(){
     const parts=(location.hash||'').slice(1).split('/'); let v=parts[0], arg=parts[1]; if(!VIEWS.includes(v)) v='marked';
     document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='view-'+v);
-    const tab=v==='produkt'?'produkter':v;
+    const tab=v==='produkt'?'produkter':v==='egnethed'?'konto':v;
     document.querySelectorAll('nav.tabs a').forEach(a=>a.dataset.view===tab?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
     // Rolle (demo): styrer faner, værktøjer og den faste ansvarsfraskrivelse.
     const role=roleOf(v);
@@ -1122,7 +1225,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     $('disclaimer').hidden=role==='trader';
     $('brandSub').textContent=ROLES[role].brand;
     renderChrome();
-    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,kapital:renderKapital,investor:renderInvestor,strategi:renderStrategy,produkter:renderProducts,produkt:()=>renderProduct(arg),community:renderCommunity})[v]();
+    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,kapital:renderKapital,investor:renderInvestor,strategi:renderStrategy,produkter:renderProducts,produkt:()=>renderProduct(arg),portefolje:renderPortfolio,konto:renderKonto,egnethed:renderTest,community:renderCommunity})[v]();
   }
 
   function renderMarket(){
@@ -1423,7 +1526,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   const ROLES = {
     trader:    { views:['marked','handel','position','resultat','kapital'], brand:'Desk' },
     investor:  { views:['investor','strategi'], brand:'Fund' },
-    community: { views:['produkter','produkt','community'], brand:'Community' }
+    community: { views:['produkter','produkt','portefolje','konto','egnethed','community'], brand:'Community' }
   };
   const roleOf = v => Object.keys(ROLES).find(r => ROLES[r].views.includes(v)) || 'trader';
   const pctS = v => v==null ? '–' : (v>0?'+':v<0?'−':'')+nf1.format(Math.abs(v*100))+' %';
@@ -1731,12 +1834,181 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     $('pdFactsheet').href=p.factsheet||'#';
     renderProfiles('pdTraders', p.traders||[]);
     renderFeed('pdFeed', p.id);
+    drawBuyButton(p);
   }
   async function renderProduct(id){
     setUserDisclaimer('');
     drawProduct(id);
-    await loadFunds();
+    await Promise.all([loadFunds(), loadAccount()]);
     if(viewName()==='produkt') drawProduct(id);
+  }
+
+  // ---------- Brugerkonto (demo): simuleret MitID, egnethed, kontantkonto, køb og udtrædelse ----------
+  const USER_KEY='traderz-user';
+  let SUIT={ questions:[], levels:{} };
+  const LEVEL_NAME={ ingen:'Ikke egnet', basis:'Basis', udvidet:'Udvidet', hoej:'Høj' };
+  const LEVEL_ORDER=['basis','udvidet','hoej'];
+  const levelFor=p=>(CATALOG.suitability.byRisk||{})[String(p.risk)];
+  const canBuy=(lvl,p)=>!!lvl && lvl!=='ingen' && LEVEL_ORDER.indexOf(lvl)>=LEVEL_ORDER.indexOf(levelFor(p));
+  const account={ id:null, data:null, status:'idle', error:null };
+  try { account.id=localStorage.getItem(USER_KEY); } catch(e){}
+  function newUserId(){ try { return crypto.randomUUID(); } catch(e){ return 'u-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10); } }
+  async function loadSuitability(){ try { const r=await fetch('data/suitability.json'); const j=await r.json(); if(r.ok && Array.isArray(j.questions)) SUIT=j; } catch(e){} }
+  async function loadAccount(){
+    if(!account.id){ account.data=null; account.status='none'; return; }
+    try {
+      const r=await fetch('/api/account?user='+encodeURIComponent(account.id),{headers:{accept:'application/json'}}); const j=await r.json().catch(()=>null);
+      if(!r.ok||!j) throw new Error((j&&j.error)||'HTTP '+r.status);
+      account.data=j.user?j:null; account.status=j.user?'ok':'none'; account.error=null;
+    } catch(e){ account.status='error'; account.error=String(e&&e.message||e); }
+  }
+  async function accountOp(op,args){
+    const r=await fetch('/api/account',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},body:JSON.stringify(Object.assign({op,user:account.id},args||{}))});
+    const j=await r.json().catch(()=>null);
+    if(!r.ok||!j) throw new Error((j&&j.error)||'Kontoen svarer ikke (HTTP '+r.status+')');
+    account.data=j.user?j:null; account.status=j.user?'ok':'none';
+    return j;
+  }
+  const me=()=>account.data&&account.data.user;
+  const myLevel=()=>me()&&me().suitability?me().suitability.level:null;
+  const txText={ deposit:'Indbetaling', withdraw:'Udbetaling', buy:'Køb', redeem:'Udtrædelse' };
+
+  // Simuleret MitID: kun et navn. Ingen rigtig identifikation.
+  function openMitid(){ $('mitidName').value=''; $('mitidErr').textContent=''; $('mitidDlg').showModal(); $('mitidName').focus(); }
+  async function submitMitid(e){
+    e.preventDefault();
+    const name=$('mitidName').value.trim();
+    if(name.length<2){ $('mitidErr').textContent='Skriv dit navn (mindst 2 tegn).'; return; }
+    const id=account.id||newUserId();
+    try {
+      account.id=id; await accountOp('login',{name});
+      try { localStorage.setItem(USER_KEY,id); } catch(err){}
+      $('mitidDlg').close(); toast('Profil oprettet. Du kan nu følge med og blive investor.'); route();
+    } catch(err){ $('mitidErr').textContent=String(err&&err.message||err); }
+  }
+  function logout(){ if(!confirm('Log ud? I demoen glemmes profilen på denne enhed.')) return; try { localStorage.removeItem(USER_KEY); } catch(e){} account.id=null; account.data=null; account.status='none'; route(); }
+
+  function drawKonto(){
+    const u=me();
+    $('ktGuest').hidden=!!u; $('ktMain').hidden=!u;
+    if(account.status==='error'){ $('ktGuest').hidden=false; $('ktGuestErr').textContent='Kontoen kunne ikke hentes: '+account.error; }
+    if(!u) return;
+    const lvl=myLevel();
+    $('ktName').textContent=u.name;
+    $('ktSince').textContent='Profil oprettet '+longDate(u.createdAt.slice(0,10))+' med MitID (simuleret).';
+    $('ktStatus').innerHTML=lvl&&lvl!=='ingen'?'<span class="badge live">Investor</span> <span class="badge fc">Egnethed: '+LEVEL_NAME[lvl]+'</span>':'<span class="badge sim">Følger gratis</span>';
+    $('ktSuit').innerHTML=lvl
+      ? '<p><strong>'+esc(LEVEL_NAME[lvl])+'.</strong> '+esc((SUIT.levels||{})[lvl]||'')+'</p><p class="small muted">Testet '+longDate(u.suitability.at.slice(0,10))+'.</p>'+suitList(lvl)
+      : '<p>Du har ikke taget egnethedstesten. Den tager et minut og afgør, hvilke produkter du kan købe.</p>';
+    $('ktTestBtn').textContent=lvl?'Tag testen igen':'Tag egnethedstesten';
+    $('ktCash').textContent=money(u.cash);
+    $('ktTx').innerHTML=account.data.tx.length?table(['Dato','Type','Produkt','Beløb'],account.data.tx.map(t=>[shortDate(t.date),txText[t.type]||t.type,t.fund?esc(fundName(t.fund)):'–',
+      '<span class="'+(t.type==='deposit'||t.type==='redeem'?'pos':'')+'">'+(t.type==='deposit'||t.type==='redeem'?'+':'−')+money(t.eur).replace('−','')+'</span>']),[3]):'<div class="empty">Ingen bevægelser endnu.</div>';
+  }
+  function suitList(lvl){
+    return '<ul class="suit">'+FUNDS().map(p=>{ const ok=canBuy(lvl,p); return '<li class="'+(ok?'ok':'no')+'"><span class="seg-mark" aria-hidden="true"></span>'+esc(p.name)+' <span class="muted">(risiko '+p.risk+'/7)</span> – '+(ok?'kan købes':'kræver '+LEVEL_NAME[levelFor(p)])+'</li>'; }).join('')+'</ul>';
+  }
+  async function renderKonto(){ setUserDisclaimer('Konto og beløb er simulerede.'); drawKonto(); await loadAccount(); if(viewName()==='konto') drawKonto(); }
+  async function cashOp(op){
+    const inp=op==='deposit'?$('ktDeposit'):$('ktWithdraw'), eurv=parseNum(inp.value);
+    $('ktCashErr').textContent='';
+    if(!(eurv>0)){ $('ktCashErr').textContent='Skriv et beløb.'; return; }
+    try { await accountOp(op,{eur:eurv}); inp.value=''; toast((op==='deposit'?'Indbetalt ':'Udbetalt ')+money(eurv)+' (simuleret)'); drawKonto(); }
+    catch(e){ $('ktCashErr').textContent=String(e&&e.message||e); }
+  }
+
+  function drawTest(){
+    const lvl=myLevel();
+    $('egForm').innerHTML=SUIT.questions.map((q,qi)=>'<fieldset class="step q"><legend class="step-h"><span class="step-n">'+(qi+1)+'</span>'+esc(q.area)+'</legend><p>'+esc(q.text)+'</p>'+
+      q.options.map((o,oi)=>'<label class="check opt"><input type="radio" name="q-'+q.id+'" value="'+oi+'"'+(me()&&me().suitability&&me().suitability.scores&&false?' checked':'')+'><span>'+esc(o.text)+'</span></label>').join('')+'</fieldset>').join('')+
+      '<button type="submit" class="btn primary block" id="egSubmit">Se mit resultat</button><p class="error" id="egErr" role="alert"></p>';
+    $('egResult').hidden=true;
+    $('egNeedLogin').hidden=!!me();
+    $('egForm').hidden=!me();
+    void lvl;
+  }
+  async function submitTest(e){
+    e.preventDefault();
+    const answers={}, missing=[];
+    SUIT.questions.forEach(q=>{ const c=document.querySelector('input[name="q-'+q.id+'"]:checked'); if(c) answers[q.id]=+c.value; else missing.push(q.area); });
+    if(missing.length){ $('egErr').textContent='Besvar alle spørgsmål: '+missing.join(', ')+'.'; return; }
+    try {
+      const j=await accountOp('assess',{answers}), lvl=j.result.level;
+      $('egForm').hidden=true; $('egResult').hidden=false;
+      $('egResult').innerHTML='<h2>Dit resultat: '+esc(LEVEL_NAME[lvl])+'</h2><p>'+esc((SUIT.levels||{})[lvl]||'')+'</p>'+suitList(lvl)+
+        '<div class="row"><a class="btn primary" href="#produkter">Se produkter</a><a class="btn" href="#konto">Til min konto</a></div>';
+    } catch(err){ $('egErr').textContent=String(err&&err.message||err); }
+  }
+  async function renderTest(){ setUserDisclaimer('Forenklet egnethedstest til demoen.'); await loadSuitability(); if(!account.data) await loadAccount(); drawTest(); }
+
+  function drawPortfolio(){
+    const u=me();
+    $('pfGuest').hidden=!!u; $('pfMain').hidden=!u;
+    if(!u) return;
+    const hs=account.data.holdings, val=hs.reduce((s,h)=>s+h.value,0), cost=hs.reduce((s,h)=>s+h.cost,0), pnl=val-cost;
+    const k=(lbl,v,sub,c)=>'<div><span>'+lbl+'</span><strong class="'+(c||'')+'">'+v+'</strong><small>'+sub+'</small></div>';
+    $('pfKpis').innerHTML=k('Samlet værdi',money(val+u.cash),'andele + saldo')+k('Andele',money(val),hs.length+(hs.length===1?' produkt':' produkter'))+
+      k('Afkast',smoney(pnl),cost?pctS(pnl/cost)+' af indskud':'før gebyrer',cls(pnl))+k('Saldo',money(u.cash),'opbevares hos uafhængig depotbank');
+    $('pfTable').innerHTML=hs.length?table(['Produkt','Andele','Kurs','Værdi','Indskudt','Afkast','Udtrædelse',''],hs.map(h=>{ const p=fundById(h.fund)||{name:h.fund};
+      return ['<a href="#produkt/'+h.fund+'">'+esc(p.name)+'</a>', nf2.format(h.units), nf2.format(h.nav), money(h.value), money(h.cost),
+        '<span class="'+cls(h.pnl)+'">'+smoney(h.pnl)+' ('+pctS(h.pnlPct)+')</span>',
+        h.pendingUnits?'<span class="tag open">'+nf2.format(h.pendingUnits)+' andele '+shortDate(h.dealing)+'</span>':'<span class="muted">'+esc(redText(p))+'</span>',
+        h.available>1e-9?'<button type="button" class="btn small" data-redeem="'+h.fund+'">Udtræd</button>':'']; }),[1,2,3,4,5])
+      :'<div class="empty">Du ejer ingen andele endnu. <a href="#produkter">Se produkter</a>.</div>';
+    $('pfTable').querySelectorAll('[data-redeem]').forEach(b=>b.addEventListener('click',()=>openRedeem(b.dataset.redeem)));
+  }
+  async function renderPortfolio(){ setUserDisclaimer('Beholdning og beløb er simulerede.'); drawPortfolio(); await loadAccount(); if(viewName()==='portefolje') drawPortfolio(); }
+
+  // Køb fra produktsiden.
+  function buyState(p){
+    const u=me(), lvl=myLevel();
+    if(!u) return { label:'Opret profil for at købe', href:'#konto', note:'Du skal have en profil (simuleret MitID) og tage en kort egnethedstest.' };
+    if(!lvl) return { label:'Tag egnethedstesten', href:'#egnethed', note:'Testen afgør, hvilke produkter du kan købe.' };
+    if(!canBuy(lvl,p)) return { label:'Køb andele', disabled:true, note:p.name+' har risiko '+p.risk+' af 7 og kræver egnethedsniveau '+LEVEL_NAME[levelFor(p)]+'. Dit niveau er '+LEVEL_NAME[lvl]+'.' };
+    return { label:'Køb andele', buy:true, note:'Saldo '+money(u.cash)+'. Køb sker til seneste kurs.' };
+  }
+  function drawBuyButton(p){
+    const s=buyState(p), b=$('pdBuy');
+    b.textContent=s.label; b.disabled=!!s.disabled; b.dataset.href=s.href||''; b.dataset.buy=s.buy?p.id:'';
+    $('pdBuyNote').textContent=s.note;
+  }
+  function openBuy(id){
+    const p=fundById(id), f=fundState(id), u=me(); if(!p||!u) return;
+    const owns=account.data.holdings.some(h=>h.fund===id);
+    $('buyTitle').textContent='Køb andele i '+p.name;
+    $('buyInfo').innerHTML='Risiko '+p.risk+' af 7 · forvaltningsgebyr '+pctOf(p.feeMgmt||0)+' · resultathonorar '+pctOf(p.feePerf||0)+' · udtrædelse '+esc(redText(p))+
+      '<br>Saldo '+money(u.cash)+(owns?'':' · minimum første køb '+money(p.minEur||0));
+    $('buyAmount').value=String(Math.min(u.cash,Math.max(p.minEur||0,1000))).replace('.',',');
+    $('buyAck').checked=false; $('buyErr').textContent='';
+    $('buyDlg').dataset.fund=id; $('buyDlg').dataset.nav=f?f.nav:'';
+    updateBuy(); $('buyDlg').showModal();
+  }
+  function updateBuy(){
+    const nav=+$('buyDlg').dataset.nav, a=parseNum($('buyAmount').value);
+    $('buyUnits').textContent=a>0&&nav?'Ca. '+nf2.format(a/nav)+' andele til kurs '+nf2.format(nav)+'.':'';
+  }
+  async function submitBuy(e){
+    e.preventDefault();
+    const id=$('buyDlg').dataset.fund, a=parseNum($('buyAmount').value);
+    if(!(a>0)){ $('buyErr').textContent='Skriv et beløb.'; return; }
+    if(!$('buyAck').checked){ $('buyErr').textContent='Bekræft, at du har læst vilkårene og forstår risikoen.'; return; }
+    try { const j=await accountOp('buy',{fund:id,eur:a}); $('buyDlg').close(); toast('Købt '+nf2.format(j.result.units)+' andele i '+fundName(id)+' for '+money(a)+' (simuleret)'); await loadFunds(); route(); }
+    catch(err){ $('buyErr').textContent=String(err&&err.message||err); }
+  }
+  // Udtrædelse fra porteføljen.
+  function openRedeem(id){
+    const p=fundById(id), h=account.data.holdings.find(x=>x.fund===id); if(!p||!h) return;
+    $('redTitle').textContent='Udtræd af '+p.name;
+    $('redInfo').innerHTML='Du har '+nf2.format(h.available)+' andele til rådighed (ca. '+money(h.available*h.nav)+'). Udtrædelse sker '+esc(redText(p))+' til kursen på handelsdagen, og beløbet sættes ind på din saldo.';
+    $('redUnits').value=nf2.format(h.available).replace(/\./g,''); $('redAll').checked=true; $('redErr').textContent='';
+    $('redDlg').dataset.fund=id; $('redDlg').showModal();
+  }
+  async function submitRedeem(e){
+    e.preventDefault();
+    const id=$('redDlg').dataset.fund, all=$('redAll').checked, u=parseNum($('redUnits').value);
+    if(!all && !(u>0)){ $('redErr').textContent='Skriv et antal andele.'; return; }
+    try { const j=await accountOp('redeem',{fund:id,units:all?'all':u}); $('redDlg').close(); toast('Udtrædelse registreret. Udføres '+longDate(j.result.dealing)+'.'); route(); }
+    catch(err){ $('redErr').textContent=String(err&&err.message||err); }
   }
 
   async function loadWaitlistCount(){
@@ -1825,6 +2097,20 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   ['feeAmount','feeReturn'].forEach(id=>$(id).addEventListener('input',renderFees));
   $('feeForm').addEventListener('submit',e=>e.preventDefault());
   $('wlForm').addEventListener('submit',joinWaitlist);
+  $('pdBuy').addEventListener('click',()=>{ const b=$('pdBuy'); if(b.dataset.href) location.hash=b.dataset.href; else if(b.dataset.buy) openBuy(b.dataset.buy); });
+  ['ktLogin','pfLogin','egLogin'].forEach(id=>$(id).addEventListener('click',openMitid));
+  $('mitidForm').addEventListener('submit',submitMitid);
+  $('mitidCancel').addEventListener('click',()=>$('mitidDlg').close());
+  $('ktLogout').addEventListener('click',logout);
+  $('ktDepositBtn').addEventListener('click',()=>cashOp('deposit'));
+  $('ktWithdrawBtn').addEventListener('click',()=>cashOp('withdraw'));
+  $('egForm').addEventListener('submit',submitTest);
+  $('buyForm').addEventListener('submit',submitBuy);
+  $('buyAmount').addEventListener('input',updateBuy);
+  $('buyCancel').addEventListener('click',()=>$('buyDlg').close());
+  $('redForm').addEventListener('submit',submitRedeem);
+  $('redCancel').addEventListener('click',()=>$('redDlg').close());
+  $('redUnits').addEventListener('input',()=>{ $('redAll').checked=false; });
   window.addEventListener('hashchange',route);
   // Hent priser igen hvert kvarter, så morgendagens priser dukker op, når de offentliggøres.
   setInterval(loadPrices, REFRESH_MS);
@@ -1837,6 +2123,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   fillFundSelects();
   route();
   loadCatalog();
+  loadSuitability();
   loadBook();
   loadPrices();
 })();
