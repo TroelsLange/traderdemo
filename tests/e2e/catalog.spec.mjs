@@ -24,7 +24,7 @@ test("Produktside: kurs, største fald, månedsafkast, strategi, tradere, vilkå
   await page.locator(".product-card").nth(2).getByRole("link", { name: "Se produkt" }).click();
   await expect(page).toHaveURL(/#produkt\/spread$/);
   await expect(page.locator("#pdTitle")).toHaveText("Spread DK1/DK2");
-  await expect(page.locator('nav[data-role="community"] a[aria-current="page"]')).toHaveText("Produkter");
+  await expect(page.locator('nav[data-role="bruger"] a[aria-current="page"]')).toHaveText("Produkter");
   await expect(page.locator("#pdKpis span")).toHaveText(["Kurs", "Afkast 12 mdr.", "Afkast i år", "Volatilitet", "Største fald", "Minimum"]);
   await expect(page.locator("#pdChart svg")).toContainText("Største fald");
   await expect(page.locator("#pdChart svg")).toContainText("Papirhandler fra");

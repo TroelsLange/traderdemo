@@ -268,18 +268,15 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .btn.trade.sell{background:var(--btn-sell-bg)} .btn.trade.sell:hover{background:var(--btn-sell-bg-hover)}
 .btn.trade:disabled,.btn.trade:disabled:hover{background:var(--btn-primary-bg-disabled);color:var(--btn-trade-text);cursor:not-allowed}
 
-/* Datagrundlag (Investor): neutral valgt tilstand med flueben */
-#srcSwitch .seg-opt:has(input:checked){background:var(--switch-bg-active);border-color:transparent}
-#srcSwitch .seg-opt:has(input:checked) .seg-mark{background:var(--text-primary)}
 /* Rolleskifter (demo): Naia Switch med grå aktiv tilstand */
-.roles{padding:var(--sp-2xs);gap:var(--sp-2xs);grid-template-columns:repeat(3,auto)}
+.roles{padding:var(--sp-2xs);gap:var(--sp-2xs);grid-template-columns:repeat(2,auto)}
 .roles .seg-opt{min-height:28px;padding:0 var(--sp-lg);gap:0;font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs)}
 .roles .seg-opt:has(input:checked){background:var(--switch-bg-active);border-color:transparent}
 .trader-only{display:flex;align-items:center;gap:var(--sp-lg)}
 .trader-only[hidden],nav.tabs[hidden]{display:none}
 @media (max-width:760px){
   .nav-main .wrap{flex-wrap:wrap}
-  .roles{order:3;width:100%;grid-template-columns:repeat(3,1fr)}
+  .roles{order:3;width:100%;grid-template-columns:repeat(2,1fr)}
 }
 
 /* Ansvarsfraskrivelse: fast i sidehovedet for Investor og Community, kan ikke lukkes */
@@ -293,19 +290,13 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .disclaimer .alert-icon img{display:block;width:14px;height:14px}
 @media (max-width:760px){ .disclaimer strong{white-space:normal} }
 
-/* Investor */
-.kpis div small .badge{margin-left:var(--sp-xs)}
-.meter{height:8px;border-radius:var(--radius-round);background:var(--meter-bg);overflow:hidden}
-.meter span{display:block;height:100%;border-radius:var(--radius-round);background:var(--positive)}
-.meter.warn span{background:var(--btn-alert-border)} .meter.over span{background:var(--negative)}
-.risk-row+.risk-row{margin-top:var(--sp-2xl)}
+/* Kurs- og månedstabeller */
 @media (max-width:760px){
-  #ivKpis,#kpKpis,#pdKpis,#pfKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
-  #ivKpis div,#kpKpis div,#pdKpis div,#pfKpis div{min-height:0;padding:var(--sp-lg)}
-  #ivKpis strong,#kpKpis strong,#pdKpis strong,#pfKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
-  #ivKpis small,#kpKpis small,#pdKpis small,#pfKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
+  #kpKpis,#pdKpis,#pfKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+  #kpKpis div,#pdKpis div,#pfKpis div{min-height:0;padding:var(--sp-lg)}
+  #kpKpis strong,#pdKpis strong,#pfKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
+  #kpKpis small,#pdKpis small,#pfKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
 }
-.risk-row .row{justify-content:space-between;margin-bottom:var(--sp-base)}
 .months{min-width:760px}
 .months td,.months th{text-align:right;padding:0 var(--sp-base)}
 .months td:first-child,.months th:first-child{text-align:left}
@@ -423,8 +414,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
       <fieldset class="segmented roles" style="margin:0;min-width:0">
         <legend class="sr-only">Visning (demo, uden login)</legend>
         <label class="seg-opt"><input type="radio" name="role" value="trader" checked>Trader</label>
-        <label class="seg-opt"><input type="radio" name="role" value="investor">Investor</label>
-        <label class="seg-opt"><input type="radio" name="role" value="community">Community</label>
+        <label class="seg-opt"><input type="radio" name="role" value="bruger">Bruger</label>
       </fieldset>
       <div class="right trader-only" id="traderTools">
         <div class="daychip" id="daychip"></div>
@@ -441,11 +431,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
         <a href="#resultat" data-view="resultat">Resultat<img src="assets/icon-invoice.svg" width="16" height="16" alt=""></a>
         <a href="#kapital" data-view="kapital">Kapital<img src="assets/icon-squares-four.svg" width="16" height="16" alt=""></a>
       </nav>
-      <nav class="tabs" aria-label="Investor" data-role="investor" hidden>
-        <a href="#investor" data-view="investor">Fonden<img src="assets/icon-chart-bar.svg" width="16" height="16" alt=""></a>
-        <a href="#strategi" data-view="strategi">Strategi<img src="assets/icon-info.svg" width="16" height="16" alt=""></a>
-      </nav>
-      <nav class="tabs" aria-label="Community" data-role="community" hidden>
+      <nav class="tabs" aria-label="Bruger" data-role="bruger" hidden>
         <a href="#produkter" data-view="produkter">Produkter<img src="assets/icon-squares-four.svg" width="16" height="16" alt=""></a>
         <a href="#portefolje" data-view="portefolje">Portefølje<img src="assets/icon-chart-bar.svg" width="16" height="16" alt=""></a>
         <a href="#konto" data-view="konto">Konto<img src="assets/icon-user-circle-check.svg" width="16" height="16" alt=""></a>
@@ -611,76 +597,6 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     <div><button class="btn" id="resetBtn">Nulstil alle data</button></div>
   </section>
 
-  <!-- INVESTOR: FONDEN -->
-  <section class="view stack" id="view-investor" hidden>
-    <div class="row spread" style="align-items:flex-end">
-      <div><h1>Fonden</h1><p class="lead" id="ivLead"></p></div>
-      <fieldset class="segmented" id="srcSwitch" style="margin:0;min-width:0">
-        <legend class="sr-only">Datagrundlag</legend>
-        <label class="seg-opt"><input type="radio" name="src" value="demo" checked><span class="seg-mark" aria-hidden="true"></span>Demodata</label>
-        <label class="seg-opt"><input type="radio" name="src" value="paper"><span class="seg-mark" aria-hidden="true"></span>Papirhandler</label>
-      </fieldset>
-    </div>
-    <div class="kpis" id="ivKpis"></div>
-    <div class="panel stack">
-      <div class="row spread"><h2>Fondens værdi (NAV)</h2><div class="legend" id="ivLegend"></div></div>
-      <div class="chart-wrap" id="ivChart"></div>
-      <p class="source" id="ivSource"></p>
-    </div>
-    <div class="panel stack">
-      <div class="row spread"><h2>Afkast pr. måned</h2><span class="muted small">Procent, før gebyrer</span></div>
-      <div class="table-wrap" id="ivMonths"></div>
-    </div>
-    <div class="cols">
-      <div class="panel c7 stack">
-        <div class="row spread"><h2>Aktuel risiko</h2><span class="badge fc">Papirhandler</span></div>
-        <div id="ivRisk"></div>
-      </div>
-      <form class="panel c5 stack" id="feeForm" novalidate>
-        <h2>Gebyrberegner</h2>
-        <div class="formgrid">
-          <div><label class="field" for="feeAmount">Beløb (EUR)</label><input class="input" id="feeAmount" inputmode="decimal" value="1.000.000" autocomplete="off"></div>
-          <div><label class="field" for="feeReturn">Antaget afkast før gebyrer (%)</label><input class="input" id="feeReturn" inputmode="decimal" value="12" autocomplete="off"></div>
-        </div>
-        <div class="summary fee-out" id="feeOut" aria-live="polite"></div>
-        <p class="help" id="feeNote"></p>
-      </form>
-    </div>
-  </section>
-
-  <!-- INVESTOR: STRATEGI -->
-  <section class="view stack" id="view-strategi" hidden>
-    <div><h1>Strategi</h1><p class="lead">Hvad fonden handler, hvordan risikoen styres, og hvilke grænser der gælder. Siden beskriver strategien i prototypen og er ikke et tilbud om investering.</p></div>
-    <div class="cols">
-      <div class="panel c7 prose">
-        <h2>Hvad fonden handler</h2>
-        <p>Fonden handler day-ahead-elektricitet i de to danske prisområder, DK1 (Vestdanmark) og DK2 (Østdanmark). Positionerne tages dagen før levering og afregnes mod den officielle spotpris, når den offentliggøres omkring kl. 13.</p>
-        <ul>
-          <li>Produkter: base (døgnets timer), peak (08–20), off-peak (resten) og timeblokke.</li>
-          <li>Kilde til priser: Energinet, Energi Data Service (DayAheadPrices, 15-minutters opløsning).</li>
-          <li>Afkastet kommer fra forskellen mellem handelsprisen og den realiserede spotpris, ikke fra fysisk levering.</li>
-        </ul>
-        <h2>Sådan styres risikoen</h2>
-        <ul>
-          <li>Positionsgrænse pr. time og prisområde. Positionen vises time for time, og brud markeres, før en handel registreres.</li>
-          <li>Store handler og handler, der bryder grænsen, skal bekræftes særskilt.</li>
-          <li>Handel stopper for en leveringsdag, når spotprisen er kendt, så der aldrig handles til en pris, der allerede er offentliggjort.</li>
-          <li>Afregning sker kun mod rigtige spotpriser. Mangler de, afregnes der ikke.</li>
-          <li>Følsomheden over for prisændringer (±10 og ±30 EUR/MWh) og vind følges for hver leveringsdag.</li>
-        </ul>
-        <h2>Det er endnu ikke på plads</h2>
-        <ul>
-          <li>Prognosemodellen bruger simulerede vind- og temperaturdata.</li>
-          <li>Der er ingen login, så handler har endnu ingen ejer.</li>
-          <li>Resultaterne er papirhandler eller demodata, ikke faktiske afkast.</li>
-        </ul>
-      </div>
-      <div class="c5 stack">
-        <div class="panel stack"><h2>Grænser og satser</h2><div class="table-wrap"><table class="kv" id="stLimits"></table></div></div>
-      </div>
-    </div>
-  </section>
-
   <!-- PRODUKTER (bruger, gratis) -->
   <section class="view stack" id="view-produkter" hidden>
     <div><h1>Produkter</h1><p class="lead">Vælg mellem produkter, som desk'ens tradere handler. Følg med gratis i kurser, tradere og afregnede handler. Alt er demo, og der er ingen rigtige penge.</p></div>
@@ -722,6 +638,15 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
         </div>
       </div>
       <div class="panel stack"><div class="row spread"><h2>Afkast pr. måned</h2><span class="muted small">Procent, før gebyrer</span></div><div class="table-wrap" id="pdMonths"></div></div>
+      <form class="panel stack" id="pdFeeForm" novalidate>
+        <h2>Gebyrberegner</h2>
+        <div class="formgrid">
+          <div><label class="field" for="pdFeeAmount">Beløb (EUR)</label><input class="input" id="pdFeeAmount" inputmode="decimal" value="10.000" autocomplete="off"></div>
+          <div><label class="field" for="pdFeeReturn">Antaget afkast før gebyrer (%)</label><input class="input" id="pdFeeReturn" inputmode="decimal" value="8" autocomplete="off"></div>
+        </div>
+        <div class="summary fee-out" id="pdFeeOut" aria-live="polite"></div>
+        <p class="help" style="margin:0">Forenklet beregning for ét år med produktets satser: forvaltningsgebyret beregnes af beløbet, resultathonoraret af afkastet efter forvaltningsgebyr og kun ved gevinst. Ingen hurdle rate eller high water mark. Antaget afkast er ikke en forventning.</p>
+      </form>
       <div class="panel stack"><h2>Ansvarlige tradere</h2><div class="profiles" id="pdTraders"></div></div>
       <div class="panel stack"><div class="row spread"><h2>Seneste afregnede handler</h2><span class="muted small">Vist efter afregning</span></div><ul class="feed" id="pdFeed"></ul></div>
     </div>
@@ -783,7 +708,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
 
   <!-- COMMUNITY -->
   <section class="view stack" id="view-community" hidden>
-    <div><h1>Community</h1><p class="lead">Desk'ens tradere, deres resultater og deres seneste afregnede positioner. Positioner vises først efter afregning, så feedet ikke kan bruges til at handle foran fonden.</p></div>
+    <div><h1>Community</h1><p class="lead">Desk'ens tradere, deres resultater og deres seneste afregnede positioner. Positioner vises først efter afregning, så feedet ikke kan bruges til at handle foran produkterne.</p></div>
     <div class="panel stack">
       <div class="row spread"><h2>Tradere</h2><span class="badge sim">Demoprofiler</span></div>
       <div class="profiles" id="cmProfiles"></div>
@@ -794,13 +719,13 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
         <ul class="feed" id="cmFeed"></ul>
       </div>
       <form class="panel c4 stack" id="wlForm" novalidate>
-        <h2>Venteliste til fonden</h2>
-        <p class="muted" style="margin:0">Skriv dig op, så kontakter vi dig, når fonden åbner. <span id="wlCount"></span></p>
+        <h2>Venteliste til nye produkter</h2>
+        <p class="muted" style="margin:0">Skriv dig op, så kontakter vi dig, når der kommer nye produkter. <span id="wlCount"></span></p>
         <div><label class="field" for="wlName">Navn</label><input class="input" id="wlName" autocomplete="name" maxlength="80"></div>
         <div><label class="field" for="wlEmail">E-mail</label><input class="input" id="wlEmail" type="email" autocomplete="email" maxlength="200"></div>
         <div><label class="field" for="wlInterest">Jeg er interesseret som</label>
           <select class="input" id="wlInterest"><option value="investor">Investor</option><option value="partner">Samarbejdspartner</option><option value="trader">Trader</option><option value="andet">Andet</option></select></div>
-        <label class="check"><input type="checkbox" id="wlConsent"><span>Jeg giver samtykke til, at Traderz gemmer mit navn og min e-mail for at kontakte mig om fonden. Jeg kan når som helst trække samtykket tilbage.</span></label>
+        <label class="check"><input type="checkbox" id="wlConsent"><span>Jeg giver samtykke til, at Traderz gemmer mit navn og min e-mail for at kontakte mig om nye produkter. Jeg kan når som helst trække samtykket tilbage.</span></label>
         <button type="submit" class="btn primary block" id="wlBtn">Skriv mig op</button>
         <p class="error" id="wlError" role="alert"></p>
         <p class="ok" id="wlOk" role="status"></p>
@@ -917,7 +842,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     if(s.seed!==state.seed) for(const k in cache) delete cache[k];
     state={ seed:s.seed, trades:s.trades, limit:s.limit, limits:s.limits||{}, nextId:s.nextId, importedAt:s.importedAt };
   }
-  const ui = { area:'DK1', side:'buy', src:'demo' };
+  const ui = { area:'DK1', side:'buy' };
 
   // Markedsdata. days[dato] = { DK1:[kvarterer], DK2:[kvarterer] } eller null, hvis prisen ikke er offentliggjort.
   // Et kvarter er { t:'2026-11-09T13:15:00' (dansk tid), u: UTC-tid, eur, dkk }.
@@ -1185,7 +1110,8 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
 
   // ---------- Views ----------
   const $=id=>document.getElementById(id);
-  const VIEWS=['marked','handel','position','resultat','kapital','investor','strategi','produkter','produkt','portefolje','konto','egnethed','community'];
+  const VIEWS=['marked','handel','position','resultat','kapital','produkter','produkt','portefolje','konto','egnethed','community'];
+  const MOVED={ investor:'produkter', strategi:'produkter' };   // gamle links fra investor-demoen
   const viewName=()=>(location.hash||'').slice(1).split('/')[0];
 
   function settleable(){ return state.trades.filter(t=>!t.settled && t.del<=DEL()); }
@@ -1213,7 +1139,9 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     $('settleBtn').textContent=n?'Afregn handler ('+n+')':'Afregn handler';
   }
   function route(){
-    const parts=(location.hash||'').slice(1).split('/'); let v=parts[0], arg=parts[1]; if(!VIEWS.includes(v)) v='marked';
+    const parts=(location.hash||'').slice(1).split('/'); let v=parts[0], arg=parts[1];
+    if(MOVED[v]){ location.replace('#'+MOVED[v]); return; }
+    if(!VIEWS.includes(v)) v='marked';
     document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='view-'+v);
     const tab=v==='produkt'?'produkter':v==='egnethed'?'konto':v;
     document.querySelectorAll('nav.tabs a').forEach(a=>a.dataset.view===tab?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
@@ -1222,10 +1150,12 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     document.querySelectorAll('input[name="role"]').forEach(r=>{ r.checked=r.value===role; });
     document.querySelectorAll('nav.tabs[data-role]').forEach(n=>{ n.hidden=n.dataset.role!==role; });
     $('traderTools').hidden=role!=='trader';
-    $('disclaimer').hidden=role==='trader';
+    // Demo-markeringen står på alle sider og kan ikke lukkes.
+    $('disclaimer').hidden=false;
+    if(role==='trader') $('disclaimerSrc').textContent='Desk\'en handler på papir mod rigtige spotpriser. Produkternes kapital og kurser er demo. Ingen rigtige penge.';
     $('brandSub').textContent=ROLES[role].brand;
     renderChrome();
-    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,kapital:renderKapital,investor:renderInvestor,strategi:renderStrategy,produkter:renderProducts,produkt:()=>renderProduct(arg),portefolje:renderPortfolio,konto:renderKonto,egnethed:renderTest,community:renderCommunity})[v]();
+    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,kapital:renderKapital,produkter:renderProducts,produkt:()=>renderProduct(arg),portefolje:renderPortfolio,konto:renderKonto,egnethed:renderTest,community:renderCommunity})[v]();
   }
 
   function renderMarket(){
@@ -1509,24 +1439,19 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   }
 
   // =====================================================================
-  // Investor og Community (demo). Læser kun desk'ens data; ændrer intet i handel eller afregning.
+  // Bruger (demo): produkter, konto, portefølje og community. Læser desk'ens data; ændrer intet i desk'ens handel eller afregning.
+  // Produkter og deres vilkår ligger i public/data/products.json.
   // =====================================================================
   const FUND = {
-    CAPITAL: 10000000,      // antaget startkapital i EUR
-    FEE_MGMT: 0.02,         // forvaltningsgebyr pr. år af beløbet
-    FEE_PERF: 0.20,         // resultathonorar af afkast efter forvaltningsgebyr
     RISK_FREE: 0.02,        // risikofri rente pr. år til Sharpe ratio
-    MAX_MW: 500,            // maks. pr. handel (samme som desk'ens spærring)
     MIN_DAYS_ANNUAL: 60,    // årligt afkast og Sharpe vises først efter så mange dage
-    DD_MARK: 0.03,          // fald større end dette markeres i NAV-grafen
-    DEMO_SEED: 20261110
+    DD_MARK: 0.03,          // fald større end dette markeres i kursgrafer
+    DEMO_SEED: 20261110     // seed til demoprofilernes resultater
   };
-  // Demodata: 12 hele måneder med tabsmåneder og et tydeligt fald i månederne 5–7.
-  const DEMO_MONTHLY = [0.021, 0.014, -0.008, 0.032, -0.029, -0.036, -0.017, 0.024, 0.019, 0.006, 0.031, 0.012];
+  // To roller (demo, uden login): Trader = desk'en; Bruger = privat bruger, der følger gratis eller investerer.
   const ROLES = {
-    trader:    { views:['marked','handel','position','resultat','kapital'], brand:'Desk' },
-    investor:  { views:['investor','strategi'], brand:'Fund' },
-    community: { views:['produkter','produkt','portefolje','konto','egnethed','community'], brand:'Community' }
+    trader: { views:['marked','handel','position','resultat','kapital'], brand:'Desk' },
+    bruger: { views:['produkter','produkt','portefolje','konto','egnethed','community'], brand:'Invest' }
   };
   const roleOf = v => Object.keys(ROLES).find(r => ROLES[r].views.includes(v)) || 'trader';
   const pctS = v => v==null ? '–' : (v>0?'+':v<0?'−':'')+nf1.format(Math.abs(v*100))+' %';
@@ -1534,37 +1459,6 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   const mio = v => nf2.format(v/1e6)+' mio. EUR';
   const monthName = ym => new Date(ym+'-15T12:00:00Z').toLocaleDateString('da-DK',{month:'short',timeZone:'UTC'}).replace('.','');
   const monthLong = ym => new Date(ym+'-15T12:00:00Z').toLocaleDateString('da-DK',{month:'long',year:'numeric',timeZone:'UTC'});
-  const SRC = {
-    demo:  { badge:'<span class="badge sim">Demodata</span>', text:'Demodata: en konstrueret historik på 12 måneder, ikke handler.' },
-    paper: { badge:'<span class="badge fc">Papirhandler</span>', text:'Papirhandler: desk\'ens afregnede handler mod rigtige spotpriser, uden rigtige penge.' }
-  };
-
-  let demoCache=null;
-  function demoSeries(){
-    const today=TODAY();
-    if(demoCache && demoCache.today===today) return demoCache.series;
-    const r=rng(FUND.DEMO_SEED), gauss=()=>{ let u=0; while(!u) u=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r()); };
-    // De 12 hele måneder før den indeværende.
-    const y0=+today.slice(0,4), m0=+today.slice(5,7)-1, months=[];
-    for(let k=12;k>=1;k--){ const d=new Date(Date.UTC(y0,m0-k,1)); months.push(d.toISOString().slice(0,7)); }
-    let nav=FUND.CAPITAL; const pts=[{ date:addDays(months[0]+'-01',-1), nav, pnl:0 }];
-    months.forEach((ym,i)=>{
-      const days=[]; for(let d=ym+'-01'; d.slice(0,7)===ym; d=addDays(d,1)) days.push(d);
-      const z=days.map(()=>gauss()*0.005), mean=z.reduce((s,x)=>s+x,0)/z.length, target=Math.log(1+DEMO_MONTHLY[i]);
-      days.forEach((d,j)=>{ const prev=nav; nav=nav*Math.exp(z[j]-mean+target/days.length); pts.push({ date:d, nav, pnl:nav-prev }); });
-    });
-    demoCache={ today, series:pts };
-    return pts;
-  }
-  // Papirhandler: afregnede handler samlet pr. leveringsdag; dage uden handler tæller med som 0.
-  function paperSeries(){
-    const done=state.trades.filter(t=>t.settled && typeof t.pnl==='number');
-    if(!done.length) return [];
-    const by={}; done.forEach(t=>{ by[t.del]=(by[t.del]||0)+t.pnl; });
-    const days=Object.keys(by).sort(); let nav=FUND.CAPITAL; const pts=[{ date:addDays(days[0],-1), nav, pnl:0 }];
-    for(let d=days[0]; d<=days[days.length-1]; d=addDays(d,1)){ const p=by[d]||0; nav+=p; pts.push({ date:d, nav, pnl:p }); }
-    return pts;
-  }
   function fundStats(pts){
     if(pts.length<2) return null;
     const n=pts.length, days=n-1, rets=[];
@@ -1595,7 +1489,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   }
   // opt: base = referencelinje (startkapital eller indeks 100), scale/unit = akseetiketter, mark = { i, label } lodret markering.
   function navChart(pts, st, opt){
-    opt=Object.assign({ base:FUND.CAPITAL, scale:1e6, unit:'mio.', label:'Fondens værdi over tid' }, opt||{});
+    opt=Object.assign({ base:100, scale:1, unit:'', label:'Kurs over tid' }, opt||{});
     const W=720,H=260,pl=56,pr=10,pt=14,pb=26, n=pts.length, B=opt.base;
     const navs=pts.map(p=>p.nav), lo=Math.min(...navs,B), hi=Math.max(...navs,B), pad=(hi-lo)*0.08||B*0.01;
     const y0=lo-pad, y1=hi+pad, x=i=>pl+i*(W-pl-pr)/Math.max(1,n-1), y=v=>pt+(y1-v)/(y1-y0)*(H-pt-pb);
@@ -1637,79 +1531,12 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
       return [yy].concat(range(1,13).map(m=>v[m]==null?'<span class="muted">–</span>':'<span class="'+cls(v[m])+'">'+pctS(v[m])+'</span>'),['<span class="'+cls(c-1)+'">'+pctS(c-1)+'</span>']); });
     return table(head,rows,[]).replace('<table>','<table class="months">');
   }
-  function renderRisk(){
-    const D=TDEL(), open=state.trades.filter(t=>!t.settled);
-    const days=[...new Set(open.map(t=>t.del))];
-    let html='';
-    ['DK1','DK2'].forEach(a=>{
-      const pos=netPosition(D,a), max=Math.max(0,...pos.map(Math.abs)), net=pos.reduce((s,v)=>s+v,0), util=state.limit?max/state.limit:0;
-      const cl=util>1?'over':util>=0.8?'warn':'';
-      html+='<div class="risk-row"><div class="row"><strong>'+a+'</strong><span class="small muted">'+nf1.format(max)+' af '+state.limit+' MW (største time)</span></div>'+
-        '<div class="meter '+cl+'" role="meter" aria-label="Udnyttelse af positionsgrænsen i '+a+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(util*100)+'"><span style="width:'+Math.min(100,util*100)+'%"></span></div>'+
-        '<div class="row small muted" style="margin:var(--sp-base) 0 0"><span>Udnyttelse '+nf0.format(util*100)+' %</span><span>Netto '+nf1.format(net)+' MWh ('+(net>=0?'lang':'kort')+')</span></div></div>';
-    });
-    const gross=['DK1','DK2'].reduce((s,a)=>s+netPosition(D,a).reduce((t,v)=>t+Math.abs(v),0),0);
-    html+='<p class="small muted" style="margin:var(--sp-2xl) 0 0">Leveringsdag '+longDate(D)+'. Brutto eksponering '+nf1.format(gross)+' MWh. '+
-      (days.length?'Åbne positioner for '+days.length+(days.length===1?' leveringsdag':' leveringsdage')+'.':'Ingen åbne positioner.')+' Kun aggregerede tal; enkelthandler vises ikke.</p>';
-    $('ivRisk').innerHTML=html;
-  }
   const parseNum=s=>parseFloat(String(s||'').replace(/\s/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.'));
-  function feeCalc(amount, r){
-    const gross=amount*r, mgmt=amount*FUND.FEE_MGMT, perf=Math.max(0,gross-mgmt)*FUND.FEE_PERF, net=gross-mgmt-perf;
+  // Forenklet ét år: forvaltningsgebyr af beløbet, resultathonorar af afkastet efter forvaltningsgebyr og kun ved gevinst.
+  function feeCalc(amount, r, feeMgmt, feePerf){
+    const gross=amount*r, mgmt=amount*feeMgmt, perf=Math.max(0,gross-mgmt)*feePerf, net=gross-mgmt-perf;
     return { gross, mgmt, perf, net, netPct: amount?net/amount:0 };
   }
-  function renderFees(){
-    const A=parseNum($('feeAmount').value), r=parseNum($('feeReturn').value)/100;
-    if(!(A>0) || !isFinite(r)){ $('feeOut').innerHTML='<div>Skriv et beløb over 0 og et afkast i procent.</div>'; return; }
-    const f=feeCalc(A,r), row=(l,v,c)=>'<div'+(c?' class="'+c+'"':'')+'><span>'+l+'</span><strong>'+v+'</strong></div>';
-    $('feeOut').innerHTML=
-      row('Afkast før gebyrer ('+pctS(r)+')', smoney(f.gross))+
-      row('Forvaltningsgebyr ('+nf1.format(FUND.FEE_MGMT*100)+' %)', smoney(-f.mgmt))+
-      row('Resultathonorar ('+nf0.format(FUND.FEE_PERF*100)+' %)', smoney(-f.perf))+
-      row('Dit nettoafkast', '<span id="feeNet" class="'+cls(f.net)+'">'+smoney(f.net)+' ('+pctS(f.netPct)+')</span>','total');
-    $('feeNote').textContent='Forenklet beregning for ét år: forvaltningsgebyret beregnes af beløbet, resultathonoraret af afkastet efter forvaltningsgebyr og kun ved gevinst. Ingen hurdle rate eller high water mark.';
-  }
-  function renderInvestor(){
-    const pts=ui.src==='paper'?paperSeries():demoSeries(), st=fundStats(pts), src=SRC[ui.src];
-    document.querySelectorAll('input[name="src"]').forEach(r=>{ r.checked=r.value===ui.src; });
-    $('disclaimerSrc').textContent=src.text;
-    $('ivLead').innerHTML='Fondens udvikling, som en investor ville se den. Startkapital '+mio(FUND.CAPITAL)+'. '+src.badge;
-    if(!st){
-      $('ivKpis').innerHTML=''; $('ivLegend').innerHTML=''; $('ivMonths').innerHTML='';
-      $('ivChart').innerHTML='<div class="empty">Ingen afregnede papirhandler endnu. Skift til demodata, eller afregn handler på desk\'en.</div>';
-      $('ivSource').innerHTML=src.badge; renderRisk(); renderFees(); return;
-    }
-    const k=(lbl,v,sub,c)=>'<div><span>'+lbl+'</span><strong class="'+(c||'')+'">'+v+'</strong><small>'+sub+'</small></div>';
-    const need='kræver '+FUND.MIN_DAYS_ANNUAL+' dage';
-    $('ivKpis').innerHTML=
-      k('Samlet afkast',pctS(st.total),st.days+' dage',cls(st.total))+
-      k('Afkast i år',pctS(st.ytd),'siden '+shortDate(addDays(st.ytdFrom,1)),cls(st.ytd))+
-      k('Årligt afkast',pctS(st.annual),st.annual==null?need:'annualiseret',cls(st.annual||0))+
-      k('Volatilitet',pctU(st.vol),st.vol==null?'kræver 20 dage':'årlig, af dagsafkast')+
-      k('Største fald',pctS(st.maxDD),st.maxDD<0?shortDate(pts[st.ddPeak].date)+' – '+shortDate(pts[st.ddTrough].date):'intet fald',cls(st.maxDD))+
-      k('Sharpe ratio',st.sharpe==null?'–':nf2.format(st.sharpe),st.sharpe==null?need:'risikofri rente '+nf0.format(FUND.RISK_FREE*100)+' %')+
-      k('Træfprocent',pctU(st.hit),'positive handelsdage');
-    $('ivLegend').innerHTML='<span><i style="background:var(--accent)"></i>NAV</span><span><i style="background:var(--dd-fill)"></i>Fald over '+nf0.format(FUND.DD_MARK*100)+' %</span><span><i style="background:transparent;border-top:2px dashed currentColor;height:0;width:14px"></i>Startkapital</span>';
-    $('ivChart').innerHTML=navChart(pts,st);
-    $('ivSource').innerHTML=src.badge+' NAV '+mio(pts[pts.length-1].nav)+' pr. '+longDate(pts[pts.length-1].date)+'. Før gebyrer.';
-    $('ivMonths').innerHTML=monthsTable(monthlyReturns(pts));
-    renderRisk(); renderFees();
-  }
-  function renderStrategy(){
-    $('disclaimerSrc').textContent='Strategien er beskrevet ud fra prototypen.';
-    const r=(a,b)=>'<tr><td>'+a+'</td><td>'+b+'</td></tr>';
-    $('stLimits').innerHTML='<tbody>'+
-      r('Prisområder','DK1 og DK2')+
-      r('Positionsgrænse','±'+state.limit+' MW pr. time pr. område')+
-      r('Maks. pr. handel',FUND.MAX_MW+' MW')+
-      r('Ekstra bekræftelse','over '+BIG_MW+' MW eller ved grænsebrud')+
-      r('Handelspris','prognose ± '+nf2.format(HALF_SPREAD)+' EUR/MWh')+
-      r('Afregning','kun mod rigtig spotpris')+
-      r('Forvaltningsgebyr',nf1.format(FUND.FEE_MGMT*100)+' % pr. år')+
-      r('Resultathonorar',nf0.format(FUND.FEE_PERF*100)+' % af gevinst')+
-      r('Startkapital (antaget)',mio(FUND.CAPITAL))+'</tbody>';
-  }
-
   // ---------- Community (demoprofiler, feed med forsinkelse, følg, venteliste) ----------
   const TRADERS = [
     { id:'mk', name:'Mette K.', style:'Vind og spread mellem DK1 og DK2', tags:['Spread','Vind'], mean:0.011, sd:0.024, trades:214, followers:128 },
@@ -1835,6 +1662,18 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     renderProfiles('pdTraders', p.traders||[]);
     renderFeed('pdFeed', p.id);
     drawBuyButton(p);
+    $('pdFeeForm').dataset.fund=p.id; renderProductFees(p);
+  }
+  function renderProductFees(p){
+    if(!p) return;
+    const A=parseNum($('pdFeeAmount').value), r=parseNum($('pdFeeReturn').value)/100;
+    if(!(A>0) || !isFinite(r)){ $('pdFeeOut').innerHTML='<div>Skriv et beløb over 0 og et afkast i procent.</div>'; return; }
+    const f=feeCalc(A,r,p.feeMgmt||0,p.feePerf||0), row=(l,v,c)=>'<div'+(c?' class="'+c+'"':'')+'><span>'+l+'</span><strong>'+v+'</strong></div>';
+    $('pdFeeOut').innerHTML=
+      row('Afkast før gebyrer ('+pctS(r)+')', smoney(f.gross))+
+      row('Forvaltningsgebyr ('+pctOf(p.feeMgmt||0)+')', smoney(-f.mgmt))+
+      row('Resultathonorar ('+pctOf(p.feePerf||0)+')', smoney(-f.perf))+
+      row('Dit nettoafkast', '<span id="pdFeeNet" class="'+cls(f.net)+'">'+smoney(f.net)+' ('+pctS(f.netPct)+')</span>','total');
   }
   async function renderProduct(id){
     setUserDisclaimer('');
@@ -2026,13 +1865,13 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
       const r=await fetch('/api/waitlist',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},body:JSON.stringify(body)});
       const j=await r.json().catch(()=>null);
       if(!r.ok || !j || !j.ok) throw new Error((j&&j.error)||'Tilmeldingen kunne ikke gemmes. Prøv igen senere.');
-      $('wlOk').textContent='Tak, du er skrevet op. Vi kontakter dig, når fonden åbner.';
+      $('wlOk').textContent='Tak, du er skrevet op. Vi kontakter dig, når der kommer nye produkter.';
       $('wlForm').reset(); $('wlCount').textContent=j.count+' er allerede skrevet op.';
     } catch(err){ $('wlError').textContent=String(err&&err.message||err); }
     finally { $('wlBtn').disabled=false; }
   }
   function renderCommunity(){
-    $('disclaimerSrc').textContent='Profiler, resultater og feed er demodata, suppleret med desk\'ens afregnede papirhandler.';
+    setUserDisclaimer('Profiler og feed er demodata, suppleret med desk\'ens afregnede papirhandler.');
     renderProfiles('cmProfiles'); renderFeed('cmFeed'); loadWaitlistCount();
   }
 
@@ -2093,9 +1932,8 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     location.hash='#marked'; route();
   });
   document.querySelectorAll('input[name="role"]').forEach(r=>r.addEventListener('change',()=>{ if(r.checked) location.hash='#'+ROLES[r.value].views[0]; }));
-  document.querySelectorAll('input[name="src"]').forEach(r=>r.addEventListener('change',()=>{ if(r.checked){ ui.src=r.value; renderInvestor(); } }));
-  ['feeAmount','feeReturn'].forEach(id=>$(id).addEventListener('input',renderFees));
-  $('feeForm').addEventListener('submit',e=>e.preventDefault());
+  ['pdFeeAmount','pdFeeReturn'].forEach(id=>$(id).addEventListener('input',()=>renderProductFees(fundById($('pdFeeForm').dataset.fund))));
+  $('pdFeeForm').addEventListener('submit',e=>e.preventDefault());
   $('wlForm').addEventListener('submit',joinWaitlist);
   $('pdBuy').addEventListener('click',()=>{ const b=$('pdBuy'); if(b.dataset.href) location.hash=b.dataset.href; else if(b.dataset.buy) openBuy(b.dataset.buy); });
   ['ktLogin','pfLogin','egLogin'].forEach(id=>$(id).addEventListener('click',openMitid));
