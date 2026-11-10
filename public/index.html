@@ -59,6 +59,10 @@
   --btn-sell-bg:var(--signal-red-deep); --btn-sell-bg-hover:var(--signal-red-muted-deep); --btn-trade-text:#FFFFFF;
   /* Advarsel i ordreoversigten */
   --warn-bg:color-mix(in srgb,var(--badge-yellow-bg) 18%,var(--light-surface)); --warn-border:var(--btn-alert-border);
+  /* Rolleskifter (Figma: elements/Switch bg-active) og investorgrafer */
+  --switch-bg-active:var(--border);
+  --dd-fill:color-mix(in srgb,var(--negative) 12%,transparent);
+  --meter-bg:var(--medium-creme-bg);
   /* Grafer: aliaser på tokens ovenfor */
   --ink:var(--text-primary); --muted:var(--text-secondary); --line:var(--border); --surface:var(--light-surface);
   --accent:var(--btn-primary-bg); --long:var(--positive); --short:var(--negative); --warn:var(--btn-alert-border);
@@ -82,11 +86,13 @@
     --select-buy-bg:color-mix(in srgb,var(--positive) 18%,var(--light-surface)); --select-buy-icon:var(--positive); --select-buy-border:var(--positive);
     --select-sell-bg:color-mix(in srgb,var(--negative) 18%,var(--light-surface)); --select-sell-icon:var(--btn-destructive-bg); --select-sell-border:var(--btn-destructive-bg);
     --warn-bg:color-mix(in srgb,var(--badge-yellow-bg) 14%,var(--light-surface));
+    --dd-fill:color-mix(in srgb,var(--negative) 10%,transparent);
   }
   /* Ikonerne er sorte SVG'er fra Figma; vend dem på mørk baggrund. */
   nav.tabs a img{filter:invert(1)}
 }
 *,*::before,*::after{box-sizing:inherit}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 html{height:100%}
 body{margin:0;min-height:100%;background:var(--creme-bg);color:var(--text-primary);font-family:var(--font-family);
   font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm);
@@ -262,6 +268,77 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .btn.trade.sell{background:var(--btn-sell-bg)} .btn.trade.sell:hover{background:var(--btn-sell-bg-hover)}
 .btn.trade:disabled,.btn.trade:disabled:hover{background:var(--btn-primary-bg-disabled);color:var(--btn-trade-text);cursor:not-allowed}
 
+/* Datagrundlag (Investor): neutral valgt tilstand med flueben */
+#srcSwitch .seg-opt:has(input:checked){background:var(--switch-bg-active);border-color:transparent}
+#srcSwitch .seg-opt:has(input:checked) .seg-mark{background:var(--text-primary)}
+/* Rolleskifter (demo): Naia Switch med grå aktiv tilstand */
+.roles{padding:var(--sp-2xs);gap:var(--sp-2xs);grid-template-columns:repeat(3,auto)}
+.roles .seg-opt{min-height:28px;padding:0 var(--sp-lg);gap:0;font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs)}
+.roles .seg-opt:has(input:checked){background:var(--switch-bg-active);border-color:transparent}
+.trader-only{display:flex;align-items:center;gap:var(--sp-lg)}
+.trader-only[hidden],nav.tabs[hidden]{display:none}
+@media (max-width:760px){
+  .nav-main .wrap{flex-wrap:wrap}
+  .roles{order:3;width:100%;grid-template-columns:repeat(3,1fr)}
+}
+
+/* Ansvarsfraskrivelse: fast i sidehovedet for Investor og Community, kan ikke lukkes */
+.disclaimer{background:var(--warn-bg);border-bottom:var(--border-sm) solid var(--warn-border);color:var(--text-primary)}
+.disclaimer[hidden]{display:none}
+.disclaimer .wrap{display:flex;align-items:center;gap:var(--sp-lg);padding-top:var(--sp-base);padding-bottom:var(--sp-base);
+  font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs)}
+.disclaimer strong{font-weight:700;white-space:nowrap}
+.disclaimer .alert-icon{flex:none;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:var(--radius-round);
+  background:var(--btn-alert-bg);border:var(--border-sm) solid var(--btn-alert-border)}
+.disclaimer .alert-icon img{display:block;width:14px;height:14px}
+@media (max-width:760px){ .disclaimer strong{white-space:normal} }
+
+/* Investor */
+.kpis div small .badge{margin-left:var(--sp-xs)}
+.meter{height:8px;border-radius:var(--radius-round);background:var(--meter-bg);overflow:hidden}
+.meter span{display:block;height:100%;border-radius:var(--radius-round);background:var(--positive)}
+.meter.warn span{background:var(--btn-alert-border)} .meter.over span{background:var(--negative)}
+.risk-row+.risk-row{margin-top:var(--sp-2xl)}
+@media (max-width:760px){
+  #ivKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+  #ivKpis div{min-height:0;padding:var(--sp-lg)}
+  #ivKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
+  #ivKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
+}
+.risk-row .row{justify-content:space-between;margin-bottom:var(--sp-base)}
+.months{min-width:760px}
+.months td,.months th{text-align:right;padding:0 var(--sp-base)}
+.months td:first-child,.months th:first-child{text-align:left}
+.months td:last-child{font-weight:700}
+.fee-out div{display:flex;justify-content:space-between;gap:var(--sp-lg);padding:var(--sp-base) 0;border-top:var(--border-sm) dashed var(--border)}
+.fee-out div:first-child{border-top:0}
+.fee-out .total{font-weight:700;border-top-style:solid}
+.prose h2{margin:var(--sp-2xl) 0 var(--sp-base)} .prose h2:first-child{margin-top:0}
+.prose ul{margin:0 0 var(--sp-md);padding-left:var(--sp-2xl);max-width:72ch} .prose li+li{margin-top:var(--sp-xs)}
+
+/* Community */
+.profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--sp-xl)}
+.profile{border:var(--border-sm) solid var(--border);border-radius:var(--radius-card);padding:var(--sp-xl);display:flex;flex-direction:column;gap:var(--sp-lg);min-width:0}
+.profile .who{display:flex;align-items:center;gap:var(--sp-lg)}
+.profile .who strong{display:block}
+.avatar{flex:none;width:40px;height:40px;border-radius:var(--radius-round);background:var(--medium-creme-bg);border:var(--border-sm) solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--text-sm)}
+.profile dl{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-base) var(--sp-lg);margin:0}
+.profile dt{color:var(--text-secondary);font-size:var(--text-xs);line-height:var(--leading-xs)} .profile dd{margin:0;font-weight:700}
+.tags{display:flex;flex-wrap:wrap;gap:var(--sp-xs)}
+.btn[aria-pressed="true"]{background:var(--switch-bg-active)}
+.spark{width:100%;height:36px;display:block}
+.feed{list-style:none;margin:0;padding:0}
+.feed li{display:grid;grid-template-columns:40px 1fr auto;gap:var(--sp-lg);padding:var(--sp-xl) 0;border-top:var(--border-sm) solid var(--border)}
+.feed li:first-child{border-top:0;padding-top:0}
+.feed .meta{color:var(--text-secondary);font-size:var(--text-xs);line-height:var(--leading-xs)}
+.feed .what{font-weight:700}
+.feed q{display:block;margin-top:var(--sp-xs);color:var(--text-secondary);quotes:"»" "«"}
+@media (max-width:760px){ .feed li{grid-template-columns:40px 1fr} .feed li>:last-child{grid-column:2} }
+.check{display:flex;gap:var(--sp-base);align-items:flex-start;font-size:var(--text-xs);line-height:var(--leading-xs);color:var(--text-secondary)}
+.check input{flex:none;width:16px;height:16px;margin:0;accent-color:var(--btn-primary-bg)}
+.ok{color:var(--positive);font-weight:700;margin:0}
+
 /* Bekræftelsesdialog (Figma: Modal) */
 dialog.confirm{border:0;border-radius:var(--radius-md);box-shadow:var(--shadow-md);padding:var(--sp-3xl);width:min(440px,calc(100vw - 2 * var(--sp-xl)));
   background:var(--light-surface);color:var(--text-primary)}
@@ -311,8 +388,14 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
 <header class="top">
   <div class="nav-main">
     <div class="wrap">
-      <div class="brand">Traderz <em>Desk</em></div>
-      <div class="right">
+      <div class="brand">Traderz <em id="brandSub">Desk</em></div>
+      <fieldset class="segmented roles" style="margin:0;min-width:0">
+        <legend class="sr-only">Visning (demo, uden login)</legend>
+        <label class="seg-opt"><input type="radio" name="role" value="trader" checked>Trader</label>
+        <label class="seg-opt"><input type="radio" name="role" value="investor">Investor</label>
+        <label class="seg-opt"><input type="radio" name="role" value="community">Community</label>
+      </fieldset>
+      <div class="right trader-only" id="traderTools">
         <div class="daychip" id="daychip"></div>
         <button class="btn primary" id="settleBtn" title="Afregner åbne handler mod den rigtige spotpris, når den er offentliggjort">Afregn handler</button>
       </div>
@@ -320,12 +403,25 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   </div>
   <div class="nav-sub">
     <div class="wrap">
-      <nav class="tabs" aria-label="Hovedmenu">
+      <nav class="tabs" aria-label="Hovedmenu" data-role="trader">
         <a href="#marked" data-view="marked">Marked<img src="assets/icon-chart-line.svg" width="16" height="16" alt=""></a>
         <a href="#handel" data-view="handel">Handel<img src="assets/icon-plus-circle.svg" width="16" height="16" alt=""></a>
         <a href="#position" data-view="position">Position og risiko<img src="assets/icon-chart-bar-horizontal.svg" width="16" height="16" alt=""></a>
         <a href="#resultat" data-view="resultat">Resultat<img src="assets/icon-invoice.svg" width="16" height="16" alt=""></a>
       </nav>
+      <nav class="tabs" aria-label="Investor" data-role="investor" hidden>
+        <a href="#investor" data-view="investor">Fonden<img src="assets/icon-chart-bar.svg" width="16" height="16" alt=""></a>
+        <a href="#strategi" data-view="strategi">Strategi<img src="assets/icon-info.svg" width="16" height="16" alt=""></a>
+      </nav>
+      <nav class="tabs" aria-label="Community" data-role="community" hidden>
+        <a href="#community" data-view="community">Community<img src="assets/icon-chat-circle.svg" width="17" height="16" alt=""></a>
+      </nav>
+    </div>
+  </div>
+  <div class="disclaimer" id="disclaimer" role="note" hidden>
+    <div class="wrap">
+      <span class="alert-icon"><img src="assets/icon-warning.svg" width="14" height="14" alt=""></span>
+      <div><strong>Simulerede resultater. Ikke faktiske afkast.</strong> <span id="disclaimerSrc"></span></div>
     </div>
   </div>
 </header>
@@ -464,6 +560,103 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     <div><button class="btn" id="resetBtn">Nulstil alle data</button></div>
   </section>
 
+  <!-- INVESTOR: FONDEN -->
+  <section class="view stack" id="view-investor" hidden>
+    <div class="row spread" style="align-items:flex-end">
+      <div><h1>Fonden</h1><p class="lead" id="ivLead"></p></div>
+      <fieldset class="segmented" id="srcSwitch" style="margin:0;min-width:0">
+        <legend class="sr-only">Datagrundlag</legend>
+        <label class="seg-opt"><input type="radio" name="src" value="demo" checked><span class="seg-mark" aria-hidden="true"></span>Demodata</label>
+        <label class="seg-opt"><input type="radio" name="src" value="paper"><span class="seg-mark" aria-hidden="true"></span>Papirhandler</label>
+      </fieldset>
+    </div>
+    <div class="kpis" id="ivKpis"></div>
+    <div class="panel stack">
+      <div class="row spread"><h2>Fondens værdi (NAV)</h2><div class="legend" id="ivLegend"></div></div>
+      <div class="chart-wrap" id="ivChart"></div>
+      <p class="source" id="ivSource"></p>
+    </div>
+    <div class="panel stack">
+      <div class="row spread"><h2>Afkast pr. måned</h2><span class="muted small">Procent, før gebyrer</span></div>
+      <div class="table-wrap" id="ivMonths"></div>
+    </div>
+    <div class="cols">
+      <div class="panel c7 stack">
+        <div class="row spread"><h2>Aktuel risiko</h2><span class="badge fc">Papirhandler</span></div>
+        <div id="ivRisk"></div>
+      </div>
+      <form class="panel c5 stack" id="feeForm" novalidate>
+        <h2>Gebyrberegner</h2>
+        <div class="formgrid">
+          <div><label class="field" for="feeAmount">Beløb (EUR)</label><input class="input" id="feeAmount" inputmode="decimal" value="1.000.000" autocomplete="off"></div>
+          <div><label class="field" for="feeReturn">Antaget afkast før gebyrer (%)</label><input class="input" id="feeReturn" inputmode="decimal" value="12" autocomplete="off"></div>
+        </div>
+        <div class="summary fee-out" id="feeOut" aria-live="polite"></div>
+        <p class="help" id="feeNote"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- INVESTOR: STRATEGI -->
+  <section class="view stack" id="view-strategi" hidden>
+    <div><h1>Strategi</h1><p class="lead">Hvad fonden handler, hvordan risikoen styres, og hvilke grænser der gælder. Siden beskriver strategien i prototypen og er ikke et tilbud om investering.</p></div>
+    <div class="cols">
+      <div class="panel c7 prose">
+        <h2>Hvad fonden handler</h2>
+        <p>Fonden handler day-ahead-elektricitet i de to danske prisområder, DK1 (Vestdanmark) og DK2 (Østdanmark). Positionerne tages dagen før levering og afregnes mod den officielle spotpris, når den offentliggøres omkring kl. 13.</p>
+        <ul>
+          <li>Produkter: base (døgnets timer), peak (08–20), off-peak (resten) og timeblokke.</li>
+          <li>Kilde til priser: Energinet, Energi Data Service (DayAheadPrices, 15-minutters opløsning).</li>
+          <li>Afkastet kommer fra forskellen mellem handelsprisen og den realiserede spotpris, ikke fra fysisk levering.</li>
+        </ul>
+        <h2>Sådan styres risikoen</h2>
+        <ul>
+          <li>Positionsgrænse pr. time og prisområde. Positionen vises time for time, og brud markeres, før en handel registreres.</li>
+          <li>Store handler og handler, der bryder grænsen, skal bekræftes særskilt.</li>
+          <li>Handel stopper for en leveringsdag, når spotprisen er kendt, så der aldrig handles til en pris, der allerede er offentliggjort.</li>
+          <li>Afregning sker kun mod rigtige spotpriser. Mangler de, afregnes der ikke.</li>
+          <li>Følsomheden over for prisændringer (±10 og ±30 EUR/MWh) og vind følges for hver leveringsdag.</li>
+        </ul>
+        <h2>Det er endnu ikke på plads</h2>
+        <ul>
+          <li>Prognosemodellen bruger simulerede vind- og temperaturdata.</li>
+          <li>Der er ingen login, så handler har endnu ingen ejer.</li>
+          <li>Resultaterne er papirhandler eller demodata, ikke faktiske afkast.</li>
+        </ul>
+      </div>
+      <div class="c5 stack">
+        <div class="panel stack"><h2>Grænser og satser</h2><div class="table-wrap"><table class="kv" id="stLimits"></table></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY -->
+  <section class="view stack" id="view-community" hidden>
+    <div><h1>Community</h1><p class="lead">Desk'ens tradere, deres resultater og deres seneste afregnede positioner. Positioner vises først efter afregning, så feedet ikke kan bruges til at handle foran fonden.</p></div>
+    <div class="panel stack">
+      <div class="row spread"><h2>Tradere</h2><span class="badge sim">Demoprofiler</span></div>
+      <div class="profiles" id="cmProfiles"></div>
+    </div>
+    <div class="cols">
+      <div class="panel c8 stack">
+        <div class="row spread"><h2>Feed</h2><span class="muted small">Vist efter afregning</span></div>
+        <ul class="feed" id="cmFeed"></ul>
+      </div>
+      <form class="panel c4 stack" id="wlForm" novalidate>
+        <h2>Venteliste til fonden</h2>
+        <p class="muted" style="margin:0">Skriv dig op, så kontakter vi dig, når fonden åbner. <span id="wlCount"></span></p>
+        <div><label class="field" for="wlName">Navn</label><input class="input" id="wlName" autocomplete="name" maxlength="80"></div>
+        <div><label class="field" for="wlEmail">E-mail</label><input class="input" id="wlEmail" type="email" autocomplete="email" maxlength="200"></div>
+        <div><label class="field" for="wlInterest">Jeg er interesseret som</label>
+          <select class="input" id="wlInterest"><option value="investor">Investor</option><option value="partner">Samarbejdspartner</option><option value="trader">Trader</option><option value="andet">Andet</option></select></div>
+        <label class="check"><input type="checkbox" id="wlConsent"><span>Jeg giver samtykke til, at Traderz gemmer mit navn og min e-mail for at kontakte mig om fonden. Jeg kan når som helst trække samtykket tilbage.</span></label>
+        <button type="submit" class="btn primary block" id="wlBtn">Skriv mig op</button>
+        <p class="error" id="wlError" role="alert"></p>
+        <p class="ok" id="wlOk" role="status"></p>
+      </form>
+    </div>
+  </section>
+
   <p class="note">Intern prototype. Spotpriser: day-ahead-priser i 15-minutters opløsning, vist som timegennemsnit af fire kvarterer. <a href="https://www.energidataservice.dk/tso-electricity/DayAheadPrices" target="_blank" rel="noopener">Data: Energinet, Energi Data Service</a>. Vind og temperatur er simulerede. Handler er papirhandler uden forbindelse til Nord Pool. Handelspris = prognose ± 0,50 EUR/MWh. Når spotpriserne for en leveringsdag er offentliggjort, rykker handlen til næste leveringsdag, og handler afregnes kun mod rigtige spotpriser.</p>
 </div></main>
 
@@ -541,7 +734,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     if(s.seed!==state.seed) for(const k in cache) delete cache[k];
     state={ seed:s.seed, trades:s.trades, limit:s.limit, nextId:s.nextId, importedAt:s.importedAt };
   }
-  const ui = { area:'DK1', side:'buy' };
+  const ui = { area:'DK1', side:'buy', src:'demo' };
 
   // Markedsdata. days[dato] = { DK1:[kvarterer], DK2:[kvarterer] } eller null, hvis prisen ikke er offentliggjort.
   // Et kvarter er { t:'2026-11-09T13:15:00' (dansk tid), u: UTC-tid, eur, dkk }.
@@ -780,7 +973,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
 
   // ---------- Views ----------
   const $=id=>document.getElementById(id);
-  const VIEWS=['marked','handel','position','resultat'];
+  const VIEWS=['marked','handel','position','resultat','investor','strategi','community'];
 
   function settleable(){ return state.trades.filter(t=>!t.settled && t.del<=DEL()); }
   function alertHtml(title,text,btnId,btnTxt){
@@ -810,8 +1003,15 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     let v=(location.hash||'').slice(1); if(!VIEWS.includes(v)) v='marked';
     document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='view-'+v);
     document.querySelectorAll('nav.tabs a').forEach(a=>a.dataset.view===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+    // Rolle (demo): styrer faner, værktøjer og den faste ansvarsfraskrivelse.
+    const role=roleOf(v);
+    document.querySelectorAll('input[name="role"]').forEach(r=>{ r.checked=r.value===role; });
+    document.querySelectorAll('nav.tabs[data-role]').forEach(n=>{ n.hidden=n.dataset.role!==role; });
+    $('traderTools').hidden=role!=='trader';
+    $('disclaimer').hidden=role==='trader';
+    $('brandSub').textContent=ROLES[role].brand;
     renderChrome();
-    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult})[v]();
+    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,investor:renderInvestor,strategi:renderStrategy,community:renderCommunity})[v]();
   }
 
   function renderMarket(){
@@ -1085,6 +1285,278 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     } finally { btn.disabled=false; }
   }
 
+  // =====================================================================
+  // Investor og Community (demo). Læser kun desk'ens data; ændrer intet i handel eller afregning.
+  // =====================================================================
+  const FUND = {
+    CAPITAL: 10000000,      // antaget startkapital i EUR
+    FEE_MGMT: 0.02,         // forvaltningsgebyr pr. år af beløbet
+    FEE_PERF: 0.20,         // resultathonorar af afkast efter forvaltningsgebyr
+    RISK_FREE: 0.02,        // risikofri rente pr. år til Sharpe ratio
+    MAX_MW: 500,            // maks. pr. handel (samme som desk'ens spærring)
+    MIN_DAYS_ANNUAL: 60,    // årligt afkast og Sharpe vises først efter så mange dage
+    DD_MARK: 0.03,          // fald større end dette markeres i NAV-grafen
+    DEMO_SEED: 20261110
+  };
+  // Demodata: 12 hele måneder med tabsmåneder og et tydeligt fald i månederne 5–7.
+  const DEMO_MONTHLY = [0.021, 0.014, -0.008, 0.032, -0.029, -0.036, -0.017, 0.024, 0.019, 0.006, 0.031, 0.012];
+  const ROLES = {
+    trader:    { views:['marked','handel','position','resultat'], brand:'Desk' },
+    investor:  { views:['investor','strategi'], brand:'Fund' },
+    community: { views:['community'], brand:'Community' }
+  };
+  const roleOf = v => Object.keys(ROLES).find(r => ROLES[r].views.includes(v)) || 'trader';
+  const pctS = v => v==null ? '–' : (v>0?'+':v<0?'−':'')+nf1.format(Math.abs(v*100))+' %';
+  const pctU = v => v==null ? '–' : nf1.format(v*100)+' %';
+  const mio = v => nf2.format(v/1e6)+' mio. EUR';
+  const monthName = ym => new Date(ym+'-15T12:00:00Z').toLocaleDateString('da-DK',{month:'short',timeZone:'UTC'}).replace('.','');
+  const monthLong = ym => new Date(ym+'-15T12:00:00Z').toLocaleDateString('da-DK',{month:'long',year:'numeric',timeZone:'UTC'});
+  const SRC = {
+    demo:  { badge:'<span class="badge sim">Demodata</span>', text:'Demodata: en konstrueret historik på 12 måneder, ikke handler.' },
+    paper: { badge:'<span class="badge fc">Papirhandler</span>', text:'Papirhandler: desk\'ens afregnede handler mod rigtige spotpriser, uden rigtige penge.' }
+  };
+
+  let demoCache=null;
+  function demoSeries(){
+    const today=TODAY();
+    if(demoCache && demoCache.today===today) return demoCache.series;
+    const r=rng(FUND.DEMO_SEED), gauss=()=>{ let u=0; while(!u) u=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r()); };
+    // De 12 hele måneder før den indeværende.
+    const y0=+today.slice(0,4), m0=+today.slice(5,7)-1, months=[];
+    for(let k=12;k>=1;k--){ const d=new Date(Date.UTC(y0,m0-k,1)); months.push(d.toISOString().slice(0,7)); }
+    let nav=FUND.CAPITAL; const pts=[{ date:addDays(months[0]+'-01',-1), nav, pnl:0 }];
+    months.forEach((ym,i)=>{
+      const days=[]; for(let d=ym+'-01'; d.slice(0,7)===ym; d=addDays(d,1)) days.push(d);
+      const z=days.map(()=>gauss()*0.005), mean=z.reduce((s,x)=>s+x,0)/z.length, target=Math.log(1+DEMO_MONTHLY[i]);
+      days.forEach((d,j)=>{ const prev=nav; nav=nav*Math.exp(z[j]-mean+target/days.length); pts.push({ date:d, nav, pnl:nav-prev }); });
+    });
+    demoCache={ today, series:pts };
+    return pts;
+  }
+  // Papirhandler: afregnede handler samlet pr. leveringsdag; dage uden handler tæller med som 0.
+  function paperSeries(){
+    const done=state.trades.filter(t=>t.settled && typeof t.pnl==='number');
+    if(!done.length) return [];
+    const by={}; done.forEach(t=>{ by[t.del]=(by[t.del]||0)+t.pnl; });
+    const days=Object.keys(by).sort(); let nav=FUND.CAPITAL; const pts=[{ date:addDays(days[0],-1), nav, pnl:0 }];
+    for(let d=days[0]; d<=days[days.length-1]; d=addDays(d,1)){ const p=by[d]||0; nav+=p; pts.push({ date:d, nav, pnl:p }); }
+    return pts;
+  }
+  function fundStats(pts){
+    if(pts.length<2) return null;
+    const n=pts.length, days=n-1, rets=[];
+    for(let i=1;i<n;i++) rets.push(pts[i].nav/pts[i-1].nav-1);
+    const total=pts[n-1].nav/pts[0].nav-1;
+    const y=pts[n-1].date.slice(0,4); let base=pts[0]; pts.forEach(p=>{ if(p.date<y+'-01-01') base=p; });
+    const ytd=pts[n-1].nav/base.nav-1;
+    const mean=rets.reduce((s,x)=>s+x,0)/rets.length;
+    const sd=rets.length>1?Math.sqrt(rets.reduce((s,x)=>s+(x-mean)*(x-mean),0)/(rets.length-1)):0;
+    const enough=days>=FUND.MIN_DAYS_ANNUAL;
+    let peak=pts[0].nav, peakI=0, dd=0, ddPeak=0, ddTrough=0;
+    pts.forEach((p,i)=>{ if(p.nav>peak){ peak=p.nav; peakI=i; } const d=p.nav/peak-1; if(d<dd){ dd=d; ddPeak=peakI; ddTrough=i; } });
+    const traded=pts.slice(1).filter(p=>p.pnl!==0);
+    return { total, ytd, ytdFrom:base.date, days,
+      annual: enough?Math.pow(1+total,365/days)-1:null,
+      vol: days>=20?sd*Math.sqrt(365):null,
+      sharpe: enough&&sd>0?(mean-FUND.RISK_FREE/365)/sd*Math.sqrt(365):null,
+      maxDD: dd, ddPeak, ddTrough,
+      hit: traded.length?traded.filter(p=>p.pnl>0).length/traded.length:null, tradedDays:traded.length };
+  }
+  function monthlyReturns(pts){
+    const out=[]; let prevNav=pts[0].nav;
+    for(let i=1;i<pts.length;i++){
+      const ym=pts[i].date.slice(0,7), last=i===pts.length-1 || pts[i+1].date.slice(0,7)!==ym;
+      if(last){ out.push({ ym, r:pts[i].nav/prevNav-1 }); prevNav=pts[i].nav; }
+    }
+    return out;
+  }
+  function navChart(pts, st){
+    const W=720,H=260,pl=56,pr=10,pt=14,pb=26, n=pts.length;
+    const navs=pts.map(p=>p.nav), lo=Math.min(...navs,FUND.CAPITAL), hi=Math.max(...navs,FUND.CAPITAL), pad=(hi-lo)*0.08||FUND.CAPITAL*0.01;
+    const y0=lo-pad, y1=hi+pad, x=i=>pl+i*(W-pl-pr)/Math.max(1,n-1), y=v=>pt+(y1-v)/(y1-y0)*(H-pt-pb);
+    let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Fondens værdi over tid, største fald '+pctS(st.maxDD)+'">';
+    // Perioder med fald: fra en top til NAV er tilbage på toppen, når faldet undervejs er større end DD_MARK.
+    const band=(a,b)=>{ s+='<rect x="'+x(a)+'" y="'+pt+'" width="'+Math.max(1,x(b)-x(a))+'" height="'+(H-pt-pb)+'" fill="var(--dd-fill)"/>'; };
+    let peak=pts[0].nav, peakI=0, worst=0;
+    pts.forEach((p,i)=>{
+      if(p.nav>=peak){ if(worst<=-FUND.DD_MARK) band(peakI,i); peak=p.nav; peakI=i; worst=0; }
+      else worst=Math.min(worst,p.nav/peak-1);
+    });
+    if(worst<=-FUND.DD_MARK) band(peakI,n-1);
+    const span=y1-y0, raw=span/4, mag=Math.pow(10,Math.floor(Math.log10(raw))), step=[1,2,2.5,5,10].map(k=>k*mag).find(k=>k>=raw);
+    for(let g=Math.ceil(y0/step)*step; g<=y1; g+=step){
+      s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="currentColor" stroke-opacity=".08"/>';
+      s+='<text x="'+(pl-6)+'" y="'+(y(g)+3)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+nf1.format(g/1e6)+'</text>';
+    }
+    s+='<text x="'+(pl-6)+'" y="'+(pt-3)+'" text-anchor="end" font-size="10" fill="var(--muted)">mio.</text>';
+    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(FUND.CAPITAL)+'" y2="'+y(FUND.CAPITAL)+'" stroke="currentColor" stroke-opacity=".45" stroke-dasharray="3 3"/>';
+    let d=''; pts.forEach((p,i)=>{ d+=(i?'L':'M')+x(i).toFixed(1)+' '+y(p.nav).toFixed(1); });
+    s+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>';
+    if(st.maxDD<0){
+      const tx=x(st.ddTrough), ty=y(pts[st.ddTrough].nav), lx=Math.min(Math.max(tx,pl+70),W-pr-70);
+      s+='<circle cx="'+tx+'" cy="'+ty+'" r="4" fill="var(--short)" stroke="var(--surface)" stroke-width="1.5"/>';
+      s+='<text x="'+lx+'" y="'+Math.min(ty+18,H-pb-4)+'" text-anchor="middle" font-size="11" font-weight="700" fill="var(--short)" stroke="var(--surface)" stroke-width="3" paint-order="stroke">Største fald '+pctS(st.maxDD)+'</text>';
+    }
+    let lastM='';
+    pts.forEach((p,i)=>{ const ym=p.date.slice(0,7); if(i>0 && ym!==lastM && p.date.slice(8)==='01'){ s+='<text x="'+x(i)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="currentColor" opacity=".55">'+monthName(ym)+'</text>'; } lastM=ym; });
+    if(n<40){ s+='<text x="'+x(0)+'" y="'+(H-8)+'" font-size="10" fill="currentColor" opacity=".55">'+shortDate(pts[0].date)+'</text><text x="'+x(n-1)+'" y="'+(H-8)+'" text-anchor="end" font-size="10" fill="currentColor" opacity=".55">'+shortDate(pts[n-1].date)+'</text>'; }
+    return s+'</svg>';
+  }
+  function monthsTable(mr){
+    const years={}; mr.forEach(m=>{ (years[m.ym.slice(0,4)]=years[m.ym.slice(0,4)]||{})[+m.ym.slice(5,7)]=m.r; });
+    const head=['År'].concat(range(1,13).map(m=>monthName('2026-'+String(m).padStart(2,'0'))),['År i alt']);
+    const rows=Object.keys(years).sort().map(yy=>{ const v=years[yy]; let c=1; Object.values(v).forEach(r=>c*=1+r);
+      return [yy].concat(range(1,13).map(m=>v[m]==null?'<span class="muted">–</span>':'<span class="'+cls(v[m])+'">'+pctS(v[m])+'</span>'),['<span class="'+cls(c-1)+'">'+pctS(c-1)+'</span>']); });
+    return table(head,rows,[]).replace('<table>','<table class="months">');
+  }
+  function renderRisk(){
+    const D=TDEL(), open=state.trades.filter(t=>!t.settled);
+    const days=[...new Set(open.map(t=>t.del))];
+    let html='';
+    ['DK1','DK2'].forEach(a=>{
+      const pos=netPosition(D,a), max=Math.max(0,...pos.map(Math.abs)), net=pos.reduce((s,v)=>s+v,0), util=state.limit?max/state.limit:0;
+      const cl=util>1?'over':util>=0.8?'warn':'';
+      html+='<div class="risk-row"><div class="row"><strong>'+a+'</strong><span class="small muted">'+nf1.format(max)+' af '+state.limit+' MW (største time)</span></div>'+
+        '<div class="meter '+cl+'" role="meter" aria-label="Udnyttelse af positionsgrænsen i '+a+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(util*100)+'"><span style="width:'+Math.min(100,util*100)+'%"></span></div>'+
+        '<div class="row small muted" style="margin:var(--sp-base) 0 0"><span>Udnyttelse '+nf0.format(util*100)+' %</span><span>Netto '+nf1.format(net)+' MWh ('+(net>=0?'lang':'kort')+')</span></div></div>';
+    });
+    const gross=['DK1','DK2'].reduce((s,a)=>s+netPosition(D,a).reduce((t,v)=>t+Math.abs(v),0),0);
+    html+='<p class="small muted" style="margin:var(--sp-2xl) 0 0">Leveringsdag '+longDate(D)+'. Brutto eksponering '+nf1.format(gross)+' MWh. '+
+      (days.length?'Åbne positioner for '+days.length+(days.length===1?' leveringsdag':' leveringsdage')+'.':'Ingen åbne positioner.')+' Kun aggregerede tal; enkelthandler vises ikke.</p>';
+    $('ivRisk').innerHTML=html;
+  }
+  const parseNum=s=>parseFloat(String(s||'').replace(/\s/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.'));
+  function feeCalc(amount, r){
+    const gross=amount*r, mgmt=amount*FUND.FEE_MGMT, perf=Math.max(0,gross-mgmt)*FUND.FEE_PERF, net=gross-mgmt-perf;
+    return { gross, mgmt, perf, net, netPct: amount?net/amount:0 };
+  }
+  function renderFees(){
+    const A=parseNum($('feeAmount').value), r=parseNum($('feeReturn').value)/100;
+    if(!(A>0) || !isFinite(r)){ $('feeOut').innerHTML='<div>Skriv et beløb over 0 og et afkast i procent.</div>'; return; }
+    const f=feeCalc(A,r), row=(l,v,c)=>'<div'+(c?' class="'+c+'"':'')+'><span>'+l+'</span><strong>'+v+'</strong></div>';
+    $('feeOut').innerHTML=
+      row('Afkast før gebyrer ('+pctS(r)+')', smoney(f.gross))+
+      row('Forvaltningsgebyr ('+nf1.format(FUND.FEE_MGMT*100)+' %)', smoney(-f.mgmt))+
+      row('Resultathonorar ('+nf0.format(FUND.FEE_PERF*100)+' %)', smoney(-f.perf))+
+      row('Dit nettoafkast', '<span id="feeNet" class="'+cls(f.net)+'">'+smoney(f.net)+' ('+pctS(f.netPct)+')</span>','total');
+    $('feeNote').textContent='Forenklet beregning for ét år: forvaltningsgebyret beregnes af beløbet, resultathonoraret af afkastet efter forvaltningsgebyr og kun ved gevinst. Ingen hurdle rate eller high water mark.';
+  }
+  function renderInvestor(){
+    const pts=ui.src==='paper'?paperSeries():demoSeries(), st=fundStats(pts), src=SRC[ui.src];
+    document.querySelectorAll('input[name="src"]').forEach(r=>{ r.checked=r.value===ui.src; });
+    $('disclaimerSrc').textContent=src.text;
+    $('ivLead').innerHTML='Fondens udvikling, som en investor ville se den. Startkapital '+mio(FUND.CAPITAL)+'. '+src.badge;
+    if(!st){
+      $('ivKpis').innerHTML=''; $('ivLegend').innerHTML=''; $('ivMonths').innerHTML='';
+      $('ivChart').innerHTML='<div class="empty">Ingen afregnede papirhandler endnu. Skift til demodata, eller afregn handler på desk\'en.</div>';
+      $('ivSource').innerHTML=src.badge; renderRisk(); renderFees(); return;
+    }
+    const k=(lbl,v,sub,c)=>'<div><span>'+lbl+'</span><strong class="'+(c||'')+'">'+v+'</strong><small>'+sub+'</small></div>';
+    const need='kræver '+FUND.MIN_DAYS_ANNUAL+' dage';
+    $('ivKpis').innerHTML=
+      k('Samlet afkast',pctS(st.total),st.days+' dage',cls(st.total))+
+      k('Afkast i år',pctS(st.ytd),'siden '+shortDate(addDays(st.ytdFrom,1)),cls(st.ytd))+
+      k('Årligt afkast',pctS(st.annual),st.annual==null?need:'annualiseret',cls(st.annual||0))+
+      k('Volatilitet',pctU(st.vol),st.vol==null?'kræver 20 dage':'årlig, af dagsafkast')+
+      k('Største fald',pctS(st.maxDD),st.maxDD<0?shortDate(pts[st.ddPeak].date)+' – '+shortDate(pts[st.ddTrough].date):'intet fald',cls(st.maxDD))+
+      k('Sharpe ratio',st.sharpe==null?'–':nf2.format(st.sharpe),st.sharpe==null?need:'risikofri rente '+nf0.format(FUND.RISK_FREE*100)+' %')+
+      k('Træfprocent',pctU(st.hit),'positive handelsdage');
+    $('ivLegend').innerHTML='<span><i style="background:var(--accent)"></i>NAV</span><span><i style="background:var(--dd-fill)"></i>Fald over '+nf0.format(FUND.DD_MARK*100)+' %</span><span><i style="background:transparent;border-top:2px dashed currentColor;height:0;width:14px"></i>Startkapital</span>';
+    $('ivChart').innerHTML=navChart(pts,st);
+    $('ivSource').innerHTML=src.badge+' NAV '+mio(pts[pts.length-1].nav)+' pr. '+longDate(pts[pts.length-1].date)+'. Før gebyrer.';
+    $('ivMonths').innerHTML=monthsTable(monthlyReturns(pts));
+    renderRisk(); renderFees();
+  }
+  function renderStrategy(){
+    $('disclaimerSrc').textContent='Strategien er beskrevet ud fra prototypen.';
+    const r=(a,b)=>'<tr><td>'+a+'</td><td>'+b+'</td></tr>';
+    $('stLimits').innerHTML='<tbody>'+
+      r('Prisområder','DK1 og DK2')+
+      r('Positionsgrænse','±'+state.limit+' MW pr. time pr. område')+
+      r('Maks. pr. handel',FUND.MAX_MW+' MW')+
+      r('Ekstra bekræftelse','over '+BIG_MW+' MW eller ved grænsebrud')+
+      r('Handelspris','prognose ± '+nf2.format(HALF_SPREAD)+' EUR/MWh')+
+      r('Afregning','kun mod rigtig spotpris')+
+      r('Forvaltningsgebyr',nf1.format(FUND.FEE_MGMT*100)+' % pr. år')+
+      r('Resultathonorar',nf0.format(FUND.FEE_PERF*100)+' % af gevinst')+
+      r('Startkapital (antaget)',mio(FUND.CAPITAL))+'</tbody>';
+  }
+
+  // ---------- Community (demoprofiler, feed med forsinkelse, følg, venteliste) ----------
+  const TRADERS = [
+    { id:'mk', name:'Mette K.', style:'Vind og spread mellem DK1 og DK2', tags:['Spread','Vind'], mean:0.011, sd:0.024, trades:214, followers:128 },
+    { id:'jr', name:'Jonas R.', style:'Peak og timeblokke omkring aftenspidsen', tags:['Peak','Timeblokke'], mean:0.009, sd:0.036, trades:167, followers:86 },
+    { id:'sl', name:'Sara L.', style:'Base og off-peak med lav risiko', tags:['Base','Lav risiko'], mean:0.005, sd:0.012, trades:98, followers:54 }
+  ];
+  const FOLLOW_KEY='traderz-follow';
+  function follows(){ try { return JSON.parse(localStorage.getItem(FOLLOW_KEY))||[]; } catch(e){ return []; } }
+  function setFollows(a){ try { localStorage.setItem(FOLLOW_KEY,JSON.stringify(a)); } catch(e){} }
+  function traderMonths(t){ const r=rng(FUND.DEMO_SEED+t.id.charCodeAt(0)*31+t.id.charCodeAt(1)); return range(0,12).map(()=>{ let u=0; while(!u) u=r(); return t.mean+t.sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r()); }); }
+  function spark(ms){
+    let nav=1; const v=[1].concat(ms.map(m=>nav*=1+m)), lo=Math.min(...v), hi=Math.max(...v), W=200, H=36;
+    const d=v.map((p,i)=>(i?'L':'M')+(i*W/(v.length-1)).toFixed(1)+' '+(3+(hi-p)/((hi-lo)||1)*(H-6)).toFixed(1)).join('');
+    return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+'" fill="none" stroke="'+(nav>=1?'var(--long)':'var(--short)')+'" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>';
+  }
+  function renderProfiles(){
+    const f=follows();
+    $('cmProfiles').innerHTML=TRADERS.map(t=>{
+      const ms=traderMonths(t), tot=ms.reduce((c,m)=>c*(1+m),1)-1, pos=ms.filter(m=>m>0).length, on=f.includes(t.id);
+      let nav=1, peak=1, dd=0; ms.forEach(m=>{ nav*=1+m; peak=Math.max(peak,nav); dd=Math.min(dd,nav/peak-1); });
+      return '<article class="profile"><div class="who"><span class="avatar" aria-hidden="true">'+t.name.split(' ').map(w=>w[0]).join('')+'</span><div><strong>'+esc(t.name)+'</strong><span class="small muted">'+esc(t.style)+'</span></div></div>'+
+        spark(ms)+
+        '<dl><div><dt>Afkast 12 mdr.</dt><dd class="'+cls(tot)+'">'+pctS(tot)+'</dd></div><div><dt>Positive måneder</dt><dd>'+pos+' af 12</dd></div>'+
+        '<div><dt>Største fald</dt><dd class="'+cls(dd)+'">'+pctS(dd)+'</dd></div><div><dt>Handler</dt><dd>'+t.trades+'</dd></div></dl>'+
+        '<div class="tags">'+t.tags.map(g=>'<span class="tag open">'+g+'</span>').join('')+'</div>'+
+        '<div class="row spread"><span class="small muted">'+(t.followers+(on?1:0))+' følgere</span><button type="button" class="btn small" data-follow="'+t.id+'" aria-pressed="'+on+'">'+(on?'Følger':'Følg')+'</button></div></article>';
+    }).join('');
+    $('cmProfiles').querySelectorAll('[data-follow]').forEach(b=>b.addEventListener('click',()=>{
+      const id=b.dataset.follow, a=follows(); setFollows(a.includes(id)?a.filter(x=>x!==id):a.concat(id)); renderProfiles();
+    }));
+  }
+  // Feedet viser kun afregnede positioner (dagen efter levering eller senere), aldrig åbne.
+  const DEMO_FEED = [
+    { t:'mk', ago:1, side:'buy',  mw:20, prod:'Peak', area:'DK2', pnl:3120,  c:'Mindre vind i øst end prognosen. Spreaden åbnede som ventet.' },
+    { t:'jr', ago:2, side:'sell', mw:15, prod:'Timer 17–21', area:'DK1', pnl:-2480, c:'Aftenspidsen blev højere end ventet. Tab, men inden for grænsen.' },
+    { t:'sl', ago:2, side:'buy',  mw:10, prod:'Base', area:'DK1', pnl:860,   c:'Kold morgen trak basen op.' },
+    { t:'mk', ago:4, side:'sell', mw:25, prod:'Off-peak', area:'DK1', pnl:1940, c:'Blæst om natten pressede priserne ned.' },
+    { t:'jr', ago:5, side:'buy',  mw:30, prod:'Peak', area:'DK2', pnl:4410,  c:'Lav sol og lav vind. Godt kald.' },
+    { t:'sl', ago:6, side:'sell', mw:10, prod:'Base', area:'DK2', pnl:-720,  c:'Prognosen ramte forbi på temperaturen.' }
+  ];
+  function renderFeed(){
+    const today=TODAY(), name=id=>(TRADERS.find(t=>t.id===id)||{}).name;
+    const items=DEMO_FEED.map(f=>({ who:name(f.t), initials:name(f.t).split(' ').map(w=>w[0]).join(''), del:addDays(today,-f.ago-1), shown:addDays(today,-f.ago),
+      what:(f.side==='buy'?'Købte ':'Solgte ')+f.mw+' MW '+f.prod+' '+f.area, pnl:f.pnl, c:f.c, demo:true }));
+    state.trades.filter(t=>t.settled).forEach(t=>items.push({ who:'Desk', initials:'D', del:t.del, shown:(t.settledAt||'').slice(0,10)||t.del,
+      what:(t.side==='buy'?'Købte ':'Solgte ')+nf1.format(t.mw)+' MW '+hoursLabel(t)+' '+t.area, pnl:t.pnl, c:t.note||'', demo:false }));
+    items.sort((a,b)=>b.shown.localeCompare(a.shown)||b.del.localeCompare(a.del));
+    $('cmFeed').innerHTML=items.slice(0,12).map(i=>'<li><span class="avatar" aria-hidden="true">'+esc(i.initials)+'</span><div><div class="meta">'+esc(i.who)+' · levering '+shortDate(i.del)+' · vist efter afregning '+(i.demo?'<span class="badge sim">Demo</span>':'<span class="badge fc">Papirhandel</span>')+'</div>'+
+      '<div class="what">'+esc(i.what)+'</div>'+(i.c?'<q>'+esc(i.c)+'</q>':'')+'</div><strong class="'+cls(i.pnl)+'">'+smoney(i.pnl)+'</strong></li>').join('');
+  }
+  async function loadWaitlistCount(){
+    try { const r=await fetch('/api/waitlist',{headers:{accept:'application/json'}}); const j=await r.json(); if(r.ok && typeof j.count==='number') $('wlCount').textContent=j.count?j.count+' er allerede skrevet op.':''; } catch(e){}
+  }
+  async function joinWaitlist(e){
+    e.preventDefault();
+    $('wlError').textContent=''; $('wlOk').textContent='';
+    const body={ name:$('wlName').value.trim(), email:$('wlEmail').value.trim(), interest:$('wlInterest').value, consent:$('wlConsent').checked };
+    if(!body.name){ $('wlError').textContent='Skriv dit navn.'; return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)){ $('wlError').textContent='Skriv en gyldig e-mailadresse.'; return; }
+    if(!body.consent){ $('wlError').textContent='Sæt hak i samtykket, før vi kan gemme tilmeldingen.'; return; }
+    $('wlBtn').disabled=true;
+    try {
+      const r=await fetch('/api/waitlist',{method:'POST',headers:{'content-type':'application/json',accept:'application/json'},body:JSON.stringify(body)});
+      const j=await r.json().catch(()=>null);
+      if(!r.ok || !j || !j.ok) throw new Error((j&&j.error)||'Tilmeldingen kunne ikke gemmes. Prøv igen senere.');
+      $('wlOk').textContent='Tak, du er skrevet op. Vi kontakter dig, når fonden åbner.';
+      $('wlForm').reset(); $('wlCount').textContent=j.count+' er allerede skrevet op.';
+    } catch(err){ $('wlError').textContent=String(err&&err.message||err); }
+    finally { $('wlBtn').disabled=false; }
+  }
+  function renderCommunity(){
+    $('disclaimerSrc').textContent='Profiler, resultater og feed er demodata, suppleret med desk\'ens afregnede papirhandler.';
+    renderProfiles(); renderFeed(); loadWaitlistCount();
+  }
+
   let tt; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),4200); }
 
   // Events
@@ -1106,6 +1578,11 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     try { await act('reset'); toast('Alle data er nulstillet'); } catch(e){ toast('Nulstilling mislykkedes: '+(e&&e.message||e)); }
     location.hash='#marked'; route();
   });
+  document.querySelectorAll('input[name="role"]').forEach(r=>r.addEventListener('change',()=>{ if(r.checked) location.hash='#'+ROLES[r.value].views[0]; }));
+  document.querySelectorAll('input[name="src"]').forEach(r=>r.addEventListener('change',()=>{ if(r.checked){ ui.src=r.value; renderInvestor(); } }));
+  ['feeAmount','feeReturn'].forEach(id=>$(id).addEventListener('input',renderFees));
+  $('feeForm').addEventListener('submit',e=>e.preventDefault());
+  $('wlForm').addEventListener('submit',joinWaitlist);
   window.addEventListener('hashchange',route);
   // Hent priser igen hvert kvarter, så morgendagens priser dukker op, når de offentliggøres.
   setInterval(loadPrices, REFRESH_MS);
