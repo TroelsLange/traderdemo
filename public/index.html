@@ -110,18 +110,19 @@ a{color:var(--text-primary);text-underline-offset:2px}
 .nav-main .wrap{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-xl);min-height:48px;padding-top:var(--sp-base);padding-bottom:var(--sp-base)}
 .brand{font-weight:700;font-size:var(--text-base);line-height:var(--leading-base);letter-spacing:var(--tracking-base);white-space:nowrap}
 .brand em{font-style:normal;font-weight:400;color:var(--text-secondary)}
-.nav-main .right{display:flex;align-items:center;gap:var(--sp-lg)}
 .daychip{font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);white-space:nowrap;text-align:right}
 .daychip strong{color:var(--text-primary);display:block;font-weight:700}
 .nav-sub{border-bottom:var(--border-sm) solid var(--tabs-border)}
-.nav-sub .wrap{display:flex}
+.nav-sub .wrap{display:flex;align-items:center}
+nav.tabs{min-width:0}
+.tab-tools{margin-left:auto;flex:none;padding-left:var(--sp-xl)}
 nav.tabs{display:flex;overflow-x:auto;border-left:var(--border-sm) solid var(--tabs-border)}
 nav.tabs a{display:flex;align-items:center;gap:var(--sp-xs);height:47px;padding:0 var(--sp-xl);background:var(--tabs-bg);border-right:var(--border-sm) solid var(--tabs-border);
   color:var(--text-primary);text-decoration:none;font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);white-space:nowrap}
 nav.tabs a img{display:block;flex:none}
 nav.tabs a:hover{background:var(--tabs-bg-active)}
 nav.tabs a[aria-current="page"]{background:var(--tabs-bg-active);font-weight:700}
-@media (max-width:760px){ .daychip{display:none} .nav-sub .wrap{padding:0} nav.tabs{border-left:0} }
+@media (max-width:760px){ .daychip{display:none} .nav-sub .wrap{padding:0} nav.tabs{border-left:0} .tab-tools{padding:0 var(--sp-xl) 0 var(--sp-base)} .tab-tools .btn{padding:var(--sp-xs) var(--sp-lg)} }
 
 /* Button/main */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-base);height:32px;padding:var(--sp-xs) var(--sp-xl);border-radius:var(--radius-round);
@@ -416,10 +417,6 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
         <label class="seg-opt"><input type="radio" name="role" value="trader" checked>Trader</label>
         <label class="seg-opt"><input type="radio" name="role" value="bruger">Bruger</label>
       </fieldset>
-      <div class="right trader-only" id="traderTools">
-        <div class="daychip" id="daychip"></div>
-        <button class="btn primary" id="settleBtn" title="Afregner åbne handler mod den rigtige spotpris, når den er offentliggjort">Afregn handler</button>
-      </div>
     </div>
   </div>
   <div class="nav-sub">
@@ -437,6 +434,11 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
         <a href="#konto" data-view="konto">Konto<img src="assets/icon-user-circle-check.svg" width="16" height="16" alt=""></a>
         <a href="#community" data-view="community">Community<img src="assets/icon-chat-circle.svg" width="17" height="16" alt=""></a>
       </nav>
+      <!-- Handelsdag og afregning på linje med fanerne (kun Trader) -->
+      <div class="tab-tools trader-only" id="traderTools">
+        <div class="daychip" id="daychip"></div>
+        <button class="btn primary" id="settleBtn" title="Afregner åbne handler mod den rigtige spotpris, når den er offentliggjort">Afregn handler</button>
+      </div>
     </div>
   </div>
   <div class="disclaimer" id="disclaimer" role="note" hidden>
