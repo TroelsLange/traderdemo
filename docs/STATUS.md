@@ -3,7 +3,7 @@
 Senest opdateret: 10. november 2026.
 
 ## Hvad vi lavede i dag (10. nov. 2026, aften): private brugere og trading-produkter
-Ny forretningsmodel: private brugere sætter (simulerede) penge ind og køber andele i produkter, som desk'ens tradere handler. Bygget i fire dele og merget til `main` via [PR #4](https://github.com/TroelsLange/traderdemo/pull/4); deployet automatisk til https://traderzai.netlify.app. Netlifys deploy preview byggede uden fejl. Produktionen er ikke kontrolleret i browser endnu (kan ikke nås fra Claudes cloud-container).
+Ny forretningsmodel: private brugere sætter (simulerede) penge ind og køber andele i produkter, som desk'ens tradere handler. Bygget i fire dele og merget til `main` via [PR #4](https://github.com/TroelsLange/traderdemo/pull/4) og deployet til https://traderzai.netlify.app. Netlifys deploy preview byggede uden fejl. Live-siden er tjekket for fejl efter deploy; brugerrejsen er ikke gennemprøvet i produktion endnu.
 
 1. Produkter og kobling til desk'en
    - Produktkatalog som data i `public/data/products.json`: Day-Ahead DK1 (risiko 3/7), Intraday Aktiv (6/7) og Spread DK1/DK2 (4/7).
@@ -15,6 +15,7 @@ Ny forretningsmodel: private brugere sætter (simulerede) penge ind og køber an
 3. Brugerkonto: simuleret MitID (kun navn), egnethedstest (Ikke egnet/Basis/Udvidet/Høj), kontantkonto med simuleret ind- og udbetaling ("opbevares hos uafhængig depotbank"), køb af andele, Min portefølje og udtrædelse på produktets næste handelsdag (`/api/account`).
 4. Rolleskifter Trader/Bruger. Den gamle fond-side (Investor/Strategi) er erstattet af produkterne; gebyrberegneren ligger på produktsiden med produktets satser. "Simulerede resultater. Ikke faktiske afkast." står nu på alle sider, også desk'ens.
 5. Tests: 25 enhedstests og 35 browsertests.
+6. Deploy: de første produktions-deploys blev sprunget over, fordi Netlify-kreditterne var brugt op. Efter opgradering af planen blev `main` deployet fra Claude-sessionen og tjekket live. Det ekstra Netlify-projekt `fancy-salmiakki-106317`, der byggede ved hvert push, er slettet.
 
 ## Tidligere i dag (10. nov. 2026, eftermiddag): investor- og community-demo (erstattet af produkterne)
 Merget til `main` via [PR #2](https://github.com/TroelsLange/traderdemo/pull/2) og deployet automatisk til https://traderzai.netlify.app. Netlifys deploy preview byggede uden fejl. Produktionen er ikke kontrolleret i browser endnu (kan ikke nås fra Claudes cloud-container).
@@ -81,7 +82,6 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 - Handel for i morgen er åben indtil offentliggørelse (ca. 13), ikke kun til den rigtige auktionslukning kl. 12.
 - Hukommelsescachen i prisfunktionen virker ikke under `netlify dev` (ny worker pr. kald); CDN-cachen virker i produktion.
 - Handler fra den gamle version (nøgle `stroemkurs-desk-v1`) vises ikke.
-- Der findes et ekstra Netlify-projekt, `fancy-salmiakki-106317`, som også bygger fra repoet. Bør slettes, hvis det ikke bruges.
 - Kosmetisk: toast kan dække indhold; akseetiketter i positionsgrafen bliver store på brede skærme.
 - Hvid tekst på handlingsknapperne (grøn #09955A ca. 3,9:1, rød #F43F48 ca. 3,7:1) opfylder 3:1 for UI-elementer, men ikke 4,5:1 for normal tekst. Farverne er designsystemets Signal/Deep.
 - Mørkt tema: tokens til kort, kanter og knapper er afledt af Prime/Dark red-skalaen, fordi Figma kun definerer baggrund og tekst for Dark.
@@ -95,10 +95,9 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 2. Juridisk afklaring af produkterne for private (markedsføring, egnethed, kundemidler, GDPR, privatlivstekst).
 3. Rigtigt login (bruger og trader), så profiler og handler får en ejer.
 4. Gebyrer trukket i kursen og et rigtigt faktaark pr. produkt.
-5. Slet det ekstra Netlify-projekt `fancy-salmiakki-106317`.
-6. Tilføj PP Radio Grotesk-fontfilerne i `public/fonts/` (fjerner også 404'erne).
-7. Kør `npm test` i CI (GitHub Actions) ved push.
-8. Rigtige vejrdata (vind, temperatur) til prognosemodellen.
-9. Kvartersvisning i Marked og handel med kvartersprodukter.
-10. Serveren beregner selv handelsprisen (kræver, at prognosemodellen flyttes til serveren).
-11. Traderz-logo i navigationen.
+5. Tilføj PP Radio Grotesk-fontfilerne i `public/fonts/` (fjerner også 404'erne).
+6. Kør `npm test` i CI (GitHub Actions) ved push.
+7. Rigtige vejrdata (vind, temperatur) til prognosemodellen.
+8. Kvartersvisning i Marked og handel med kvartersprodukter.
+9. Serveren beregner selv handelsprisen (kræver, at prognosemodellen flyttes til serveren).
+10. Traderz-logo i navigationen.
