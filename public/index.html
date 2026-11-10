@@ -300,10 +300,10 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .meter.warn span{background:var(--btn-alert-border)} .meter.over span{background:var(--negative)}
 .risk-row+.risk-row{margin-top:var(--sp-2xl)}
 @media (max-width:760px){
-  #ivKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
-  #ivKpis div{min-height:0;padding:var(--sp-lg)}
-  #ivKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
-  #ivKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
+  #ivKpis,#kpKpis{grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+  #ivKpis div,#kpKpis div{min-height:0;padding:var(--sp-lg)}
+  #ivKpis strong,#kpKpis strong{font-size:var(--text-2xl);line-height:var(--leading-2xl);letter-spacing:var(--tracking-2xl)}
+  #ivKpis small,#kpKpis small{font-size:var(--text-xs);line-height:var(--leading-xs)}
 }
 .risk-row .row{justify-content:space-between;margin-bottom:var(--sp-base)}
 .months{min-width:760px}
@@ -408,6 +408,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
         <a href="#handel" data-view="handel">Handel<img src="assets/icon-plus-circle.svg" width="16" height="16" alt=""></a>
         <a href="#position" data-view="position">Position og risiko<img src="assets/icon-chart-bar-horizontal.svg" width="16" height="16" alt=""></a>
         <a href="#resultat" data-view="resultat">Resultat<img src="assets/icon-invoice.svg" width="16" height="16" alt=""></a>
+        <a href="#kapital" data-view="kapital">Kapital<img src="assets/icon-squares-four.svg" width="16" height="16" alt=""></a>
       </nav>
       <nav class="tabs" aria-label="Investor" data-role="investor" hidden>
         <a href="#investor" data-view="investor">Fonden<img src="assets/icon-chart-bar.svg" width="16" height="16" alt=""></a>
@@ -467,10 +468,13 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
       <form class="panel c5 order" id="orderForm" novalidate>
         <fieldset class="step">
           <legend class="step-h"><span class="step-n">1</span>Marked</legend>
+          <div><label class="field" for="fFund">Produkt</label>
+            <select class="input" id="fFund"></select>
+            <p class="help" id="fFundHelp"></p></div>
           <div class="formgrid">
             <div><label class="field" for="fArea">Område</label>
               <select class="input" id="fArea"><option value="DK1">DK1 Vestdanmark</option><option value="DK2">DK2 Østdanmark</option></select></div>
-            <div><label class="field" for="fProd">Produkt</label>
+            <div><label class="field" for="fProd">Kontrakt</label>
               <select class="input" id="fProd"><option value="base">Base 00–24</option><option value="peak">Peak 08–20</option><option value="offpeak">Off-peak</option><option value="block">Timeblok</option></select></div>
           </div>
           <div class="formgrid" id="blockRow" hidden>
@@ -522,6 +526,8 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     <div class="row spread" style="align-items:flex-end">
       <div><h1>Position og risiko</h1><p class="lead" id="psLead"></p></div>
       <div class="row" style="gap:var(--sp-base)">
+        <label class="field" for="psFund" style="margin:0">Produkt</label>
+        <select class="input compact" id="psFund" style="width:auto"></select>
         <label class="field" for="limitInput" style="margin:0">Grænse pr. time</label>
         <input class="input compact" id="limitInput" inputmode="numeric" style="width:90px">
         <span class="small muted">MW</span>
@@ -542,6 +548,17 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     <div class="panel stack">
       <h2>Følsomhed</h2>
       <div class="table-wrap" id="sensTable"></div>
+    </div>
+  </section>
+
+  <!-- KAPITAL -->
+  <section class="view stack" id="view-kapital" hidden>
+    <div><h1>Kapital pr. produkt</h1><p class="lead" id="kpLead">Hvor meget kapital hvert produkt har at handle med, ind- og udbetalinger fra brugerne og produktets kurs. Alle beløb er demo, og kursen bygger på demodata og papirhandler.</p></div>
+    <div class="kpis" id="kpKpis"></div>
+    <div class="panel stack">
+      <div class="row spread"><h2>Produkter</h2><span class="badge sim">Demo</span></div>
+      <div class="table-wrap" id="kpTable"></div>
+      <p class="source" id="kpSource"></p>
     </div>
   </section>
 
@@ -725,14 +742,14 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   // ---------- State ----------
   // Handlerne ligger i den fælles handelsbog (/api/book, Netlify Blobs). Svarer den ikke,
   // gemmes de i browserens localStorage, og det står tydeligt i et banner.
-  function init(){ return { seed:Math.floor(Math.random()*1e9), trades:[], limit:50, nextId:1 }; }
+  function init(){ return { seed:Math.floor(Math.random()*1e9), trades:[], limit:50, limits:{}, nextId:1 }; }
   let state=init();
   const book={ mode:'loading', updatedAt:null, error:null };   // mode: loading | remote | local
   function loadLocal(){ try { const s=JSON.parse(localStorage.getItem(KEY)); return s&&Array.isArray(s.trades)?s:null; } catch(e){ return null; } }
   function save(){ if(book.mode!=='local') return; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
   function useState(s){
     if(s.seed!==state.seed) for(const k in cache) delete cache[k];
-    state={ seed:s.seed, trades:s.trades, limit:s.limit, nextId:s.nextId, importedAt:s.importedAt };
+    state={ seed:s.seed, trades:s.trades, limit:s.limit, limits:s.limits||{}, nextId:s.nextId, importedAt:s.importedAt };
   }
   const ui = { area:'DK1', side:'buy', src:'demo' };
 
@@ -819,7 +836,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   function localAct(op,a){
     if(op==='trade'){ const trade=Object.assign({},a.trade,{ id:state.nextId++, tradedOn:TODAY(), settled:false, createdAt:new Date().toISOString() }); state.trades.push(trade); return {trade}; }
     if(op==='cancel'){ state.trades=state.trades.filter(x=>x.id!==a.id); return {}; }
-    if(op==='limit'){ state.limit=a.limit; return {}; }
+    if(op==='limit'){ state.limits=Object.assign({},state.limits,{[a.fund]:a.limit}); if(a.fund==='da-dk1') state.limit=a.limit; return {}; }
     if(op==='reset'){ useState(init()); return {}; }
     throw new Error('Ukendt handling');
   }
@@ -900,12 +917,41 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   function hoursLabel(t){ if(t.product!=='block') return PRODUCTS[t.product].label; return 'Timer '+hh(t.from)+'–'+hh(t.to); }
   const BADGE={ fc:'<span class="badge fc">Prognose</span>', live:'<span class="badge live">Spot</span>', sim:'<span class="badge sim">Simuleret</span>' };
 
+  // ---------- Produkter (public/data/products.json) ----------
+  // Indtil kataloget er hentet (eller hvis siden er åbnet som fil), bruges en minimal reserveliste.
+  let CATALOG={ launch:'2026-11-01', suitability:{ byRisk:{} }, redemptionText:{},
+    products:[ { id:'da-dk1', name:'Day-Ahead DK1', areas:['DK1'], limitMw:50, risk:3 }, { id:'intraday', name:'Intraday Aktiv', areas:['DK1','DK2'], limitMw:40, risk:6 }, { id:'spread', name:'Spread DK1/DK2', areas:['DK1','DK2'], limitMw:30, risk:4 } ] };
+  const FUNDS=()=>CATALOG.products;
+  const fundById=id=>FUNDS().find(p=>p.id===id);
+  const fundOf=t=>t.fund&&fundById(t.fund)?t.fund:(t.area==='DK2'?'spread':'da-dk1');   // handler fra før produkterne
+  const fundName=id=>(fundById(id)||{name:id}).name;
+  const limitOf=id=>(state.limits&&state.limits[id])||(fundById(id)||{}).limitMw||state.limit;
+  async function loadCatalog(){
+    try { const r=await fetch('data/products.json',{headers:{accept:'application/json'}}); const j=await r.json(); if(r.ok && Array.isArray(j.products)) CATALOG=j; } catch(e){}
+    fillFundSelects(); route();
+  }
+  function fillFundSelects(){
+    const opts=FUNDS().map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('');
+    ['fFund','psFund'].forEach(id=>{ const el=$(id), v=el.value; el.innerHTML=opts; if(v&&fundById(v)) el.value=v; });
+  }
+  // Fondenes kurs og kapital (beregnes på serveren ud fra handler og brugernes ind- og udbetalinger).
+  const fundsData={ status:'idle', funds:[], error:null };
+  async function loadFunds(){
+    try {
+      const r=await fetch('/api/funds',{headers:{accept:'application/json'}}); const j=await r.json().catch(()=>null);
+      if(!r.ok||!j||!Array.isArray(j.funds)) throw new Error((j&&j.error)||'HTTP '+r.status);
+      fundsData.status='ok'; fundsData.funds=j.funds; fundsData.today=j.today; fundsData.error=null;
+    } catch(e){ fundsData.status='error'; fundsData.error=String(e&&e.message||e); }
+  }
+  const fundState=id=>fundsData.funds.find(f=>f.id===id);
+
   // ---------- Positioner ----------
   function tradeHours(t){ return productSlots(t.product,t.del,t.from,t.to); }
   const sign=t=>t.side==='buy'?1:-1;
-  function netPosition(date, area, extra){
+  // Nettoposition pr. time; med `fund` kun for det produkt.
+  function netPosition(date, area, extra, fund){
     const pos=new Array(slotHours(date).length).fill(0);
-    state.trades.concat(extra?[extra]:[]).forEach(t=>{ if(t.del===date && t.area===area && !t.settled) tradeHours(t).forEach(i=>pos[i]+=sign(t)*t.mw); });
+    state.trades.concat(extra?[extra]:[]).forEach(t=>{ if(t.del===date && t.area===area && !t.settled && (!fund||fundOf(t)===fund)) tradeHours(t).forEach(i=>pos[i]+=sign(t)*t.mw); });
     return pos;
   }
 
@@ -973,7 +1019,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
 
   // ---------- Views ----------
   const $=id=>document.getElementById(id);
-  const VIEWS=['marked','handel','position','resultat','investor','strategi','community'];
+  const VIEWS=['marked','handel','position','resultat','kapital','investor','strategi','community'];
 
   function settleable(){ return state.trades.filter(t=>!t.settled && t.del<=DEL()); }
   function alertHtml(title,text,btnId,btnTxt){
@@ -1011,7 +1057,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     $('disclaimer').hidden=role==='trader';
     $('brandSub').textContent=ROLES[role].brand;
     renderChrome();
-    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,investor:renderInvestor,strategi:renderStrategy,community:renderCommunity})[v]();
+    ({marked:renderMarket,handel:renderTrade,position:renderPosition,resultat:renderResult,kapital:renderKapital,investor:renderInvestor,strategi:renderStrategy,community:renderCommunity})[v]();
   }
 
   function renderMarket(){
@@ -1072,7 +1118,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   function draft(){
     const product=$('fProd').value, from=+$('fFrom').value, to=+$('fTo').value;
     const mw=parseFloat(($('fMw').value||'').replace(',','.'))||0;
-    const t={ area:$('fArea').value, product, side:ui.side, mw:Math.round(mw*10)/10, del:TDEL(), note:$('fNote').value.trim() };
+    const t={ fund:$('fFund').value||'da-dk1', area:$('fArea').value, product, side:ui.side, mw:Math.round(mw*10)/10, del:TDEL(), note:$('fNote').value.trim() };
     if(product==='block'){ t.from=from; t.to=to; }
     return t;
   }
@@ -1091,7 +1137,15 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     }
     updateTrade();
   }
+  // Produktet styrer, hvilke områder der kan vælges, og hvilken grænse der gælder.
+  function syncFundForm(){
+    const f=fundById($('fFund').value)||FUNDS()[0];
+    Array.from($('fArea').options).forEach(o=>{ o.disabled=!f.areas.includes(o.value); });
+    if(!f.areas.includes($('fArea').value)) $('fArea').value=f.areas[0];
+    $('fFundHelp').textContent='Risiko '+(f.risk||'–')+'/7 · '+f.areas.join(' og ')+' · grænse '+limitOf(f.id)+' MW pr. time'+(f.notice?'. '+f.notice:'');
+  }
   function updateTrade(){
+    syncFundForm();
     $('blockRow').hidden=$('fProd').value!=='block';
     document.querySelectorAll('input[name="side"]').forEach(r=>{ r.checked=r.value===ui.side; });
     const t=draft(), hours=tradeHours(t), hs=slotHours(t.del);
@@ -1129,14 +1183,14 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   }
   // Timer, hvor handlen bringer positionen over grænsen (eller længere over). Kun visning; ændrer ingen beregning.
   function limitBreach(t){
-    const before=netPosition(t.del,t.area), after=netPosition(t.del,t.area,Object.assign({},t,{settled:false}));
-    const hit=after.map((v,i)=>Math.abs(v)>state.limit && Math.abs(v)>Math.abs(before[i])?Math.abs(v):0).filter(v=>v>0);
+    const L=limitOf(t.fund), before=netPosition(t.del,t.area,null,t.fund), after=netPosition(t.del,t.area,Object.assign({},t,{settled:false}),t.fund);
+    const hit=after.map((v,i)=>Math.abs(v)>L && Math.abs(v)>Math.abs(before[i])?Math.abs(v):0).filter(v=>v>0);
     return { hours:hit.length, max:hit.length?Math.max(...hit):0 };
   }
   function orderWarnings(t){
     const w=[], b=limitBreach(t);
     if(b.hours) w.push({ kind:'limit', title:'Overskrider positionsgrænsen',
-      text:'Efter handlen ligger '+b.hours+(b.hours===1?' time':' timer')+' over grænsen på '+state.limit+' MW i '+t.area+' (op til '+nf1.format(b.max)+' MW). Du bliver bedt om at bekræfte.' });
+      text:'Efter handlen ligger '+b.hours+(b.hours===1?' time':' timer')+' over '+fundName(t.fund)+'s grænse på '+limitOf(t.fund)+' MW i '+t.area+' (op til '+nf1.format(b.max)+' MW). Du bliver bedt om at bekræfte.' });
     if(t.mw>BIG_MW) w.push({ kind:'big', title:'Stor handel',
       text:nf1.format(t.mw)+' MW er over '+BIG_MW+' MW. Du bliver bedt om at bekræfte.' });
     return w;
@@ -1154,15 +1208,15 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     });
   }
   function drawTradePos(t){
-    const area=$('fArea').value, D=TDEL();
-    const now=netPosition(D,area), after=t?netPosition(D,area,Object.assign({},t,{settled:false})):now;
-    $('tdPosChart').innerHTML='<div class="small muted" style="margin-bottom:4px">'+area+(t?', stiplet = før handlen':'')+'</div>'+posChart(after,state.limit,t?now:null,D);
-    const breach=after.filter(v=>Math.abs(v)>state.limit).length;
-    $('tdLimitTxt').innerHTML=breach?'<span class="warnc">'+breach+' timer over grænsen på '+state.limit+' MW</span>':'Grænse '+state.limit+' MW pr. time';
+    const area=$('fArea').value, D=TDEL(), fund=$('fFund').value||'da-dk1', L=limitOf(fund);
+    const now=netPosition(D,area,null,fund), after=t?netPosition(D,area,Object.assign({},t,{settled:false}),fund):now;
+    $('tdPosChart').innerHTML='<div class="small muted" style="margin-bottom:4px">'+esc(fundName(fund))+', '+area+(t?', stiplet = før handlen':'')+'</div>'+posChart(after,L,t?now:null,D);
+    const breach=after.filter(v=>Math.abs(v)>L).length;
+    $('tdLimitTxt').innerHTML=breach?'<span class="warnc">'+breach+' timer over grænsen på '+L+' MW</span>':'Grænse '+L+' MW pr. time';
     const open=state.trades.filter(x=>x.del===D&&!x.settled);
-    $('tdOpen').innerHTML=open.length?table(['#','Område','Produkt','Retning','MW','Pris','Note',''],open.map(x=>[
-      x.id,x.area,hoursLabel(x),'<span class="tag '+x.side+'">'+(x.side==='buy'?'Køb':'Salg')+'</span>',nf1.format(x.mw),eur(x.price),esc(x.note||''),'<button class="btn small" data-cancel="'+x.id+'">Annullér</button>'
-    ]),[4,5]):'<div class="empty">Ingen handler for leveringsdagen endnu.</div>';
+    $('tdOpen').innerHTML=open.length?table(['#','Produkt','Område','Kontrakt','Retning','MW','Pris','Note',''],open.map(x=>[
+      x.id,esc(fundName(fundOf(x))),x.area,hoursLabel(x),'<span class="tag '+x.side+'">'+(x.side==='buy'?'Køb':'Salg')+'</span>',nf1.format(x.mw),eur(x.price),esc(x.note||''),'<button class="btn small" data-cancel="'+x.id+'">Annullér</button>'
+    ]),[5,6]):'<div class="empty">Ingen handler for leveringsdagen endnu.</div>';
     $('tdOpen').querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',async()=>{
       const id=+b.dataset.cancel; b.disabled=true;
       try { await act('cancel',{id}); toast('Handel #'+id+' annulleret'); }
@@ -1183,7 +1237,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     busy=true; $('placeBtn').disabled=true;
     try {
       const { trade } = await act('trade',{trade:t});
-      const after=netPosition(t.del,t.area); const breach=after.some(v=>Math.abs(v)>state.limit);
+      const after=netPosition(t.del,t.area,null,t.fund); const breach=after.some(v=>Math.abs(v)>limitOf(t.fund));
       toast('Handel #'+trade.id+' registreret: '+(t.side==='buy'?'Køb ':'Salg ')+nf1.format(t.mw)+' MW '+hoursLabel(trade)+' '+t.area+(breach?'. Bemærk: grænsen er overskredet':''));
       $('fNote').value='';
     } catch(e){
@@ -1198,20 +1252,21 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     const waitingN=shifted()?state.trades.filter(t=>t.del===DEL()&&!t.settled).length:0;
     $('psLead').textContent='Leveringsdag '+longDate(D)+'. Urealiseret resultat er beregnet mod '+(dReal?'den offentliggjorte spotpris':'prognosen')+'.'+
       (waitingN?' '+waitingN+(waitingN===1?' handel':' handler')+' for '+longDate(DEL())+' kan afregnes nu.':'')+dstNote(D);
-    $('limitInput').value=state.limit;
-    const p1=netPosition(D,'DK1'), p2=netPosition(D,'DK2');
-    const open=state.trades.filter(t=>t.del===D&&!t.settled);
+    const F=$('psFund').value||'da-dk1', L=limitOf(F);
+    $('limitInput').value=L;
+    const p1=netPosition(D,'DK1',null,F), p2=netPosition(D,'DK2',null,F);
+    const open=state.trades.filter(t=>t.del===D&&!t.settled&&fundOf(t)===F);
     const unreal=open.reduce((s,t)=>s+sign(t)*t.mw*tradeHours(t).length*(avgH(pricesFor(D,t.area).prices,tradeHours(t))-t.price),0);
     const net=p=>p.reduce((s,v)=>s+v,0), gross=p=>p.reduce((s,v)=>s+Math.abs(v),0);
-    const breaches=p1.concat(p2).filter(v=>Math.abs(v)>state.limit).length;
+    const breaches=p1.concat(p2).filter(v=>Math.abs(v)>L).length;
     $('psKpis').innerHTML=
       '<div><span>Netto DK1</span><strong class="'+cls(net(p1))+'">'+nf1.format(net(p1))+' MWh</strong><small>'+(net(p1)>=0?'lang':'kort')+'</small></div>'+
       '<div><span>Netto DK2</span><strong class="'+cls(net(p2))+'">'+nf1.format(net(p2))+' MWh</strong><small>'+(net(p2)>=0?'lang':'kort')+'</small></div>'+
       '<div><span>Brutto eksponering</span><strong>'+nf1.format(gross(p1)+gross(p2))+' MWh</strong><small>sum af timepositioner</small></div>'+
       '<div><span>Urealiseret</span><strong class="'+cls(unreal)+'">'+smoney(unreal)+'</strong><small>'+(dReal?'mod spotpris':'mod prognose')+'</small></div>'+
-      '<div><span>Grænsebrud</span><strong>'+breaches+'</strong><small>'+(breaches?'<span class="warnc">timer over '+state.limit+' MW</span>':'timer over '+state.limit+' MW')+'</small></div>';
-    $('psChart1').innerHTML=posChart(p1,state.limit,null,D);
-    $('psChart2').innerHTML=posChart(p2,state.limit,null,D);
+      '<div><span>Grænsebrud</span><strong>'+breaches+'</strong><small>'+(breaches?'<span class="warnc">timer over '+L+' MW</span>':'timer over '+L+' MW')+'</small></div>';
+    $('psChart1').innerHTML=posChart(p1,L,null,D);
+    $('psChart2').innerHTML=posChart(p2,L,null,D);
     const scen=[-30,-10,10,30];
     const rowFor=(name,pos)=>{ const n=net(pos); return [name, nf1.format(n)+' MWh'].concat(scen.map(d=>{ const v=n*d; return '<span class="'+cls(v)+'">'+smoney(v)+'</span>'; })); };
     let windTxt='';
@@ -1245,10 +1300,10 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     $('rsChart').innerHTML=lineChart(pts);
     $('rsDays').innerHTML=dayKeys.length?table(['Levering','Handler','Resultat'],dayKeys.slice().reverse().map(d=>[shortDate(d),days[d].n,'<span class="'+cls(days[d].pnl)+'">'+smoney(days[d].pnl)+'</span>']),[1,2]):'<div class="empty">Ingen afregnede dage endnu.</div>';
     const all=state.trades.slice().sort((a,b)=>b.id-a.id);
-    $('rsBlotter').innerHTML=all.length?table(['#','Levering','Område','Produkt','Retning','MW','Pris','Spot','Resultat','Note'],all.map(t=>[
-      t.id, shortDate(t.del), t.area, hoursLabel(t), '<span class="tag '+t.side+'">'+(t.side==='buy'?'Køb':'Salg')+'</span>', nf1.format(t.mw), eur(t.price),
+    $('rsBlotter').innerHTML=all.length?table(['#','Levering','Produkt','Område','Kontrakt','Retning','MW','Pris','Spot','Resultat','Note'],all.map(t=>[
+      t.id, shortDate(t.del), esc(fundName(fundOf(t))), t.area, hoursLabel(t), '<span class="tag '+t.side+'">'+(t.side==='buy'?'Køb':'Salg')+'</span>', nf1.format(t.mw), eur(t.price),
       t.settled?eur(t.settle):'<span class="tag open">Åben</span>', t.settled?'<span class="'+cls(t.pnl)+'">'+smoney(t.pnl)+'</span>':'<span class="muted">–</span>', esc(t.note||'')
-    ]),[5,6,7,8]):'<div class="empty">Ingen handler endnu. <a href="#handel">Lav den første</a>.</div>';
+    ]),[6,7,8,9]):'<div class="empty">Ingen handler endnu. <a href="#handel">Lav den første</a>.</div>';
   }
 
   // Afregning: kun mod rigtige spotpriser fra Energi Data Service, aldrig mod simulerede.
@@ -1301,7 +1356,7 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
   // Demodata: 12 hele måneder med tabsmåneder og et tydeligt fald i månederne 5–7.
   const DEMO_MONTHLY = [0.021, 0.014, -0.008, 0.032, -0.029, -0.036, -0.017, 0.024, 0.019, 0.006, 0.031, 0.012];
   const ROLES = {
-    trader:    { views:['marked','handel','position','resultat'], brand:'Desk' },
+    trader:    { views:['marked','handel','position','resultat','kapital'], brand:'Desk' },
     investor:  { views:['investor','strategi'], brand:'Fund' },
     community: { views:['community'], brand:'Community' }
   };
@@ -1557,19 +1612,54 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     renderProfiles(); renderFeed(); loadWaitlistCount();
   }
 
+  // ---------- Kapital pr. produkt (desk) ----------
+  function drawKapital(){
+    const D=TDEL();
+    if(fundsData.status!=='ok'){
+      $('kpKpis').innerHTML=''; $('kpSource').textContent='';
+      $('kpTable').innerHTML='<div class="empty">'+(fundsData.status==='error'?'Produkternes kapital kunne ikke hentes: '+esc(fundsData.error):'Henter produkternes kapital …')+'</div>';
+      return;
+    }
+    const fs=FUNDS().map(p=>({ p, f:fundState(p.id) })).filter(x=>x.f);
+    const sum=k=>fs.reduce((s,x)=>s+x.f[k],0);
+    const k=(lbl,v,sub)=>'<div><span>'+lbl+'</span><strong>'+v+'</strong><small>'+sub+'</small></div>';
+    $('kpKpis').innerHTML=
+      k('Samlet kapital',mio(sum('aum')),fs.length+' produkter')+
+      k('Indbetalt',money(sum('inflow')),'fra brugere')+
+      k('Udbetalt',money(sum('outflow')),'til brugere')+
+      k('Ventende udtrædelser',money(sum('pendingEur')),'udbetales på næste handelsdag');
+    const rows=fs.map(({p,f})=>{
+      const L=limitOf(p.id), max=Math.max(0,...['DK1','DK2'].map(a=>Math.max(0,...netPosition(D,a,null,p.id).map(Math.abs))));
+      const util=L?max/L:0;
+      return ['<strong>'+esc(p.name)+'</strong>', (p.risk||'–')+'/7', nf2.format(f.nav), mio(f.aum), money(f.inflow), money(f.outflow),
+        f.pendingEur?money(f.pendingEur):'–', '<strong>'+mio(f.aum-f.pendingEur)+'</strong>', String(f.investors),
+        nf1.format(max)+' / '+L+' MW <span class="'+(util>1?'neg':'muted')+'">('+nf0.format(util*100)+' %)</span>'];
+    });
+    $('kpTable').innerHTML=table(['Produkt','Risiko','Kurs','Kapital','Indbetalt','Udbetalt','Ventende udtrædelser','Til handel','Investorer','Position / grænse'],rows,[1,2,3,4,5,6,7,8,9]);
+    const any=fs[0]&&fs[0].f;
+    $('kpSource').innerHTML='<span class="badge sim">Demodata</span> kurs før '+longDate(CATALOG.launch)+', derefter <span class="badge fc">Papirhandler</span>. Kurs = indeks 100 for 12 måneder siden, før gebyrer'+(any?', senest '+longDate(any.navDate):'')+'. Position for leveringsdagen '+longDate(D)+'. Til handel = kapital minus ventende udtrædelser.';
+  }
+  async function renderKapital(){
+    drawKapital();
+    await loadFunds();
+    if((location.hash||'').slice(1)==='kapital') drawKapital();
+  }
+
   let tt; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),4200); }
 
   // Events
   document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{ ui.area=b.dataset.area; renderMarket(); }));
-  ['fArea','fProd','fFrom','fTo'].forEach(id=>$(id).addEventListener('change',updateTrade));
+  ['fFund','fArea','fProd','fFrom','fTo'].forEach(id=>$(id).addEventListener('change',updateTrade));
+  $('psFund').addEventListener('change',renderPosition);
   $('fMw').addEventListener('input',updateTrade);
   document.querySelectorAll('input[name="side"]').forEach(r=>r.addEventListener('change',()=>{ if(r.checked){ ui.side=r.value; updateTrade(); } }));
   $('orderForm').addEventListener('submit',e=>{ e.preventDefault(); if(!$('placeBtn').disabled) place(); });
   $('settleBtn').addEventListener('click',settle);
   $('limitInput').addEventListener('change',async()=>{
     const v=parseInt($('limitInput').value,10);
-    if(!(v>0)){ $('limitInput').value=state.limit; return; }
-    try { await act('limit',{limit:v}); } catch(e){ toast('Grænsen kunne ikke gemmes: '+(e&&e.message||e)); }
+    const F=$('psFund').value||'da-dk1';
+    if(!(v>0)){ $('limitInput').value=limitOf(F); return; }
+    try { await act('limit',{fund:F,limit:v}); } catch(e){ toast('Grænsen kunne ikke gemmes: '+(e&&e.message||e)); }
     renderPosition();
   });
   $('resetBtn').addEventListener('click',async()=>{
@@ -1592,7 +1682,9 @@ dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-x
     if(market.fetchedAt && Date.now()-Date.parse(market.fetchedAt)>REFRESH_MS) loadPrices();
     if(book.mode==='remote') loadBook(true);
   });
+  fillFundSelects();
   route();
+  loadCatalog();
   loadBook();
   loadPrices();
 })();

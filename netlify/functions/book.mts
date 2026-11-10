@@ -4,7 +4,7 @@
 // POST /api/book { op: "trade", trade } -> registrér handel (serveren tildeler id)
 //                { op: "cancel", id }   -> annullér åben handel
 //                { op: "settle" }       -> afregn mod rigtig spotpris (hentes af serveren)
-//                { op: "limit", limit } -> grænse pr. time i MW
+//                { op: "limit", fund, limit } -> produktets grænse pr. time i MW
 //                { op: "reset" }        -> slet alle handler og start forfra
 //                { op: "import", book } -> overfør handler fra browserens localStorage (kun til tom bog)
 //
@@ -13,6 +13,7 @@
 import { getStore } from "@netlify/blobs";
 import { fetchDays, type Day } from "../lib/energinet.mts";
 import { addDays, copenhagenDate, hourly, productSlots, PRODUCTS, type Product } from "../lib/hours.mts";
+import { legacyFund, productById, PRODUCTS as FUNDS } from "../lib/funds.mts";
 
 const KEY = "book";
 const MAX_TRADES = 5000;
@@ -21,6 +22,7 @@ const MAX_DAYS_BACK = 62;
 
 export type Trade = {
   id: number;
+  fund: string; // produktet handlen hører til (public/data/products.json)
   area: "DK1" | "DK2";
   product: Product;
   from?: number;
@@ -39,7 +41,7 @@ export type Trade = {
   pnl?: number;
   settledAt?: string;
 };
-export type Book = { version: 1; seed: number; limit: number; nextId: number; trades: Trade[]; updatedAt: string };
+export type Book = { version: 1; seed: number; limit: number; limits: Record<string, number>; nextId: number; trades: Trade[]; updatedAt: string };
 
 // Den del af Netlify Blobs-API'et, vi bruger (så testene kan give en butik i hukommelsen).
 export type BookStore = {
@@ -59,8 +61,16 @@ const isDate = (s: unknown): s is string => typeof s === "string" && /^\d{4}-\d{
 const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const tradeSlots = (t: Pick<Trade, "product" | "del" | "from" | "to">) => productSlots(t.product, t.del, t.from, t.to);
 
+const defaultLimits = () => Object.fromEntries(FUNDS.map((p) => [p.id, p.limitMw]));
+// Bøger fra før produkterne: handler får et produkt, og hvert produkt får en grænse.
+function normalize(book: Book): Book {
+  for (const t of book.trades) if (!t.fund || !productById(t.fund)) t.fund = legacyFund(t.area);
+  book.limits = { ...defaultLimits(), ...(book.limits || {}) };
+  return book;
+}
+
 function newBook(now: number): Book {
-  return { version: 1, seed: Math.floor(Math.random() * 1e9), limit: 50, nextId: 1, trades: [], updatedAt: new Date(now).toISOString() };
+  return { version: 1, seed: Math.floor(Math.random() * 1e9), limit: 50, limits: defaultLimits(), nextId: 1, trades: [], updatedAt: new Date(now).toISOString() };
 }
 
 // Kontrollerer en ny handel fra klienten. Prisen beregnes i klienten ud fra prognosen.
@@ -68,14 +78,17 @@ function validTrade(x: any, today: string): Omit<Trade, "id" | "tradedOn" | "set
   const tomorrow = addDays(today, 1);
   if (!x || typeof x !== "object") throw new HttpError(400, "Handel mangler");
   if (x.area !== "DK1" && x.area !== "DK2") throw new HttpError(400, "Ukendt område");
-  if (!PRODUCTS.includes(x.product)) throw new HttpError(400, "Ukendt produkt");
+  if (!PRODUCTS.includes(x.product)) throw new HttpError(400, "Ukendt kontrakt");
+  const fund = productById(x.fund ?? legacyFund(x.area));
+  if (!fund) throw new HttpError(400, "Ukendt produkt");
+  if (!fund.areas.includes(x.area)) throw new HttpError(400, fund.name + " må kun handle " + fund.areas.join(" og ") + ".");
   if (x.side !== "buy" && x.side !== "sell") throw new HttpError(400, "Ukendt retning");
   if (!isNum(x.mw) || x.mw <= 0) throw new HttpError(400, "Volumen skal være større end 0 MW.");
   if (x.mw > 500) throw new HttpError(400, "Volumen over 500 MW pr. handel er spærret. Del handlen op.");
   if (!isDate(x.del) || x.del < tomorrow || x.del > addDays(tomorrow, 1)) throw new HttpError(400, "Leveringsdagen kan ikke handles");
   if (!isNum(x.price) || Math.abs(x.price) > 10000 || !isNum(x.fair)) throw new HttpError(400, "Ugyldig pris");
   const t: any = {
-    area: x.area, product: x.product, side: x.side, mw: Math.round(x.mw * 10) / 10, del: x.del,
+    fund: fund.id, area: x.area, product: x.product, side: x.side, mw: Math.round(x.mw * 10) / 10, del: x.del,
     note: typeof x.note === "string" ? x.note.trim().slice(0, 60) : "",
     price: Math.round(x.price * 100) / 100, fair: x.fair, simBasis: !!x.simBasis,
   };
@@ -98,7 +111,7 @@ function importedTrades(list: unknown): Trade[] {
       throw new HttpError(400, "Ugyldig handel i import");
     }
     const t: Trade = {
-      id: x.id, area: x.area === "DK2" ? "DK2" : "DK1", product: x.product, side: x.side === "sell" ? "sell" : "buy",
+      id: x.id, fund: legacyFund(x.area), area: x.area === "DK2" ? "DK2" : "DK1", product: x.product, side: x.side === "sell" ? "sell" : "buy",
       mw: x.mw, del: x.del, note: typeof x.note === "string" ? x.note.slice(0, 60) : "", price: x.price,
       fair: isNum(x.fair) ? x.fair : x.price, tradedOn: isDate(x.tradedOn) ? x.tradedOn : x.del, simBasis: !!x.simBasis,
       settled: !!x.settled && isNum(x.settle) && isNum(x.pnl),
@@ -114,6 +127,7 @@ export function createBookHandler({ store = () => getStore({ name: "traderz", co
     const cur = await s.getWithMetadata(KEY, { type: "json" });
     const book = cur?.data as Book | undefined;
     if (!book || !Array.isArray(book.trades)) return null;
+    normalize(book);
     // Den lokale Blobs-server under `netlify dev` sender ingen ETag ved læsning; list() gør.
     const etag = cur!.etag || (await s.list({ prefix: KEY })).blobs.find((b) => b.key === KEY)?.etag;
     return { book, etag };
@@ -211,7 +225,9 @@ export function createBookHandler({ store = () => getStore({ name: "traderz", co
         }
         case "limit": {
           if (!Number.isInteger(body.limit) || body.limit < 1 || body.limit > 100000) throw new HttpError(400, "Ugyldig grænse");
-          const { book } = await mutate(s, (b) => { b.limit = body.limit; });
+          const fund = productById(body.fund ?? "da-dk1");
+          if (!fund) throw new HttpError(400, "Ukendt produkt");
+          const { book } = await mutate(s, (b) => { b.limits[fund.id] = body.limit; if (fund.id === "da-dk1") b.limit = body.limit; });
           return json({ book });
         }
         case "reset": {

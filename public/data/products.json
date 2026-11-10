@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "launch": "2026-11-01",
+  "note": "Demo. Alle produkter, tal og vilkår er konstrueret til prototypen. Kursen før 'launch' er demodata; derefter beregnes den ud fra desk'ens papirhandler.",
+  "suitability": {
+    "levels": { "basis": "Basis", "udvidet": "Udvidet", "hoej": "Høj" },
+    "byRisk": { "1": "basis", "2": "basis", "3": "basis", "4": "udvidet", "5": "udvidet", "6": "hoej", "7": "hoej" }
+  },
+  "products": [
+    {
+      "id": "da-dk1",
+      "name": "Day-Ahead DK1",
+      "risk": 3,
+      "areas": ["DK1"],
+      "limitMw": 50,
+      "seedCapital": 4000000,
+      "minEur": 1000,
+      "feeMgmt": 0.01,
+      "feePerf": 0.15,
+      "redemption": "weekly",
+      "traders": ["sl", "mk"],
+      "tagline": "Rolig handel med morgendagens strøm i Vestdanmark.",
+      "strategy": "Produktet køber og sælger strøm til levering i morgen i Vestdanmark (DK1). Traderne sammenligner vores prognose med markedets forventning og tager mindre positioner, når de vurderer, at prisen bliver højere eller lavere end ventet. Alle positioner lukkes mod den officielle spotpris dagen efter, så produktet aldrig ejer strøm.",
+      "riskText": "Positionen pr. time må højst være 50 MW. Kun prisområde DK1.",
+      "demoMonthly": [0.009, 0.006, -0.004, 0.012, -0.011, -0.016, -0.007, 0.010, 0.008, 0.003, 0.011, 0.005],
+      "demoVol": 0.0025,
+      "factsheet": "faktaark/da-dk1.html"
+    },
+    {
+      "id": "intraday",
+      "name": "Intraday Aktiv",
+      "risk": 6,
+      "areas": ["DK1", "DK2"],
+      "limitMw": 40,
+      "seedCapital": 2000000,
+      "minEur": 5000,
+      "feeMgmt": 0.02,
+      "feePerf": 0.20,
+      "redemption": "monthly",
+      "traders": ["jr"],
+      "tagline": "Aktiv handel tæt på leveringstidspunktet. Store udsving.",
+      "strategy": "Produktet handler aktivt i timer, hvor prisen ændrer sig meget, f.eks. aftenspidsen eller timer med meget vind og sol. Målet er højere afkast, men værdien kan svinge meget fra måned til måned. I prototypen handles produktet indtil videre med timeblokke på day-ahead-markedet; rigtig intraday-handel er ikke bygget endnu.",
+      "riskText": "Positionen pr. time må højst være 40 MW. DK1 og DK2. Høj risiko: kræver et højt resultat i egnethedstesten.",
+      "demoMonthly": [0.038, -0.026, 0.049, -0.058, 0.022, -0.074, 0.031, 0.056, -0.039, 0.044, -0.018, 0.030],
+      "demoVol": 0.011,
+      "factsheet": "faktaark/intraday.html",
+      "notice": "Handles med day-ahead-timeblokke, indtil intraday-handel er bygget."
+    },
+    {
+      "id": "spread",
+      "name": "Spread DK1/DK2",
+      "risk": 4,
+      "areas": ["DK1", "DK2"],
+      "limitMw": 30,
+      "seedCapital": 3000000,
+      "minEur": 2500,
+      "feeMgmt": 0.015,
+      "feePerf": 0.20,
+      "redemption": "weekly",
+      "traders": ["mk"],
+      "tagline": "Prisforskellen mellem Øst- og Vestdanmark.",
+      "strategy": "Produktet handler forskellen mellem prisen i Vestdanmark (DK1) og Østdanmark (DK2). Når traderne forventer, at forskellen bliver større eller mindre end markedet tror, køber de i det ene område og sælger i det andet. Det gør produktet mindre afhængigt af, om strømprisen generelt stiger eller falder.",
+      "riskText": "Positionen pr. time må højst være 30 MW pr. område. DK1 og DK2.",
+      "demoMonthly": [0.014, 0.009, -0.006, 0.019, -0.018, -0.024, -0.011, 0.016, 0.012, 0.004, 0.019, 0.008],
+      "demoVol": 0.004,
+      "factsheet": "faktaark/spread.html"
+    }
+  ],
+  "redemptionText": { "daily": "dagligt", "weekly": "ugentligt (fredag)", "monthly": "månedligt (sidste dag i måneden)" }
+}

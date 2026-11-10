@@ -74,8 +74,8 @@ test("afregning venter på spot og afregner derefter mod rigtig pris", async ({ 
   await expect(page.locator("#toast")).toContainText("1 handel afregnet mod spotpris");
   // DK1 base i testdata: gennemsnit af 50,15 … 73,15 = 61,65.
   const cells = page.locator("#rsBlotter tbody tr").first().locator("td");
-  await expect(cells.nth(7)).toHaveText("61,65");
-  const price = num(await cells.nth(6).textContent());
-  const pnl = num(await cells.nth(8).textContent());
+  await expect(cells.nth(8)).toHaveText("61,65");
+  const price = num(await cells.nth(7).textContent());
+  const pnl = num(await cells.nth(9).textContent());
   expect(Math.abs(pnl - Math.round(240 * (61.65 - price)))).toBeLessThanOrEqual(1);
 });
