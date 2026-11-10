@@ -132,3 +132,18 @@ test("book: virker også uden ETag ved læsning (lokal Blobs-server)", async () 
   assert.ok(res.every((r) => r.status === 200));
   assert.equal((await call()).book.trades.length, 3);
 });
+
+test("waitlist: kræver navn, gyldig e-mail og samtykke; samme e-mail tælles én gang", async () => {
+  const { createWaitlistHandler } = await import("../../netlify/functions/waitlist.mts");
+  const store = memoryStore();
+  const h = createWaitlistHandler({ store: () => store });
+  const post = async (b) => { const r = await h(new Request("http://x/api/waitlist", { method: "POST", body: JSON.stringify(b) })); return { status: r.status, ...(await r.json()) }; };
+  assert.equal((await post({ name: "A", email: "a@b.dk" })).status, 400, "uden samtykke");
+  assert.equal((await post({ name: "", email: "a@b.dk", consent: true })).status, 400);
+  assert.equal((await post({ name: "A", email: "ikke-en-mail", consent: true })).status, 400);
+  assert.equal((await post({ name: "A", email: "a@b.dk", consent: true, interest: "investor" })).count, 1);
+  assert.equal((await post({ name: "A igen", email: "A@B.dk", consent: true })).count, 1, "samme e-mail");
+  assert.equal((await post({ name: "C", email: "c@d.dk", consent: true })).count, 2);
+  const g = await (await h(new Request("http://x/api/waitlist"))).json();
+  assert.deepEqual(g, { count: 2 }, "GET udleverer kun antal");
+});

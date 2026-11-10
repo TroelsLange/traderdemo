@@ -2,7 +2,16 @@
 
 Senest opdateret: 10. november 2026.
 
-## Hvad vi lavede i dag (10. nov. 2026)
+## Hvad vi lavede i dag (10. nov. 2026, eftermiddag): investor- og community-demo
+1. Rolleskifter øverst: Trader (desk'en, uændret), Investor og Community. Demo uden login; rollen følger URL'en.
+2. Investor, Fonden: nøgletal (samlet afkast, afkast i år, årligt afkast, volatilitet, største fald, Sharpe, træfprocent), NAV-graf med markering af fald over 3 %, månedstabel, aktuel risiko i DK1/DK2 i forhold til grænsen (kun aggregerede tal) og gebyrberegner (2 % forvaltning, 20 % resultathonorar, konfigurerbart i `FUND`).
+3. Investor, Strategi: hvad fonden handler, hvordan risiko styres, og en tabel med grænser og satser hentet fra desk'ens konstanter.
+4. Data: vælg mellem demodata (12 måneder med 4 tabsmåneder og et fald på ca. 10 % fra marts til juni) og papirhandler (desk'ens afregnede handler med en antaget startkapital på 10 mio. EUR).
+5. "Simulerede resultater. Ikke faktiske afkast." står fast i sidehovedet på alle Investor- og Community-sider sammen med datagrundlaget.
+6. Community: tre demoprofiler med resultater og stil, feed med positioner og kommentarer vist først efter afregning, Følg-knap og venteliste (`/api/waitlist`, Netlify Blobs, kræver samtykke).
+7. Tests: 14 enhedstests og 27 browsertests (10 nye for roller, ansvarsfraskrivelse, nøgletal, gebyrer, feed og venteliste).
+
+## Tidligere i dag (10. nov. 2026, formiddag)
 Alt er merget til `main` via [PR #1](https://github.com/TroelsLange/traderdemo/pull/1) og deployet automatisk til https://traderzai.netlify.app. Netlifys deploy preview byggede uden fejl. Produktionen er ikke kontrolleret i browser endnu (kan ikke nås fra Claudes cloud-container).
 
 1. Fælles handelsbog: ny funktion `/api/book` gemmer handler i Netlify Blobs, så alle brugere og enheder ser de samme handler. Afregning sker på serveren mod rigtig spot. Svarer bogen ikke, gemmes handler i browseren med et tydeligt banner, og de flyttes til bogen, når den svarer igen.
@@ -28,6 +37,8 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 - 23/25-timers dage.
 - Fallback ved prisfejl (simulerede priser + advarsel) og ved bogfejl (localStorage + advarsel).
 - Mobilvisning uden vandret scroll.
+- Rolleskifter og investor-/community-demo med fast ansvarsfraskrivelse.
+- Venteliste med samtykke.
 - `npm test` (enheds- og browsertests uden netværk).
 
 ## Halvfærdigt
@@ -38,6 +49,8 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 - Fonten PP Radio Grotesk mangler (licens); siden viser Helvetica/Arial.
 - Logo: kun tekst "Traderz Desk"; designsystemet har kun et Naia-logo.
 - Testene kører ikke automatisk i CI endnu.
+- Investor- og communitytal er demodata eller papirhandler. Profilerne er fiktive demoprofiler, og Følg gemmes kun i browseren.
+- Papirhandler giver først årligt afkast og Sharpe efter 60 dage.
 
 ## Kendte fejl og begrænsninger
 - Den fælles bog er ikke afprøvet i produktion endnu (kun under `netlify dev` og i testene). Tjek: lav en handel, åbn siden i en anden browser, afregn.
@@ -51,14 +64,17 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 - Kosmetisk: toast kan dække indhold; akseetiketter i positionsgrafen bliver store på brede skærme.
 - Hvid tekst på handlingsknapperne (grøn #09955A ca. 3,9:1, rød #F43F48 ca. 3,7:1) opfylder 3:1 for UI-elementer, men ikke 4,5:1 for normal tekst. Farverne er designsystemets Signal/Deep.
 - Mørkt tema: tokens til kort, kanter og knapper er afledt af Prime/Dark red-skalaen, fordi Figma kun definerer baggrund og tekst for Dark.
+- Ventelisten har ingen side til at se eller eksportere tilmeldinger (kun Netlifys Blobs-oversigt) og ingen funktion til at slette en tilmelding ved tilbagetrukket samtykke.
+- Inden siden vises for eksterne investorer: få afklaret de juridiske krav til markedsføring af en fond, også med simulerede tal.
 
 ## Næste skridt (prioriteret)
-1. Tjek den fælles bog i produktion (se ovenfor).
-2. Slet det ekstra Netlify-projekt `fancy-salmiakki-106317`.
-3. Login (Netlify team-login / `context.user`), så handler får en ejer, og nulstil kun rammer egne handler.
-4. Tilføj PP Radio Grotesk-fontfilerne i `public/fonts/` (fjerner også 404'erne).
-5. Kør `npm test` i CI (GitHub Actions) ved push.
-6. Rigtige vejrdata (vind, temperatur) til prognosemodellen.
-7. Kvartersvisning i Marked og handel med kvartersprodukter.
-8. Serveren beregner selv handelsprisen (kræver, at prognosemodellen flyttes til serveren).
-9. Traderz-logo i navigationen.
+1. Tjek den fælles bog og ventelisten i produktion.
+2. Juridisk afklaring af investorvisningen og ventelisten (markedsføring, GDPR, privatlivstekst).
+3. Slet det ekstra Netlify-projekt `fancy-salmiakki-106317`.
+4. Login (Netlify team-login / `context.user`), så handler får en ejer, og nulstil kun rammer egne handler.
+5. Tilføj PP Radio Grotesk-fontfilerne i `public/fonts/` (fjerner også 404'erne).
+6. Kør `npm test` i CI (GitHub Actions) ved push.
+7. Rigtige vejrdata (vind, temperatur) til prognosemodellen.
+8. Kvartersvisning i Marked og handel med kvartersprodukter.
+9. Serveren beregner selv handelsprisen (kræver, at prognosemodellen flyttes til serveren).
+10. Traderz-logo i navigationen.
