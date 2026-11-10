@@ -45,11 +45,46 @@
   --row-bg:#FFFFFF; --row-bg-hover:#F5F2ED; --row-border:#D9D6D2;
   --input-border:#D9D6D2; --input-focused:#C1B7B7; --input-label:#808080; --input-placeholder:#B2B2B2;
   --focus:#007DFF;
+  /* Signal-primitiver (Figma: Colors * / Signal) */
+  --neutrals-black:#000000; --signal-green-deep:#09955A; --signal-red-deep:#F43F48; --signal-red-muted-deep:#D74C4F;
+  /* Badge-tekst (gul/blå badge altid sort tekst, grøn/rød altid hvid) */
+  --badge-text:#000000; --badge-text-inverse:#FFFFFF;
+  /* Switch (Figma: elements/Switch) og valgt retning i ordreformularen */
+  --switch-bg:var(--light-surface); --switch-border:var(--border); --switch-bg-hover:var(--btn-secondary-bg-hover);
+  --select-buy-bg:color-mix(in srgb,var(--positive) 12%,var(--light-surface)); --select-buy-border:var(--signal-green-deep); --select-buy-icon:var(--signal-green-deep);
+  --select-sell-bg:color-mix(in srgb,var(--negative) 10%,var(--light-surface)); --select-sell-border:var(--signal-red-deep); --select-sell-icon:var(--signal-red-muted-deep);
+  --select-off-ring:var(--text-tertiary);
+  /* Handlingsknap: eneste fuldt mættede farve i formularen */
+  --btn-buy-bg:var(--signal-green-deep); --btn-buy-bg-hover:color-mix(in srgb,var(--signal-green-deep) 85%,var(--neutrals-black));
+  --btn-sell-bg:var(--signal-red-deep); --btn-sell-bg-hover:var(--signal-red-muted-deep); --btn-trade-text:#FFFFFF;
+  /* Advarsel i ordreoversigten */
+  --warn-bg:color-mix(in srgb,var(--badge-yellow-bg) 18%,var(--light-surface)); --warn-border:var(--btn-alert-border);
   /* Grafer: aliaser på tokens ovenfor */
   --ink:var(--text-primary); --muted:var(--text-secondary); --line:var(--border); --surface:var(--light-surface);
   --accent:var(--btn-primary-bg); --long:var(--positive); --short:var(--negative); --warn:var(--btn-alert-border);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* Mørkt tema (følger systemindstillingen). Figma: Color Surface "Dark" (bg #300F0F, tekst #FFF / #C1B7B7)
+   suppleret med Prime/Dark red-skalaen til kort, kanter og knapper. */
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --light-surface:#452727; --text-primary:#FFFFFF; --text-secondary:#C1B7B7; --text-tertiary:#978787;
+    --border:#6E5757; --creme-bg:#300F0F; --medium-creme-bg:#300F0F; --creme-text:#FFFFFF;
+    --overlay:rgba(0,0,0,.6);
+    --btn-primary-bg:#F5F2ED; --btn-primary-bg-hover:#EAE7E2; --btn-primary-bg-disabled:#6E5757; --btn-primary-text:#300F0F;
+    --btn-secondary-bg:#452727; --btn-secondary-bg-hover:#300F0F; --btn-secondary-border:#6E5757; --btn-secondary-text:#FFFFFF;
+    --badge-grey-bg:#6E5757;
+    --tabs-bg:#452727; --tabs-bg-active:#300F0F; --tabs-border:#6E5757;
+    --row-bg:#452727; --row-bg-hover:#300F0F; --row-border:#6E5757;
+    --input-border:#6E5757; --input-focused:#978787; --input-label:#C1B7B7; --input-placeholder:#978787;
+    --select-buy-bg:color-mix(in srgb,var(--positive) 18%,var(--light-surface)); --select-buy-icon:var(--positive); --select-buy-border:var(--positive);
+    --select-sell-bg:color-mix(in srgb,var(--negative) 18%,var(--light-surface)); --select-sell-icon:var(--btn-destructive-bg); --select-sell-border:var(--btn-destructive-bg);
+    --warn-bg:color-mix(in srgb,var(--badge-yellow-bg) 14%,var(--light-surface));
+  }
+  /* Ikonerne er sorte SVG'er fra Figma; vend dem på mørk baggrund. */
+  nav.tabs a img{filter:invert(1)}
 }
 *,*::before,*::after{box-sizing:inherit}
 html{height:100%}
@@ -159,16 +194,16 @@ tfoot th:first-child{border-radius:var(--radius-sm) 0 0 var(--radius-sm)} tfoot 
 .kv tbody tr:hover td{background:transparent}
 .kv th{height:32px}
 .pos{color:var(--positive);font-weight:700}.neg{color:var(--negative);font-weight:700}
-.warnc{display:inline-block;padding:0 var(--sp-sm);border-radius:var(--radius-round);background:var(--badge-yellow-bg);color:var(--text-primary);font-weight:700}
+.warnc{display:inline-block;padding:0 var(--sp-sm);border-radius:var(--radius-round);background:var(--badge-yellow-bg);color:var(--badge-text);font-weight:700}
 .empty{padding:var(--sp-2xl);text-align:center;color:var(--text-secondary)}
 
 /* Badge */
 .badge,.tag{display:inline-flex;align-items:center;gap:var(--sp-xs);height:24px;padding:var(--sp-xs) var(--sp-base);border-radius:var(--radius-round);
   font-size:var(--text-2xs);line-height:var(--leading-2xs);letter-spacing:var(--tracking-2xs);font-weight:400;text-transform:uppercase;white-space:nowrap;vertical-align:middle}
-.badge.fc{background:var(--badge-blue-bg);border:var(--border-sm) solid var(--badge-blue-border);color:var(--text-primary)}
-.badge.live,.tag.buy{background:var(--badge-green-bg);color:#FFFFFF}
-.badge.sim{background:var(--badge-yellow-bg);color:var(--text-primary)}
-.tag.sell{background:var(--badge-red-bg);color:#FFFFFF}
+.badge.fc{background:var(--badge-blue-bg);border:var(--border-sm) solid var(--badge-blue-border);color:var(--badge-text)}
+.badge.live,.tag.buy{background:var(--badge-green-bg);color:var(--badge-text-inverse)}
+.badge.sim{background:var(--badge-yellow-bg);color:var(--badge-text)}
+.tag.sell{background:var(--badge-red-bg);color:var(--badge-text-inverse)}
 .tag.open{background:var(--badge-grey-bg);color:var(--text-primary)}
 
 /* input/basic */
@@ -180,19 +215,73 @@ label.field,.field{display:block;color:var(--input-label);font-size:var(--text-x
 .input:focus-visible{outline:none}
 select.input{appearance:auto;padding-top:0;padding-bottom:0}
 .input.compact{height:32px;padding:var(--sp-xs) var(--sp-base);font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm)}
-.sidebtns{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-base)}
-.sidebtns button{height:44px;border-radius:var(--radius-round);border:var(--border-sm) solid var(--btn-secondary-border);background:var(--btn-secondary-bg);
-  font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm);cursor:pointer}
-.sidebtns button:hover{background:var(--btn-secondary-bg-hover)}
-.sidebtns button[aria-pressed="true"].b{background:var(--btn-primary-bg);border-color:var(--btn-primary-bg);color:var(--btn-primary-text)}
-.sidebtns button[aria-pressed="true"].s{background:var(--btn-destructive-bg);border-color:var(--btn-destructive-bg);color:var(--btn-destructive-text)}
+/* Ordreformular: nummererede trin */
+.order{display:flex;flex-direction:column;gap:var(--sp-3xl)}
+.step{border:0;margin:0;padding:0;min-width:0}
+.step>*+*{margin-top:var(--sp-lg)}
+.step-h{float:left;width:100%;display:flex;align-items:center;gap:var(--sp-base);padding:0;margin:0 0 var(--sp-lg);
+  font-size:var(--text-base);line-height:var(--leading-base);letter-spacing:var(--tracking-base);font-weight:700;color:var(--text-primary)}
+.step-h+*{clear:both;margin-top:0}
+.step-n{display:inline-flex;align-items:center;justify-content:center;flex:none;width:24px;height:24px;border-radius:var(--radius-round);
+  border:var(--border-sm) solid var(--border);background:var(--light-surface);font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);font-weight:700}
+.help{margin:var(--sp-base) 0 0;color:var(--text-secondary);font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs)}
+
+/* Retning: segmented control (Figma: elements/Switch) som radiogruppe */
+.segmented{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-xs);padding:var(--sp-xs);background:var(--switch-bg);
+  border:var(--border-sm) solid var(--switch-border);border-radius:var(--radius-round)}
+.seg-opt{position:relative;display:flex;align-items:center;justify-content:center;gap:var(--sp-base);min-height:40px;padding:0 var(--sp-xl);
+  border:var(--border-sm) solid transparent;border-radius:var(--radius-round);color:var(--text-secondary);cursor:pointer;user-select:none;
+  font-size:var(--text-sm);line-height:var(--leading-sm);letter-spacing:var(--tracking-sm)}
+.seg-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.seg-opt:hover{background:var(--switch-bg-hover);color:var(--text-primary)}
+.seg-mark{flex:none;width:16px;height:16px;border-radius:var(--radius-round);box-shadow:inset 0 0 0 1.5px var(--select-off-ring)}
+.seg-opt:has(input:checked){font-weight:700;color:var(--text-primary)}
+.seg-opt:has(input:checked) .seg-mark{box-shadow:none;border-radius:0;-webkit-mask:url(assets/icon-check.svg) center/16px 16px no-repeat;mask:url(assets/icon-check.svg) center/16px 16px no-repeat}
+.seg-opt.buy:has(input:checked){background:var(--select-buy-bg);border-color:var(--select-buy-border)}
+.seg-opt.buy:has(input:checked) .seg-mark{background:var(--select-buy-icon)}
+.seg-opt.sell:has(input:checked){background:var(--select-sell-bg);border-color:var(--select-sell-border)}
+.seg-opt.sell:has(input:checked) .seg-mark{background:var(--select-sell-icon)}
+.seg-opt:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
+
+/* Ordreoversigt: læses som en kvittering */
+.receipt{background:var(--medium-creme-bg);border-radius:var(--radius-md);padding:var(--sp-2xl)}
+.receipt>*+*{margin-top:var(--sp-xl)}
+.receipt .step-n{background:var(--medium-creme-bg)}
+.order-warn{display:flex;gap:var(--sp-lg);align-items:flex-start;padding:var(--sp-lg);background:var(--warn-bg);border:var(--border-sm) solid var(--warn-border);
+  border-radius:var(--radius-sm);color:var(--text-primary)}
+.order-warn+.order-warn{margin-top:var(--sp-base)}
+.order-warn .alert-icon{flex:none;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:var(--radius-round);
+  background:var(--btn-alert-bg);border:var(--border-sm) solid var(--btn-alert-border)}
+.order-warn .alert-icon img{display:block;width:14px;height:14px}
+.order-warn strong{display:block}
+
+/* Handlingsknap */
+.btn.trade{width:100%;min-height:48px;height:auto;padding:var(--sp-md) var(--sp-xl);border:0;color:var(--btn-trade-text);white-space:normal;
+  font-size:var(--text-base);line-height:var(--leading-base);letter-spacing:var(--tracking-base);font-weight:700}
+.btn.trade.buy{background:var(--btn-buy-bg)} .btn.trade.buy:hover{background:var(--btn-buy-bg-hover)}
+.btn.trade.sell{background:var(--btn-sell-bg)} .btn.trade.sell:hover{background:var(--btn-sell-bg-hover)}
+.btn.trade:disabled,.btn.trade:disabled:hover{background:var(--btn-primary-bg-disabled);color:var(--btn-trade-text);cursor:not-allowed}
+
+/* Bekræftelsesdialog (Figma: Modal) */
+dialog.confirm{border:0;border-radius:var(--radius-md);box-shadow:var(--shadow-md);padding:var(--sp-3xl);width:min(440px,calc(100vw - 2 * var(--sp-xl)));
+  background:var(--light-surface);color:var(--text-primary)}
+dialog.confirm::backdrop{background:var(--overlay)}
+dialog.confirm h2{margin-bottom:var(--sp-base)}
+dialog.confirm p{color:var(--text-secondary)}
+dialog.confirm ul{margin:var(--sp-lg) 0 var(--sp-2xl);padding-left:var(--sp-2xl)}
+dialog.confirm li+li{margin-top:var(--sp-xs)}
+dialog.confirm .actions{display:flex;flex-wrap:wrap;gap:var(--sp-base);justify-content:flex-end}
+dialog.confirm .actions .btn{height:40px}
+dialog.confirm .actions .btn.trade{width:auto;min-height:40px;padding:var(--sp-xs) var(--sp-xl);font-size:var(--text-sm);line-height:var(--leading-sm)}
 .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-lg)}
+.formgrid[hidden]{display:none}
 .quote{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp-base);text-align:center}
-.quote div{background:var(--medium-creme-bg);border-radius:var(--radius-sm);padding:var(--sp-md) var(--sp-sm)}
+.quote div{background:var(--light-surface);border-radius:var(--radius-sm);padding:var(--sp-md) var(--sp-sm)}
 .quote span{display:block;font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);text-transform:uppercase}
 .quote strong{font-size:var(--text-lg);line-height:var(--leading-lg);letter-spacing:var(--tracking-lg)}
-.summary{background:var(--medium-creme-bg);border-radius:var(--radius-sm);padding:var(--sp-lg) var(--sp-xl)}
-.summary div{display:flex;justify-content:space-between;gap:var(--sp-lg);padding:var(--sp-2xs) 0}
+.summary div{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-lg);padding:var(--sp-base) 0;border-top:var(--border-sm) dashed var(--border)}
+.summary div:first-child{border-top:0;padding-top:0}
+.summary strong{text-align:right}
 .summary span{color:var(--text-secondary)}
 .error{color:var(--negative);min-height:var(--leading-sm);margin:var(--sp-sm) 0 0}
 .note{font-size:var(--text-xs);line-height:var(--leading-xs);letter-spacing:var(--tracking-xs);color:var(--text-secondary);border-top:var(--border-sm) solid var(--border);padding-top:var(--sp-xl);margin-top:var(--sp-4xl)}
@@ -243,6 +332,7 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 
 <main><div class="wrap">
   <div class="banner" id="banner" role="alert" hidden></div>
+  <div class="banner" id="bookBanner" role="alert" hidden></div>
 
   <!-- MARKED -->
   <section class="view stack" id="view-marked" hidden>
@@ -278,28 +368,46 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   <section class="view stack" id="view-handel" hidden>
     <div><h1>Ny handel</h1><p class="lead" id="tdLead"></p></div>
     <div class="cols">
-      <div class="panel c5 stack">
-        <div class="formgrid">
-          <div><label class="field" for="fArea">Område</label>
-            <select class="input" id="fArea"><option value="DK1">DK1 Vestdanmark</option><option value="DK2">DK2 Østdanmark</option></select></div>
-          <div><label class="field" for="fProd">Produkt</label>
-            <select class="input" id="fProd"><option value="base">Base 00–24</option><option value="peak">Peak 08–20</option><option value="offpeak">Off-peak</option><option value="block">Timeblok</option></select></div>
+      <form class="panel c5 order" id="orderForm" novalidate>
+        <fieldset class="step">
+          <legend class="step-h"><span class="step-n">1</span>Marked</legend>
+          <div class="formgrid">
+            <div><label class="field" for="fArea">Område</label>
+              <select class="input" id="fArea"><option value="DK1">DK1 Vestdanmark</option><option value="DK2">DK2 Østdanmark</option></select></div>
+            <div><label class="field" for="fProd">Produkt</label>
+              <select class="input" id="fProd"><option value="base">Base 00–24</option><option value="peak">Peak 08–20</option><option value="offpeak">Off-peak</option><option value="block">Timeblok</option></select></div>
+          </div>
+          <div class="formgrid" id="blockRow" hidden>
+            <div><label class="field" for="fFrom">Fra time</label><select class="input" id="fFrom"></select></div>
+            <div><label class="field" for="fTo">Til time</label><select class="input" id="fTo"></select></div>
+          </div>
+        </fieldset>
+        <fieldset class="step" aria-describedby="sideHelp">
+          <legend class="step-h"><span class="step-n">2</span>Retning</legend>
+          <div class="segmented">
+            <label class="seg-opt buy"><input type="radio" name="side" value="buy" checked><span class="seg-mark" aria-hidden="true"></span>Køb</label>
+            <label class="seg-opt sell"><input type="radio" name="side" value="sell"><span class="seg-mark" aria-hidden="true"></span>Sælg</label>
+          </div>
+          <p class="help" id="sideHelp">Vælg om du køber eller sælger strøm. Handlen udføres først, når du bekræfter nederst.</p>
+        </fieldset>
+        <fieldset class="step">
+          <legend class="step-h"><span class="step-n">3</span>Volumen og note</legend>
+          <div class="formgrid">
+            <div><label class="field" for="fMw">Volumen (MW)</label><input class="input" id="fMw" inputmode="decimal" value="10" autocomplete="off"></div>
+            <div><label class="field" for="fNote">Note (valgfri)</label><input class="input" id="fNote" maxlength="60" placeholder="F.eks. vindrisiko" autocomplete="off"></div>
+          </div>
+        </fieldset>
+        <section class="step receipt" aria-labelledby="receiptTitle">
+          <h2 class="step-h" id="receiptTitle"><span class="step-n">4</span>Ordreoversigt</h2>
+          <div class="quote" id="quote"></div>
+          <div class="summary" id="tdSummary"></div>
+          <div id="tdWarn" aria-live="polite"></div>
+        </section>
+        <div>
+          <button type="submit" class="btn trade buy" id="placeBtn">Køb</button>
+          <p class="error" id="tdError" role="alert"></p>
         </div>
-        <div class="formgrid" id="blockRow" hidden>
-          <div><label class="field" for="fFrom">Fra time</label><select class="input" id="fFrom"></select></div>
-          <div><label class="field" for="fTo">Til time</label><select class="input" id="fTo"></select></div>
-        </div>
-        <div><span class="field">Retning</span>
-          <div class="sidebtns"><button class="b" data-side="buy" aria-pressed="true">Køb</button><button class="s" data-side="sell" aria-pressed="false">Sælg</button></div></div>
-        <div class="formgrid">
-          <div><label class="field" for="fMw">Volumen (MW)</label><input class="input" id="fMw" inputmode="decimal" value="10"></div>
-          <div><label class="field" for="fNote">Note (valgfri)</label><input class="input" id="fNote" maxlength="60" placeholder="F.eks. vindrisiko"></div>
-        </div>
-        <div class="quote" id="quote"></div>
-        <div class="summary" id="tdSummary"></div>
-        <button class="btn primary block" id="placeBtn">Køb</button>
-        <p class="error" id="tdError" role="alert"></p>
-      </div>
+      </form>
       <div class="c7 stack">
         <div class="panel stack">
           <div class="row spread"><h2>Position for leveringsdagen efter denne handel</h2><span class="muted small" id="tdLimitTxt"></span></div>
@@ -361,52 +469,96 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<dialog class="confirm" id="confirmDlg" aria-labelledby="confirmTitle" aria-describedby="confirmWhat">
+  <form method="dialog">
+    <h2 id="confirmTitle">Bekræft handlen</h2>
+    <p id="confirmWhat"></p>
+    <ul id="confirmWhy"></ul>
+    <div class="actions"><button class="btn" value="cancel">Tilbage</button><button class="btn trade" id="confirmOk" value="ok">Bekræft</button></div>
+  </form>
+</dialog>
+
 <script>
 (function(){
-  const KEY = 'traderz-desk-v2';
+  const KEY = 'traderz-desk-v2';          // localStorage: bruges kun, når den fælles handelsbog ikke svarer
   const HALF_SPREAD = 0.5;
+  const BIG_MW = 100;                     // handler over denne størrelse skal bekræftes
   const PRICES_URL = '/api/prices';
+  const BOOK_URL = '/api/book';
   const REFRESH_MS = 15*60*1000;
+  const BOOK_POLL_MS = 30*1000;           // hent handelsbogen igen, så handler fra andre dukker op
   const SHAPE = [0.72,0.68,0.66,0.66,0.70,0.82,1.02,1.18,1.20,1.08,0.98,0.94,0.92,0.92,0.96,1.04,1.18,1.36,1.42,1.30,1.12,0.98,0.88,0.80];
-  const PRODUCTS = {
-    base:{ label:'Base', hours:()=>range(0,24) },
-    peak:{ label:'Peak', hours:()=>range(8,20) },
-    offpeak:{ label:'Off-peak', hours:()=>range(0,8).concat(range(20,24)) },
-    block:{ label:'Timeblok', hours:(f,t)=>range(f,t) }
-  };
   function range(a,b){ const r=[]; for(let i=a;i<b;i++) r.push(i); return r; }
 
-  // ---------- Datoer (dansk tid, ISO-datoer YYYY-MM-DD) ----------
-  const cphFmt=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Copenhagen',year:'numeric',month:'2-digit',day:'2-digit'});
-  const cphToday=()=>cphFmt.format(new Date());
+  // ---------- Datoer og timer (dansk tid, ISO-datoer YYYY-MM-DD) ----------
+  // Samme logik som netlify/lib/hours.mts. En dag har 24 timer, 23 når uret stilles frem (time 02 mangler)
+  // og 25 når uret stilles tilbage (time 02 to gange: 02A og 02B). Priser og positioner ligger i "slots":
+  // én pr. faktisk time på dagen, i tidsorden.
+  const HOUR=3600e3;
+  const localFmt=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Copenhagen',hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  function local(ms){ const p={}; localFmt.formatToParts(new Date(ms)).forEach(x=>p[x.type]=x.value); return p.year+'-'+p.month+'-'+p.day+' '+p.hour+':'+p.minute; }
+  const cphToday=()=>local(Date.now()).slice(0,10);
   function addDays(iso,n){ const d=new Date(iso+'T12:00:00Z'); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); }
   const dayNum=iso=>Math.round((Date.parse(iso+'T00:00:00Z')-Date.UTC(2020,0,1))/864e5);
   const isoToDate=iso=>new Date(iso+'T12:00:00Z');
+  const hh=h=>String(h).padStart(2,'0');
+  const startCache={}, slotCache={};
+  function dayStartUtc(date){
+    if(date in startCache) return startCache[date];
+    const g=Date.parse(date+'T00:00:00Z');
+    return startCache[date]=[1,2].map(o=>g-o*HOUR).find(ms=>local(ms)===date+' 00:00');
+  }
+  function slotHours(date){
+    if(slotCache[date]) return slotCache[date];
+    const s=dayStartUtc(date), n=Math.round((dayStartUtc(addDays(date,1))-s)/HOUR);
+    return slotCache[date]=range(0,n).map(i=>+local(s+i*HOUR).slice(11,13));
+  }
+  function slotLabels(date){ const hs=slotHours(date); return hs.map((h,i)=>hh(h)+(hs.indexOf(h)!==hs.lastIndexOf(h)?(hs.indexOf(h)===i?'A':'B'):'')); }
+  const slotRange=(label,h)=>hh(h)+'–'+hh(h+1)+(label.length>2?' '+label.slice(2):'');
+  // Sommertidsnote til leveringsdage med 23 eller 25 timer.
+  function dstNote(date){ const n=slotHours(date).length; return n===25?' '+longDate(date)+' har 25 timer (uret stilles tilbage, time 02–03 findes to gange: A og B).':n===23?' '+longDate(date)+' har 23 timer (uret stilles frem, time 02–03 findes ikke).':''; }
+  function productSlots(product,date,from,to){
+    const out=[]; slotHours(date).forEach((h,i)=>{
+      if(product==='base' || (product==='peak'&&h>=8&&h<20) || (product==='offpeak'&&(h<8||h>=20)) || (product==='block'&&h>=from&&h<to)) out.push(i);
+    }); return out;
+  }
+  const PRODUCTS = {
+    base:{ label:'Base', hours:d=>productSlots('base',d) },
+    peak:{ label:'Peak', hours:d=>productSlots('peak',d) },
+    offpeak:{ label:'Off-peak', hours:d=>productSlots('offpeak',d) },
+    block:{ label:'Timeblok', hours:(d,f,t)=>productSlots('block',d,f,t) }
+  };
 
   // ---------- State ----------
+  // Handlerne ligger i den fælles handelsbog (/api/book, Netlify Blobs). Svarer den ikke,
+  // gemmes de i browserens localStorage, og det står tydeligt i et banner.
   function init(){ return { seed:Math.floor(Math.random()*1e9), trades:[], limit:50, nextId:1 }; }
-  let state;
-  try { state = JSON.parse(localStorage.getItem(KEY)) || null; } catch(e){ state = null; }
-  if (!state || !Array.isArray(state.trades)) state = init();
-  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+  let state=init();
+  const book={ mode:'loading', updatedAt:null, error:null };   // mode: loading | remote | local
+  function loadLocal(){ try { const s=JSON.parse(localStorage.getItem(KEY)); return s&&Array.isArray(s.trades)?s:null; } catch(e){ return null; } }
+  function save(){ if(book.mode!=='local') return; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+  function useState(s){
+    if(s.seed!==state.seed) for(const k in cache) delete cache[k];
+    state={ seed:s.seed, trades:s.trades, limit:s.limit, nextId:s.nextId, importedAt:s.importedAt };
+  }
   const ui = { area:'DK1', side:'buy' };
 
   // Markedsdata. days[dato] = { DK1:[kvarterer], DK2:[kvarterer] } eller null, hvis prisen ikke er offentliggjort.
-  // Et kvarter er { t:'2026-11-09T13:15:00' (dansk tid), eur, dkk }.
+  // Et kvarter er { t:'2026-11-09T13:15:00' (dansk tid), u: UTC-tid, eur, dkk }.
   const today0=cphToday();
   const market = { status:'loading', today:today0, tomorrow:addDays(today0,1), days:{}, fetchedAt:null };
   const TODAY=()=>market.today, DEL=()=>market.tomorrow;
 
   // ---------- Rigtige priser ----------
   const hourlyCache={};
-  function hourly(quarters){
-    const sum=new Array(24).fill(0), n=new Array(24).fill(0);
-    quarters.forEach(q=>{ const h=+q.t.slice(11,13); sum[h]+=q.eur; n[h]++; });
-    return sum.map((s,h)=>n[h]?Math.round(s/n[h]*100)/100:null);   // gennemsnit af kvartererne i timen
+  function hourly(quarters, date){
+    const hs=slotHours(date), start=dayStartUtc(date), sum=new Array(hs.length).fill(0), n=new Array(hs.length).fill(0);
+    quarters.forEach(q=>{ const i=q.u?Math.floor((Date.parse(q.u+'Z')-start)/HOUR):hs.indexOf(+q.t.slice(11,13)); if(i>=0&&i<hs.length){ sum[i]+=q.eur; n[i]++; } });
+    return sum.map((s,i)=>n[i]?Math.round(s/n[i]*100)/100:null);   // gennemsnit af kvartererne i timen
   }
   function realH(date, area){
     const d=market.days[date]; if(!d || !d[area] || !d[area].length) return null;
-    const k=date+area+d[area].length+d[area][0].t; return hourlyCache[k]||(hourlyCache[k]=hourly(d[area]));
+    const k=date+area+d[area].length+d[area][0].t; return hourlyCache[k]||(hourlyCache[k]=hourly(d[area],date));
   }
   const delIsReal=()=>!!(realH(DEL(),'DK1') && realH(DEL(),'DK2'));
   const todayIsReal=()=>!!(realH(TODAY(),'DK1') && realH(TODAY(),'DK2'));
@@ -432,6 +584,53 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     route();
   }
 
+  // ---------- Fælles handelsbog ----------
+  async function bookFetch(opts){
+    const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),12000);
+    try {
+      const r=await fetch(BOOK_URL,Object.assign({signal:ctl.signal,headers:{accept:'application/json','content-type':'application/json'}},opts));
+      const j=await r.json().catch(()=>null);
+      if(!r.ok || !j || !j.book) throw new Error((j&&j.error)||'Handelsbogen svarer ikke (HTTP '+r.status+')');
+      book.updatedAt=j.book.updatedAt; useState(j.book);
+      return j;
+    } finally { clearTimeout(to); }
+  }
+  async function loadBook(quiet){
+    try {
+      const before=book.updatedAt;
+      await bookFetch({method:'GET'});
+      const first=book.mode!=='remote'; book.mode='remote'; book.error=null;
+      if(first) await importLocal();
+      if(first || book.updatedAt!==before) route();
+    } catch(e){
+      book.error=String(e&&e.message||e);
+      if(book.mode!=='remote'){ book.mode='local'; useState(loadLocal()||init()); route(); }
+      else if(!quiet) toast('Handelsbogen kunne ikke opdateres: '+book.error);
+    }
+  }
+  // Handler fra før den fælles bog (gemt i denne browser) flyttes én gang over i en tom bog.
+  async function importLocal(){
+    const loc=loadLocal();
+    if(!loc || !loc.trades.length || loc.importedAt || state.trades.length) return;
+    try {
+      const j=await bookFetch({method:'POST',body:JSON.stringify({op:'import',book:loc})});
+      if(j.imported){ loc.importedAt=new Date().toISOString(); try { localStorage.setItem(KEY,JSON.stringify(loc)); } catch(e){}
+        toast(j.imported+(j.imported===1?' handel':' handler')+' fra denne browser er flyttet til den fælles handelsbog'); }
+    } catch(e){}
+  }
+  // Én handling på bogen. Fælles bog: serveren udfører den. Lokal: samme handling i localStorage.
+  async function act(op, args){
+    if(book.mode==='remote') return bookFetch({method:'POST',body:JSON.stringify(Object.assign({op},args))});
+    const r=localAct(op,args||{}); save(); return r;
+  }
+  function localAct(op,a){
+    if(op==='trade'){ const trade=Object.assign({},a.trade,{ id:state.nextId++, tradedOn:TODAY(), settled:false, createdAt:new Date().toISOString() }); state.trades.push(trade); return {trade}; }
+    if(op==='cancel'){ state.trades=state.trades.filter(x=>x.id!==a.id); return {}; }
+    if(op==='limit'){ state.limit=a.limit; return {}; }
+    if(op==='reset'){ useState(init()); return {}; }
+    throw new Error('Ukendt handling');
+  }
+
   // ---------- Simulering og prognosemodel (EUR/MWh) ----------
   function rng(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -439,6 +638,7 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   function windFor(date){ const day=dayNum(date), r=rng(state.seed+day*9973); return clamp(0.5+0.3*Math.sin(day*1.27+(state.seed%13))+(r()-0.5)*0.55,0,1); }
   function tempFor(date){ const day=dayNum(date), r=rng(state.seed+day*313); return Math.round(5+3*Math.sin(day*0.6)+(r()-0.5)*6); }
   function forecastWind(date){ const r=rng(state.seed+dayNum(date)*577); return clamp(windFor(date)+(r()-0.5)*0.32,0,1); }
+  // Modellen regner pr. klokketime (24 værdier); toSlots/byClock oversætter til dagens faktiske timer.
   function build(date, area, wind, noisy){
     const day=dayNum(date), temp=tempFor(date), base=92+(5-temp)*3, mul=area==='DK2'?1.06:1;
     const r=rng(state.seed+day*131+(area==='DK2'?17:3));
@@ -449,8 +649,15 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
       return Math.round(p*100)/100;
     });
   }
+  const toSlots=(a24,date)=>slotHours(date).map(h=>a24[h]);
+  function byClock(arr,date){
+    const out=new Array(24).fill(null);
+    slotHours(date).forEach((h,i)=>{ if(out[h]==null && arr[i]!=null) out[h]=arr[i]; });   // 25-timers dag: 02A
+    for(let h=0;h<24;h++) if(out[h]==null){ const a=out[(h+23)%24], b=out[(h+1)%24]; out[h]=a!=null&&b!=null?(a+b)/2:(a!=null?a:b); } // 23-timers dag: time 02 udfyldes
+    return out;
+  }
   const cache = {};
-  function simSpot(date,area){ const k='s'+date+area+state.seed; return cache[k]||(cache[k]=build(date,area,windFor(date),true)); }
+  function simSpot(date,area){ const k='s'+date+area+state.seed; return cache[k]||(cache[k]=toSlots(build(date,area,windFor(date),true),date)); }
   // Dagens spot: rigtig pris, hvis den findes, ellers simuleret (fallback).
   function spotToday(area){ return realH(TODAY(),area) || simSpot(TODAY(),area); }
   // Prognose for en leveringsdag: dagen før (rigtig spot, ellers simuleret) + modellens forventede ændring.
@@ -458,20 +665,31 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     const baseDate=addDays(target,-1), baseReal=realH(baseDate,area);
     const k='f'+baseDate+target+area+(windAdj||0)+state.seed+(baseReal?'r':'s');
     if(cache[k]) return cache[k];
-    const base=baseReal || simSpot(baseDate,area);
+    const base=byClock(baseReal || simSpot(baseDate,area), baseDate);
     const mDel=build(target,area,clamp(forecastWind(target)+(windAdj||0),0,1),false), mBase=build(baseDate,area,windFor(baseDate),false);
-    return cache[k]=base.map((p,h)=>Math.round(((p==null?mBase[h]:p)+mDel[h]-mBase[h])*100)/100);
+    return cache[k]=toSlots(base.map((p,h)=>Math.round(((p==null?mBase[h]:p)+mDel[h]-mBase[h])*100)/100),target);
   }
   // Priserne for en leveringsdag: rigtige, når de er offentliggjort, ellers prognosen.
   function pricesFor(date, area){ const r=realH(date,area); return r?{prices:r,real:true}:{prices:forecastFor(date,area),real:false}; }
-  function delPrices(area){ return pricesFor(DEL(),area); }
   // Leveringsdagen, der kan handles: i morgen, indtil dens spotpriser er offentliggjort; derefter overmorgen.
   const TDEL=()=>delIsReal()?addDays(DEL(),1):DEL();
   const shifted=()=>TDEL()!==DEL();
 
   const vals=a=>a.filter(v=>v!=null);
   const avg=a=>{ const v=vals(a); return v.length?v.reduce((s,x)=>s+x,0)/v.length:0; };
-  const avgH=(prices,hours)=>avg(hours.map(h=>prices[h]));
+  const avgH=(prices,slots)=>avg(slots.map(i=>prices[i]));
+  // Rækker til visning af to dage side om side (basisdag og leveringsdag), justeret efter klokketime.
+  // Har den ene dag 25 timer, får time 02 to rækker (A/B); har den 23, er dens værdi tom i time 02.
+  function alignDays(B,D){
+    const hb=slotHours(B), hd=slotHours(D), rows=[];
+    for(let h=0;h<24;h++){
+      const ib=[], id=[]; hb.forEach((x,i)=>{ if(x===h) ib.push(i); }); hd.forEach((x,i)=>{ if(x===h) id.push(i); });
+      const n=Math.max(ib.length,id.length);
+      for(let j=0;j<n;j++) rows.push({ h, label:hh(h)+(n>1?(j?'B':'A'):''), ib:ib[j], id:id[j] });
+    }
+    return rows;
+  }
+  const at=(arr,i)=>i==null?null:arr[i];
 
   // ---------- Format ----------
   const nf2=new Intl.NumberFormat('da-DK',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -481,7 +699,6 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   const money=v=>(v<0?'−':'')+nf0.format(Math.abs(Math.round(v)))+' EUR';
   const smoney=v=>(v>0?'+':v<0?'−':'')+nf0.format(Math.abs(Math.round(v)))+' EUR';
   const cls=v=>v>0?'pos':v<0?'neg':'';
-  const hh=h=>String(h).padStart(2,'0');
   const longDate=iso=>isoToDate(iso).toLocaleDateString('da-DK',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'});
   const shortDate=iso=>isoToDate(iso).toLocaleDateString('da-DK',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
   const clock=ts=>new Date(ts).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Copenhagen'});
@@ -491,38 +708,39 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   const BADGE={ fc:'<span class="badge fc">Prognose</span>', live:'<span class="badge live">Spot</span>', sim:'<span class="badge sim">Simuleret</span>' };
 
   // ---------- Positioner ----------
-  function tradeHours(t){ return t.product==='block'?PRODUCTS.block.hours(t.from,t.to):PRODUCTS[t.product].hours(); }
+  function tradeHours(t){ return productSlots(t.product,t.del,t.from,t.to); }
   const sign=t=>t.side==='buy'?1:-1;
   function netPosition(date, area, extra){
-    const pos=new Array(24).fill(0);
-    state.trades.concat(extra?[extra]:[]).forEach(t=>{ if(t.del===date && t.area===area && !t.settled) tradeHours(t).forEach(h=>pos[h]+=sign(t)*t.mw); });
+    const pos=new Array(slotHours(date).length).fill(0);
+    state.trades.concat(extra?[extra]:[]).forEach(t=>{ if(t.del===date && t.area===area && !t.settled) tradeHours(t).forEach(i=>pos[i]+=sign(t)*t.mw); });
     return pos;
   }
 
   // ---------- Grafer ----------
-  function priceChart(spot, del, delReal){
-    const W=720,H=230,pb=24,pt=12,n=24,slot=W/n;
+  // rows: fra alignDays; spot = basisdag (søjler), del = leveringsdag (linje).
+  function priceChart(rows, spot, del, delReal){
+    const W=720,H=230,pb=24,pt=12,n=rows.length,slot=W/n;
     const all=vals(spot.concat(del)); const lo=Math.min(0,...all), hi=Math.max(10,...all)*1.08;
     const y=v=>pt+(hi-v)/(hi-lo)*(H-pt-pb);
     const step=hi>800?200:hi>400?100:50;
-    let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Spotpriser i dag og '+(delReal?'spotpriser':'prognose')+' for leveringsdagen">';
+    let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Spotpriser og '+(delReal?'spotpriser':'prognose')+' for leveringsdagen">';
     let labels='';
     for(let g=0; g<=hi; g+=step){ s+='<line x1="0" x2="'+W+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="currentColor" stroke-opacity=".08"/>'; labels+='<text x="2" y="'+(y(g)-3)+'" font-size="10" fill="var(--muted)" stroke="var(--surface)" stroke-width="3" paint-order="stroke">'+g+'</text>'; }
-    for(let h=0;h<n;h++){
-      const p=spot[h], x=h*slot+3, w=slot-6;
+    for(let i=0;i<n;i++){
+      const p=spot[i], x=i*slot+3, w=slot-6;
       if(p!=null){ const top=Math.min(y(p),y(0)), ht=Math.max(1.5,Math.abs(y(p)-y(0)));
         s+='<rect x="'+x+'" y="'+top+'" width="'+w+'" height="'+ht+'" rx="2" fill="var(--line)"/>'; }
-      s+='<rect data-h="'+h+'" x="'+(h*slot)+'" y="0" width="'+slot+'" height="'+(H-pb)+'" fill="transparent" style="cursor:pointer"/>';
-      if(h%3===0) s+='<text x="'+(x+w/2)+'" y="'+(H-6)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">'+hh(h)+'</text>';
+      s+='<rect data-i="'+i+'" x="'+(i*slot)+'" y="0" width="'+slot+'" height="'+(H-pb)+'" fill="transparent" style="cursor:pointer"/>';
+      if(rows[i].h%3===0 && !rows[i].label.endsWith('B')) s+='<text x="'+(x+w/2)+'" y="'+(H-6)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">'+rows[i].label+'</text>';
     }
-    let d='', pen=false; del.forEach((p,h)=>{ if(p==null){ pen=false; return; } d+=(pen?'L':'M')+(h*slot+slot/2)+' '+y(p); pen=true; });
+    let d='', pen=false; del.forEach((p,i)=>{ if(p==null){ pen=false; return; } d+=(pen?'L':'M')+(i*slot+slot/2)+' '+y(p); pen=true; });
     s+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"'+(delReal?'':' stroke-dasharray="6 4"')+' pointer-events="none"/>';
-    del.forEach((p,h)=>{ if(p!=null) s+='<circle cx="'+(h*slot+slot/2)+'" cy="'+y(p)+'" r="2.5" fill="'+(delReal?'var(--accent)':'var(--surface)')+'" stroke="var(--accent)" stroke-width="1.5" pointer-events="none"/>'; });
+    del.forEach((p,i)=>{ if(p!=null) s+='<circle cx="'+(i*slot+slot/2)+'" cy="'+y(p)+'" r="2.5" fill="'+(delReal?'var(--accent)':'var(--surface)')+'" stroke="var(--accent)" stroke-width="1.5" pointer-events="none"/>'; });
     if(lo<0) s+='<line x1="0" x2="'+W+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/>';
     return s+labels+'</svg>';
   }
-  function posChart(pos, limit, ghost){
-    const W=720,H=160,pb=20,pt=8,n=24,slot=W/n;
+  function posChart(pos, limit, ghost, date){
+    const W=720,H=160,pb=20,pt=8,n=pos.length,slot=W/n, hs=slotHours(date), lb=slotLabels(date);
     const m=Math.max(limit*1.2, ...pos.map(Math.abs), ...(ghost||[]).map(Math.abs), 1);
     const y=v=>pt+(m-v)/(2*m)*(H-pt-pb);
     let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Nettoposition pr. time i MW">';
@@ -530,12 +748,12 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     [limit,-limit].forEach(l=>{ s+='<line x1="0" x2="'+W+'" y1="'+y(l)+'" y2="'+y(l)+'" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 4"/>'; });
     s+='<text x="'+(W-2)+'" y="'+(y(limit)-4)+'" text-anchor="end" font-size="10" fill="var(--warn)">+'+limit+' MW</text>';
     s+='<text x="'+(W-2)+'" y="'+(y(-limit)+12)+'" text-anchor="end" font-size="10" fill="var(--warn)">−'+limit+' MW</text>';
-    pos.forEach((v,h)=>{
-      const x=h*slot+3,w=slot-6;
-      if(ghost && ghost[h]!==v){ const g=ghost[h]; s+='<rect x="'+x+'" y="'+Math.min(y(g),y(0))+'" width="'+w+'" height="'+Math.max(1,Math.abs(y(g)-y(0)))+'" rx="2" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="2 2"/>'; }
+    pos.forEach((v,i)=>{
+      const x=i*slot+3,w=slot-6;
+      if(ghost && ghost[i]!==v){ const g=ghost[i]; s+='<rect x="'+x+'" y="'+Math.min(y(g),y(0))+'" width="'+w+'" height="'+Math.max(1,Math.abs(y(g)-y(0)))+'" rx="2" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="2 2"/>'; }
       if(v!==0){ const col=v>0?'var(--long)':'var(--short)'; const over=Math.abs(v)>limit;
-        s+='<rect x="'+x+'" y="'+Math.min(y(v),y(0))+'" width="'+w+'" height="'+Math.max(1.5,Math.abs(y(v)-y(0)))+'" rx="2" fill="'+col+'"'+(over?' stroke="var(--warn)" stroke-width="2.5"':'')+'><title>'+hh(h)+'–'+hh(h+1)+': '+nf1.format(v)+' MW</title></rect>'; }
-      if(h%3===0) s+='<text x="'+(x+w/2)+'" y="'+(H-4)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">'+hh(h)+'</text>';
+        s+='<rect x="'+x+'" y="'+Math.min(y(v),y(0))+'" width="'+w+'" height="'+Math.max(1.5,Math.abs(y(v)-y(0)))+'" rx="2" fill="'+col+'"'+(over?' stroke="var(--warn)" stroke-width="2.5"':'')+'><title>'+slotRange(lb[i],hs[i])+': '+nf1.format(v)+' MW</title></rect>'; }
+      if(hs[i]%3===0 && !lb[i].endsWith('B')) s+='<text x="'+(x+w/2)+'" y="'+(H-4)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">'+lb[i]+'</text>';
     });
     return s+'</svg>';
   }
@@ -565,17 +783,25 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   const VIEWS=['marked','handel','position','resultat'];
 
   function settleable(){ return state.trades.filter(t=>!t.settled && t.del<=DEL()); }
+  function alertHtml(title,text,btnId,btnTxt){
+    return '<div class="alert-body"><span class="alert-icon"><img src="assets/icon-warning.svg" width="16" height="16" alt=""></span>'+
+      '<div><strong>'+title+'</strong><p>'+text+'</p></div></div>'+(btnId?'<button class="btn" id="'+btnId+'">'+btnTxt+'</button>':'');
+  }
   function renderChrome(){
     const b=$('banner');
     if(market.status==='fallback'){
       b.hidden=false; b.className='banner';
-      b.innerHTML='<div class="alert-body"><span class="alert-icon"><img src="assets/icon-warning.svg" width="16" height="16" alt=""></span>'+
-        '<div><strong>Energi Data Service svarer ikke</strong><p>Alle priser er lige nu simulerede og ikke rigtige markedspriser. Handler afregnes først, når rigtige spotpriser kan hentes igen.</p></div></div>'+
-        '<button class="btn" id="retryBtn">Prøv igen</button>';
+      b.innerHTML=alertHtml('Energi Data Service svarer ikke','Alle priser er lige nu simulerede og ikke rigtige markedspriser. Handler afregnes først, når rigtige spotpriser kan hentes igen.','retryBtn','Prøv igen');
       $('retryBtn').addEventListener('click',()=>{ market.status='loading'; renderChrome(); loadPrices(); });
     } else if(market.status==='loading'){
       b.hidden=false; b.className='banner info'; b.innerHTML='<p>Henter spotpriser fra Energi Data Service …</p>';
-    } else b.hidden=true;
+    } else { b.hidden=true; b.innerHTML=''; }
+    const bb=$('bookBanner');
+    if(book.mode==='local'){
+      bb.hidden=false;
+      bb.innerHTML=alertHtml('Handler gemmes kun i denne browser','Den fælles handelsbog svarer ikke, så nye handler deles ikke med andre og ligger kun her på enheden.','bookRetryBtn','Prøv igen');
+      $('bookRetryBtn').addEventListener('click',async()=>{ book.mode='loading'; renderChrome(); await loadBook(); if(book.mode!=='remote') toast('Handelsbogen svarer stadig ikke'); });
+    } else { bb.hidden=true; bb.innerHTML=''; }
     $('daychip').innerHTML='<strong>Handelsdag '+shortDate(TODAY())+'</strong>Levering '+shortDate(TDEL());
     const n=settleable().length;
     $('settleBtn').textContent=n?'Afregn handler ('+n+')':'Afregn handler';
@@ -603,8 +829,9 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     if(shifted()) lead+=' Morgendagens spotpriser er offentliggjort, så leveringsdagen er rykket til overmorgen, ligesom på handelsfanen.'+
       (todayIsReal()?' Dagens base: DK1 '+eur(avg(spotToday('DK1')))+', DK2 '+eur(avg(spotToday('DK2')))+' EUR/MWh.':'');
     else if(!dReal) lead+=' Morgendagens spotpriser offentliggøres efter middag. Indtil da vises vores prognose.';
+    lead+=dstNote(B)+(D!==B?dstNote(D):'');
     $('mkLead').textContent=lead;
-    const pk=PRODUCTS.peak.hours(), base=PRODUCTS.base.hours();
+    const pk=PRODUCTS.peak.hours(D);
     const k=(lbl,v,sub)=>'<div><span>'+lbl+'</span><strong>'+eur(v)+'</strong><small>'+sub+'</small></div>';
     const chg=(f,s)=>{ const d=avg(f)-avg(s); return (d>=0?'+':'−')+eur(Math.abs(d))+' mod '+bWord; };
     $('mkKpis').innerHTML=
@@ -617,9 +844,11 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     $('mkChartTitle').innerHTML=a+': '+shortDate(B)+' og '+shortDate(D)+' '+dBadge;
     $('mkLegend').innerHTML='<span><i style="background:var(--line)"></i>'+(tReal?'Spot ':'Simuleret ')+bWord+'</span>'+
       '<span><i style="background:transparent;border:1.5px '+(dReal?'solid':'dashed')+' var(--accent)"></i>'+(dReal?'Spot leveringsdag':'Prognose leveringsdag')+'</span>';
-    const sp=a==='DK1'?s1:s2, fc=a==='DK1'?f1:f2;
-    $('mkChart').innerHTML=priceChart(sp,fc,dReal);
-    $('mkChart').querySelectorAll('rect[data-h]').forEach(r=>{ const h=+r.dataset.h; const show=()=>{ $('mkReadout').textContent=hh(h)+'–'+hh(h+1)+':  '+(tReal?'spot':'simuleret')+' '+bWord+' '+eur(sp[h])+'  ·  '+dTag+' '+shortDate(D)+' '+eur(fc[h])+' EUR/MWh'; }; r.addEventListener('mouseenter',show); r.addEventListener('click',show); });
+    const rows=alignDays(B,D);
+    const sp=(a==='DK1'?s1:s2), fc=(a==='DK1'?f1:f2);
+    const spR=rows.map(r=>at(sp,r.ib)), fcR=rows.map(r=>at(fc,r.id));
+    $('mkChart').innerHTML=priceChart(rows,spR,fcR,dReal);
+    $('mkChart').querySelectorAll('rect[data-i]').forEach(el=>{ const r=rows[+el.dataset.i], i=+el.dataset.i; const show=()=>{ $('mkReadout').textContent=slotRange(r.label,r.h)+':  '+(tReal?'spot':'simuleret')+' '+bWord+' '+eur(spR[i])+'  ·  '+dTag+' '+shortDate(D)+' '+eur(fcR[i])+' EUR/MWh'; }; el.addEventListener('mouseenter',show); el.addEventListener('click',show); });
     $('mkSource').innerHTML=market.status==='live'
       ? '<a href="https://www.energidataservice.dk/tso-electricity/DayAheadPrices" target="_blank" rel="noopener">Data: Energinet, Energi Data Service</a> · timepris = gennemsnit af fire kvarterer · hentet '+clock(market.fetchedAt)
       : market.status==='loading' ? 'Henter priser …' : '<span class="badge sim">Simuleret</span> Energi Data Service svarede ikke.';
@@ -629,19 +858,23 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
       '<tr><td>Temperatur '+BADGE.sim+'</td><td>'+tempFor(B)+' °C</td><td>'+tempFor(D)+' °C</td></tr>'+
       '<tr><td>Laveste time DK1</td><td>'+eur(Math.min(...vals(s1)))+'</td><td>'+eur(Math.min(...vals(f1)))+'</td></tr>'+
       '<tr><td>Højeste time DK1</td><td>'+eur(Math.max(...vals(s1)))+'</td><td>'+eur(Math.max(...vals(f1)))+'</td></tr>'+
-      '<tr><td>Negative timer DK1</td><td>'+vals(s1).filter(v=>v<0).length+'</td><td>'+vals(f1).filter(v=>v<0).length+'</td></tr></tbody>';
+      '<tr><td>Negative timer DK1</td><td>'+vals(s1).filter(v=>v<0).length+'</td><td>'+vals(f1).filter(v=>v<0).length+'</td></tr>'+
+      '<tr><td>Antal timer</td><td>'+slotHours(B).length+'</td><td>'+slotHours(D).length+'</td></tr></tbody>';
     $('hourNote').innerHTML='EUR/MWh, timegennemsnit. Spread = DK2 minus DK1. '+bCap+' '+tBadge+' Leveringsdag '+dBadge;
-    const rows=base.map(h=>{ const spr=(f2[h]==null||f1[h]==null)?null:f2[h]-f1[h]; return [hh(h)+'–'+hh(h+1), eur(s1[h]), eur(s2[h]), '<strong>'+eur(f1[h])+'</strong>', '<strong>'+eur(f2[h])+'</strong>', spr==null?'–':(spr>=0?'+':'−')+eur(Math.abs(spr))]; });
+    const trs=rows.map(r=>{ const a1=at(f1,r.id), a2=at(f2,r.id), spr=(a1==null||a2==null)?null:a2-a1;
+      return [slotRange(r.label,r.h), eur(at(s1,r.ib)), eur(at(s2,r.ib)), '<strong>'+eur(a1)+'</strong>', '<strong>'+eur(a2)+'</strong>', spr==null?'–':(spr>=0?'+':'−')+eur(Math.abs(spr))]; });
     const foot='<tfoot><tr><th>Base</th><th class="num">'+eur(avg(s1))+'</th><th class="num">'+eur(avg(s2))+'</th><th class="num">'+eur(avg(f1))+'</th><th class="num">'+eur(avg(f2))+'</th><th class="num">'+eur(avg(f2)-avg(f1))+'</th></tr></tfoot>';
     const tl=bWord+(tReal?'':' (sim.)');
-    $('hourTable').innerHTML=table(['Time','DK1 '+tl,'DK2 '+tl,'DK1 '+dTag,'DK2 '+dTag,'Spread '+dTag],rows,[1,2,3,4,5],foot);
+    $('hourTable').innerHTML=table(['Time','DK1 '+tl,'DK2 '+tl,'DK1 '+dTag,'DK2 '+dTag,'Spread '+dTag],trs,[1,2,3,4,5],foot);
   }
 
   // Handel
   function draft(){
     const product=$('fProd').value, from=+$('fFrom').value, to=+$('fTo').value;
     const mw=parseFloat(($('fMw').value||'').replace(',','.'))||0;
-    return { area:$('fArea').value, product, from, to, side:ui.side, mw:Math.round(mw*10)/10, del:TDEL(), note:$('fNote').value.trim() };
+    const t={ area:$('fArea').value, product, side:ui.side, mw:Math.round(mw*10)/10, del:TDEL(), note:$('fNote').value.trim() };
+    if(product==='block'){ t.from=from; t.to=to; }
+    return t;
   }
   function quoteFor(t){
     const fair=avgH(forecastFor(t.del,t.area), tradeHours(t));
@@ -650,7 +883,7 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   function renderTrade(){
     $('tdLead').textContent='Leveringsdag '+longDate(TDEL())+'. '+
       (shifted()?'Spotpriserne for '+longDate(DEL())+' er offentliggjort, så handlen er rykket til næste leveringsdag. ':'')+
-      'Handlerne afregnes mod den rigtige spotpris, når den er offentliggjort.';
+      'Handlerne afregnes mod den rigtige spotpris, når den er offentliggjort.'+dstNote(TDEL());
     if(!$('fFrom').options.length){
       $('fFrom').innerHTML=range(0,24).map(h=>'<option value="'+h+'">'+hh(h)+'</option>').join('');
       $('fTo').innerHTML=range(1,25).map(h=>'<option value="'+h+'">'+hh(h)+'</option>').join('');
@@ -660,54 +893,102 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   }
   function updateTrade(){
     $('blockRow').hidden=$('fProd').value!=='block';
-    document.querySelectorAll('.sidebtns button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.side===ui.side)));
-    const t=draft(), hours=t.product==='block'?(t.to>t.from?tradeHours(t):[]):tradeHours(t);
+    document.querySelectorAll('input[name="side"]').forEach(r=>{ r.checked=r.value===ui.side; });
+    const t=draft(), hours=tradeHours(t), hs=slotHours(t.del);
     const err=$('tdError'); err.textContent='';
     const btn=$('placeBtn');
-    btn.className='btn block '+(t.side==='buy'?'primary':'sell');
-    if(!hours.length){ $('quote').innerHTML=''; $('tdSummary').innerHTML='<div>Til-time skal ligge efter fra-time.</div>'; btn.disabled=true; btn.textContent=t.side==='buy'?'Køb':'Sælg'; drawTradePos(null); return; }
+    btn.className='btn trade '+t.side;
+    $('tdWarn').innerHTML='';
+    if(!hours.length){
+      $('quote').innerHTML='';
+      $('tdSummary').innerHTML='<div>'+(t.product==='block'&&t.to<=t.from?'Til-time skal ligge efter fra-time.':'Timerne findes ikke på leveringsdagen (sommertid).')+'</div>';
+      btn.disabled=true; btn.textContent=t.side==='buy'?'Køb':'Sælg'; drawTradePos(null); return;
+    }
     const q=quoteFor(t);
     $('quote').innerHTML='<div><span>Bud</span><strong>'+eur(q.bid)+'</strong></div><div><span>Prognose</span><strong>'+eur(q.fair)+'</strong></div><div><span>Udbud</span><strong>'+eur(q.ask)+'</strong></div>';
     const mwh=t.mw*hours.length;
     $('tdSummary').innerHTML=
       (market.status==='fallback'?'<div><span class="badge sim">Simuleret</span><span>Prognosen bygger på simulerede priser</span></div>':'')+
       '<div><span>Leveringsdag</span><strong>'+shortDate(t.del)+' '+BADGE.fc+'</strong></div>'+
-      '<div><span>Timer</span><strong>'+hours.length+' ('+hh(hours[0])+'–'+hh(hours[hours.length-1]+1)+(t.product==='offpeak'?', ekskl. 08–20':'')+')</strong></div>'+
-      '<div><span>Energi</span><strong>'+nf1.format(mwh)+' MWh</strong></div>'+
+      '<div><span>Timer</span><strong id="tdHours">'+hours.length+' ('+hh(hs[hours[0]])+'–'+hh(hs[hours[hours.length-1]]+1)+(t.product==='offpeak'?', ekskl. 08–20':'')+')</strong></div>'+
+      '<div><span>Energi</span><strong id="tdMwh">'+nf1.format(mwh)+' MWh</strong></div>'+
       '<div><span>Din pris</span><strong>'+eur(q.price)+' EUR/MWh</strong></div>'+
       '<div><span>Værdi</span><strong>'+money(mwh*q.price)+'</strong></div>'+
       '<div><span>Følsomhed ved ±10 EUR/MWh</span><strong>±'+money(mwh*10)+'</strong></div>';
     const valid=t.mw>0;
-    btn.disabled=!valid;
-    btn.textContent=(t.side==='buy'?'Køb ':'Sælg ')+nf1.format(t.mw)+' MW '+(t.product==='block'?'timer '+hh(t.from)+'–'+hh(t.to):PRODUCTS[t.product].label)+' '+t.area+' til '+eur(q.price);
+    btn.disabled=!valid || busy;
+    btn.textContent=tradeLabel(t,q);
+    // Advarsler vises i ordreoversigten, før brugeren trykker på knappen.
+    $('tdWarn').innerHTML=valid?orderWarnings(t).map(w=>
+      '<div class="order-warn"><span class="alert-icon"><img src="assets/icon-warning.svg" width="14" height="14" alt=""></span><div><strong>'+w.title+'</strong>'+w.text+'</div></div>').join(''):'';
     drawTradePos(valid?t:null);
   }
+  // Knaptekst: præcis hvad der sker, f.eks. "Køb 10 MW Base DK1 til 46,32 EUR/MWh".
+  function tradeLabel(t,q){
+    return (t.side==='buy'?'Køb ':'Sælg ')+nf1.format(t.mw)+' MW '+(t.product==='block'?'timer '+hh(t.from)+'–'+hh(t.to):PRODUCTS[t.product].label)+' '+t.area+' til '+eur(q.price)+' EUR/MWh';
+  }
+  // Timer, hvor handlen bringer positionen over grænsen (eller længere over). Kun visning; ændrer ingen beregning.
+  function limitBreach(t){
+    const before=netPosition(t.del,t.area), after=netPosition(t.del,t.area,Object.assign({},t,{settled:false}));
+    const hit=after.map((v,i)=>Math.abs(v)>state.limit && Math.abs(v)>Math.abs(before[i])?Math.abs(v):0).filter(v=>v>0);
+    return { hours:hit.length, max:hit.length?Math.max(...hit):0 };
+  }
+  function orderWarnings(t){
+    const w=[], b=limitBreach(t);
+    if(b.hours) w.push({ kind:'limit', title:'Overskrider positionsgrænsen',
+      text:'Efter handlen ligger '+b.hours+(b.hours===1?' time':' timer')+' over grænsen på '+state.limit+' MW i '+t.area+' (op til '+nf1.format(b.max)+' MW). Du bliver bedt om at bekræfte.' });
+    if(t.mw>BIG_MW) w.push({ kind:'big', title:'Stor handel',
+      text:nf1.format(t.mw)+' MW er over '+BIG_MW+' MW. Du bliver bedt om at bekræfte.' });
+    return w;
+  }
+  // Bekræftelsesdialog (native <dialog>): fokus starter på "Tilbage", Esc annullerer.
+  function confirmTrade(label, warnings, side){
+    return new Promise(resolve=>{
+      const d=$('confirmDlg');
+      $('confirmWhat').textContent=label+'.';
+      $('confirmWhy').innerHTML=warnings.map(w=>'<li><strong>'+w.title+':</strong> '+esc(w.text.replace(/ Du bliver bedt om at bekræfte\.$/,''))+'</li>').join('');
+      const ok=$('confirmOk'); ok.className='btn trade '+side; ok.textContent=side==='buy'?'Bekræft køb':'Bekræft salg';
+      d.returnValue='';
+      d.addEventListener('close',()=>resolve(d.returnValue==='ok'),{once:true});
+      d.showModal();
+    });
+  }
   function drawTradePos(t){
-    const area=$('fArea').value;
-    const now=netPosition(TDEL(),area), after=t?netPosition(TDEL(),area,Object.assign({},t,{settled:false})):now;
-    $('tdPosChart').innerHTML='<div class="small muted" style="margin-bottom:4px">'+area+(t?', stiplet = før handlen':'')+'</div>'+posChart(after,state.limit,t?now:null);
+    const area=$('fArea').value, D=TDEL();
+    const now=netPosition(D,area), after=t?netPosition(D,area,Object.assign({},t,{settled:false})):now;
+    $('tdPosChart').innerHTML='<div class="small muted" style="margin-bottom:4px">'+area+(t?', stiplet = før handlen':'')+'</div>'+posChart(after,state.limit,t?now:null,D);
     const breach=after.filter(v=>Math.abs(v)>state.limit).length;
     $('tdLimitTxt').innerHTML=breach?'<span class="warnc">'+breach+' timer over grænsen på '+state.limit+' MW</span>':'Grænse '+state.limit+' MW pr. time';
-    const open=state.trades.filter(x=>x.del===TDEL()&&!x.settled);
+    const open=state.trades.filter(x=>x.del===D&&!x.settled);
     $('tdOpen').innerHTML=open.length?table(['#','Område','Produkt','Retning','MW','Pris','Note',''],open.map(x=>[
       x.id,x.area,hoursLabel(x),'<span class="tag '+x.side+'">'+(x.side==='buy'?'Køb':'Salg')+'</span>',nf1.format(x.mw),eur(x.price),esc(x.note||''),'<button class="btn small" data-cancel="'+x.id+'">Annullér</button>'
     ]),[4,5]):'<div class="empty">Ingen handler for leveringsdagen endnu.</div>';
-    $('tdOpen').querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{
-      const id=+b.dataset.cancel; state.trades=state.trades.filter(x=>x.id!==id); save(); toast('Handel #'+id+' annulleret'); renderChrome(); updateTrade();
+    $('tdOpen').querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',async()=>{
+      const id=+b.dataset.cancel; b.disabled=true;
+      try { await act('cancel',{id}); toast('Handel #'+id+' annulleret'); }
+      catch(e){ toast('Handel #'+id+' kunne ikke annulleres: '+(e&&e.message||e)); }
+      route();
     }));
   }
-  function place(){
+  let busy=false;
+  async function place(){
     const t=draft();
     if(t.mw<=0){ $('tdError').textContent='Volumen skal være større end 0 MW.'; return; }
     if(t.mw>500){ $('tdError').textContent='Volumen over 500 MW pr. handel er spærret. Del handlen op.'; return; }
     if(t.product==='block' && t.to<=t.from){ $('tdError').textContent='Til-time skal ligge efter fra-time.'; return; }
     const q=quoteFor(t);
-    const trade=Object.assign(t,{ id:state.nextId++, price:Math.round(q.price*100)/100, fair:q.fair, tradedOn:TODAY(), simBasis:market.status!=='live', settled:false });
-    if(trade.product!=='block'){ delete trade.from; delete trade.to; }
-    state.trades.push(trade); save();
-    const after=netPosition(TDEL(),t.area); const breach=after.some(v=>Math.abs(v)>state.limit);
-    toast('Handel #'+trade.id+' registreret: '+(t.side==='buy'?'Køb ':'Salg ')+nf1.format(t.mw)+' MW '+hoursLabel(trade)+' '+t.area+(breach?'. Bemærk: grænsen er overskredet':''));
-    $('fNote').value='';
+    const warnings=orderWarnings(t);
+    if(warnings.length && !(await confirmTrade(tradeLabel(t,q),warnings,t.side))) return;
+    Object.assign(t,{ price:Math.round(q.price*100)/100, fair:q.fair, simBasis:market.status!=='live' });
+    busy=true; $('placeBtn').disabled=true;
+    try {
+      const { trade } = await act('trade',{trade:t});
+      const after=netPosition(t.del,t.area); const breach=after.some(v=>Math.abs(v)>state.limit);
+      toast('Handel #'+trade.id+' registreret: '+(t.side==='buy'?'Køb ':'Salg ')+nf1.format(t.mw)+' MW '+hoursLabel(trade)+' '+t.area+(breach?'. Bemærk: grænsen er overskredet':''));
+      $('fNote').value='';
+    } catch(e){
+      busy=false; updateTrade(); $('tdError').textContent='Handlen blev ikke registreret: '+(e&&e.message||e); return;
+    } finally { busy=false; }
     renderChrome(); updateTrade();
   }
 
@@ -716,7 +997,7 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
     const D=TDEL(), dReal=!!(realH(D,'DK1')&&realH(D,'DK2'));
     const waitingN=shifted()?state.trades.filter(t=>t.del===DEL()&&!t.settled).length:0;
     $('psLead').textContent='Leveringsdag '+longDate(D)+'. Urealiseret resultat er beregnet mod '+(dReal?'den offentliggjorte spotpris':'prognosen')+'.'+
-      (waitingN?' '+waitingN+(waitingN===1?' handel':' handler')+' for '+longDate(DEL())+' kan afregnes nu.':'');
+      (waitingN?' '+waitingN+(waitingN===1?' handel':' handler')+' for '+longDate(DEL())+' kan afregnes nu.':'')+dstNote(D);
     $('limitInput').value=state.limit;
     const p1=netPosition(D,'DK1'), p2=netPosition(D,'DK2');
     const open=state.trades.filter(t=>t.del===D&&!t.settled);
@@ -729,14 +1010,14 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
       '<div><span>Brutto eksponering</span><strong>'+nf1.format(gross(p1)+gross(p2))+' MWh</strong><small>sum af timepositioner</small></div>'+
       '<div><span>Urealiseret</span><strong class="'+cls(unreal)+'">'+smoney(unreal)+'</strong><small>'+(dReal?'mod spotpris':'mod prognose')+'</small></div>'+
       '<div><span>Grænsebrud</span><strong>'+breaches+'</strong><small>'+(breaches?'<span class="warnc">timer over '+state.limit+' MW</span>':'timer over '+state.limit+' MW')+'</small></div>';
-    $('psChart1').innerHTML=posChart(p1,state.limit);
-    $('psChart2').innerHTML=posChart(p2,state.limit);
+    $('psChart1').innerHTML=posChart(p1,state.limit,null,D);
+    $('psChart2').innerHTML=posChart(p2,state.limit,null,D);
     const scen=[-30,-10,10,30];
     const rowFor=(name,pos)=>{ const n=net(pos); return [name, nf1.format(n)+' MWh'].concat(scen.map(d=>{ const v=n*d; return '<span class="'+cls(v)+'">'+smoney(v)+'</span>'; })); };
     let windTxt='';
     if(!dReal){
       // Vindscenarie: prognosen genberegnet med ±15 procentpoint (simuleret) vind.
-      const windScen=dw=>{ let tot=0; ['DK1','DK2'].forEach(a=>{ const pos=a==='DK1'?p1:p2, fc=forecastFor(D,a), alt=forecastFor(D,a,dw); pos.forEach((v,h)=>tot+=v*(alt[h]-fc[h])); }); return tot; };
+      const windScen=dw=>{ let tot=0; ['DK1','DK2'].forEach(a=>{ const pos=a==='DK1'?p1:p2, fc=forecastFor(D,a), alt=forecastFor(D,a,dw); pos.forEach((v,i)=>tot+=v*(alt[i]-fc[i])); }); return tot; };
       const wUp=windScen(0.15), wDn=windScen(-0.15);
       windTxt='<p class="small muted" style="margin:12px 0 0">'+BADGE.sim+' Vindscenarie: hvis vinden bliver 15 procentpoint stærkere end den simulerede prognose, er effekten på dit resultat <strong class="'+cls(wUp)+'">'+smoney(wUp)+'</strong>. Hvis den bliver 15 procentpoint svagere: <strong class="'+cls(wDn)+'">'+smoney(wDn)+'</strong>.</p>';
     } else windTxt='<p class="small muted" style="margin:12px 0 0">Spotprisen for leveringsdagen er kendt, så positionen har ikke længere prisrisiko. Den afregnes, når du trykker Afregn handler.</p>';
@@ -771,29 +1052,35 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   }
 
   // Afregning: kun mod rigtige spotpriser fra Energi Data Service, aldrig mod simulerede.
+  // Fælles bog: serveren henter spotpriserne og afregner. Lokal: det samme sker her i browseren.
+  async function settleLocal(open){
+    const missing=[...new Set(open.map(t=>t.del))].filter(d=>!(d in market.days));
+    for(const d of missing){
+      try { const j=await getJSON(PRICES_URL+'?date='+d); Object.assign(market.days,j.days); } catch(e){}
+    }
+    const r={ n:0, total:0, waiting:0, failed:0 };
+    open.forEach(t=>{
+      const real=realH(t.del,t.area), slots=tradeHours(t);
+      if(!real || slots.some(i=>real[i]==null)){ if(!real && t.del>=DEL() && market.status==='live') r.waiting++; else r.failed++; return; }
+      const settlePx=avgH(real,slots);
+      t.settle=Math.round(settlePx*100)/100; t.pnl=sign(t)*t.mw*slots.length*(settlePx-t.price); t.settled=true; t.settledAt=new Date().toISOString(); r.n++; r.total+=t.pnl;
+    });
+    save();
+    return r;
+  }
   async function settle(){
     const btn=$('settleBtn'); btn.disabled=true;
     try {
       const open=settleable();
       if(!open.length){ toast(delIsReal()?'Ingen åbne handler at afregne':'Ingen handler kan afregnes endnu. Spotprisen for '+shortDate(DEL())+' offentliggøres efter middag.'); return; }
-      // Hent ældre dage, hvis brugeren har handler fra før i går.
-      const missing=[...new Set(open.map(t=>t.del))].filter(d=>!(d in market.days));
-      for(const d of missing){
-        try { const j=await getJSON(PRICES_URL+'?date='+d); Object.assign(market.days,j.days); } catch(e){}
-      }
-      let n=0, tot=0, waiting=0, failed=0;
-      open.forEach(t=>{
-        const real=realH(t.del,t.area);
-        if(!real){ if(t.del>=DEL() && market.status==='live') waiting++; else failed++; return; }
-        const settlePx=avgH(real,tradeHours(t));
-        t.settle=Math.round(settlePx*100)/100; t.pnl=sign(t)*t.mw*tradeHours(t).length*(settlePx-t.price); t.settled=true; t.settledAt=new Date().toISOString(); n++; tot+=t.pnl;
-      });
-      save();
+      let r;
+      try { r=book.mode==='remote'?(await act('settle')).result:await settleLocal(open); }
+      catch(e){ toast('Afregningen mislykkedes: '+(e&&e.message||e)); return; }
       const parts=[];
-      if(n) parts.push(n+(n===1?' handel':' handler')+' afregnet mod spotpris: '+smoney(tot));
-      if(waiting) parts.push(waiting+' venter på morgendagens spotpris');
-      if(failed) parts.push(failed+' kunne ikke afregnes, fordi spotprisen ikke kunne hentes');
-      toast(parts.join('. '));
+      if(r.n) parts.push(r.n+(r.n===1?' handel':' handler')+' afregnet mod spotpris: '+smoney(r.total));
+      if(r.waiting) parts.push(r.waiting+' venter på morgendagens spotpris');
+      if(r.failed) parts.push(r.failed+' kunne ikke afregnes, fordi spotprisen ikke kunne hentes');
+      toast(parts.join('. ')||'Ingen handler kan afregnes endnu');
       route();
     } finally { btn.disabled=false; }
   }
@@ -804,16 +1091,32 @@ select.input{appearance:auto;padding-top:0;padding-bottom:0}
   document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{ ui.area=b.dataset.area; renderMarket(); }));
   ['fArea','fProd','fFrom','fTo'].forEach(id=>$(id).addEventListener('change',updateTrade));
   $('fMw').addEventListener('input',updateTrade);
-  document.querySelectorAll('.sidebtns button').forEach(b=>b.addEventListener('click',()=>{ ui.side=b.dataset.side; updateTrade(); }));
-  $('placeBtn').addEventListener('click',place);
+  document.querySelectorAll('input[name="side"]').forEach(r=>r.addEventListener('change',()=>{ if(r.checked){ ui.side=r.value; updateTrade(); } }));
+  $('orderForm').addEventListener('submit',e=>{ e.preventDefault(); if(!$('placeBtn').disabled) place(); });
   $('settleBtn').addEventListener('click',settle);
-  $('limitInput').addEventListener('change',()=>{ const v=parseInt($('limitInput').value,10); if(v>0){ state.limit=v; save(); renderPosition(); } else $('limitInput').value=state.limit; });
-  $('resetBtn').addEventListener('click',()=>{ if(!confirm('Slet alle handler og start forfra? Det kan ikke fortrydes.')) return; state=init(); for(const k in cache) delete cache[k]; save(); toast('Alle data er nulstillet'); location.hash='#marked'; route(); });
+  $('limitInput').addEventListener('change',async()=>{
+    const v=parseInt($('limitInput').value,10);
+    if(!(v>0)){ $('limitInput').value=state.limit; return; }
+    try { await act('limit',{limit:v}); } catch(e){ toast('Grænsen kunne ikke gemmes: '+(e&&e.message||e)); }
+    renderPosition();
+  });
+  $('resetBtn').addEventListener('click',async()=>{
+    const shared=book.mode==='remote';
+    if(!confirm(shared?'Slet alle handler i den fælles handelsbog og start forfra? Det gælder alle brugere og kan ikke fortrydes.':'Slet alle handler og start forfra? Det kan ikke fortrydes.')) return;
+    try { await act('reset'); toast('Alle data er nulstillet'); } catch(e){ toast('Nulstilling mislykkedes: '+(e&&e.message||e)); }
+    location.hash='#marked'; route();
+  });
   window.addEventListener('hashchange',route);
   // Hent priser igen hvert kvarter, så morgendagens priser dukker op, når de offentliggøres.
   setInterval(loadPrices, REFRESH_MS);
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden && market.fetchedAt && Date.now()-Date.parse(market.fetchedAt)>REFRESH_MS) loadPrices(); });
+  setInterval(()=>{ if(!document.hidden && book.mode==='remote') loadBook(true); }, BOOK_POLL_MS);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden) return;
+    if(market.fetchedAt && Date.now()-Date.parse(market.fetchedAt)>REFRESH_MS) loadPrices();
+    if(book.mode==='remote') loadBook(true);
+  });
   route();
+  loadBook();
   loadPrices();
 })();
 </script>
