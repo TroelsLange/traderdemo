@@ -3,6 +3,8 @@
 Senest opdateret: 10. november 2026.
 
 ## Hvad vi lavede i dag (10. nov. 2026, eftermiddag): investor- og community-demo
+Merget til `main` via [PR #2](https://github.com/TroelsLange/traderdemo/pull/2) og deployet automatisk til https://traderzai.netlify.app. Netlifys deploy preview byggede uden fejl. Produktionen er ikke kontrolleret i browser endnu (kan ikke nås fra Claudes cloud-container).
+
 1. Rolleskifter øverst: Trader (desk'en, uændret), Investor og Community. Demo uden login; rollen følger URL'en.
 2. Investor, Fonden: nøgletal (samlet afkast, afkast i år, årligt afkast, volatilitet, største fald, Sharpe, træfprocent), NAV-graf med markering af fald over 3 %, månedstabel, aktuel risiko i DK1/DK2 i forhold til grænsen (kun aggregerede tal) og gebyrberegner (2 % forvaltning, 20 % resultathonorar, konfigurerbart i `FUND`).
 3. Investor, Strategi: hvad fonden handler, hvordan risiko styres, og en tabel med grænser og satser hentet fra desk'ens konstanter.
@@ -54,7 +56,7 @@ Prototypen lagt på GitHub og omdøbt til Traderz; rigtige spotpriser via `/api/
 
 ## Kendte fejl og begrænsninger
 - Den fælles bog er ikke afprøvet i produktion endnu (kun under `netlify dev` og i testene). Tjek: lav en handel, åbn siden i en anden browser, afregn.
-- Deploy previews og produktion bruger samme Blobs-lager (`traderz`), så testhandler i en preview havner i den rigtige bog.
+- Deploy previews og produktion bruger samme Blobs-lager (`traderz`), så testhandler og testtilmeldinger til ventelisten i en preview havner i de rigtige data.
 - Under `netlify dev` er samtidige skrivninger til bogen ikke helt sikre: den lokale Blobs-server sender ingen ETag ved læsning og laver ETag ud fra filens ændringstid, så to skrivninger i samme millisekund kan overskrive hinanden (set ved 5 samtidige handler). I produktion er betingede skrivninger (`onlyIfMatch`) atomiske.
 - To 404'er pr. sidevisning, fordi fontfilerne i `/fonts/` ikke findes.
 - Handel for i morgen er åben indtil offentliggørelse (ca. 13), ikke kun til den rigtige auktionslukning kl. 12.
